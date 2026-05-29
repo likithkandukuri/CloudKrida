@@ -67,7 +67,7 @@ function HistoryTab({ matches, currentRound }) {
 }
 
 // ── PointsTournament ──────────────────────────────────────────────────────────
-export default function PointsTournament({ tournament, playerFields, onUpdate, tournamentId, canUpload = false, canDelete = false, canViewPrivate = false, onDisplay, isSuperAdmin = false }) {
+export default function PointsTournament({ tournament, playerFields, onUpdate, tournamentId, canUpload = false, canDelete = false, currentUserId = null, currentUserRole = null, canViewPrivate = false, onDisplay, isSuperAdmin = false }) {
   // Guard: tournament data must be valid before any rendering
   if (!tournament?.players || !tournament?.matches) {
     return (
@@ -367,7 +367,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
 
         {activeTab === 'gallery' && (
           <motion.div key="gallery" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-            <GalleryView gallery={gallery} tournamentId={tournamentId} canUpload={canUpload} canDelete={canDelete} />
+            <GalleryView gallery={gallery} tournamentId={tournamentId} canUpload={canUpload} canDelete={canDelete} currentUserId={currentUserId} currentUserRole={currentUserRole} />
           </motion.div>
         )}
       </AnimatePresence>

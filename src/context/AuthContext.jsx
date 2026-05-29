@@ -5,6 +5,7 @@ const AuthCtx = createContext(null)
 
 export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null)
+  const [userId,  setUserId]  = useState(null)
   const [users,   setUsers]   = useState([])
   const [loading, setLoading] = useState(true)   // true until Supabase resolves session
 
@@ -23,6 +24,7 @@ export function AuthProvider({ children }) {
         fetchProfile(session.user.id)
       } else {
         setProfile(null)
+        setUserId(null)
         setLoading(false)
       }
     })
@@ -30,11 +32,12 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const fetchProfile = async (userId) => {
+  const fetchProfile = async (uid) => {
+    setUserId(uid)
     const { data } = await supabase
       .from('user_profiles')
       .select('username, role, status')
-      .eq('id', userId)
+      .eq('id', uid)
       .single()
     setProfile(data ?? null)
     setLoading(false)
@@ -103,7 +106,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthCtx.Provider value={{
-      role, username, loading,
+      role, username, userId, loading,
       isSuperAdmin, isAdmin,
       canUploadPhotos, canDeletePhotos,
       login, logout,

@@ -95,7 +95,7 @@ export default function Dashboard({ onAction, tournamentCount = 0, quickMatchCou
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
         <span className="dashboard-crown">♛</span>
-        <h1 className="dashboard-title">KRIDA Chess</h1>
+        <h1 className="dashboard-title">Chess</h1>
         <p className="dashboard-sub">
           {isSuperAdmin
             ? 'Full tournament control. Create brackets, track scores, manage players, and administer your platform.'

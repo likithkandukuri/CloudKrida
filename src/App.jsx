@@ -6,6 +6,8 @@ import Login from './pages/Login'
 import Chess from './pages/chess/Chess'
 import Tennis from './pages/Tennis'
 import Darts from './pages/Darts'
+import About from './pages/About'
+import Contact from './pages/Contact'
 
 export default function App() {
   return (
@@ -13,11 +15,13 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/"       element={<Home />}   />
-            <Route path="/login"  element={<Login />}  />
-            <Route path="/chess"  element={<Chess />}  />
-            <Route path="/tennis" element={<Tennis />} />
-            <Route path="/darts"  element={<Darts />}  />
+            <Route path="/"        element={<Home />}    />
+            <Route path="/login"   element={<Login />}   />
+            <Route path="/chess"   element={<Chess />}   />
+            <Route path="/tennis"  element={<Tennis />}  />
+            <Route path="/darts"   element={<Darts />}   />
+            <Route path="/about"   element={<About />}   />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

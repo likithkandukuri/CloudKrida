@@ -6,9 +6,11 @@ import { useAuth } from '../context/AuthContext.jsx'
 import './GlobalNav.css'
 
 const NON_CHESS_LINKS = [
-  { label: 'Home',   path: '/',       exact: true  },
-  { label: 'Tennis', path: '/tennis', exact: false },
-  { label: 'Darts',  path: '/darts',  exact: false },
+  { label: 'Home',    path: '/',        exact: true  },
+  { label: 'Tennis',  path: '/tennis',  exact: false },
+  { label: 'Darts',   path: '/darts',   exact: false },
+  { label: 'About',   path: '/about',   exact: false },
+  { label: 'Contact', path: '/contact', exact: false },
 ]
 
 // Actions filtered at render time by role
@@ -198,7 +200,7 @@ export default function GlobalNav() {
               </svg>
             </div>
             <div className="gnav-logo-text-wrap">
-              <span className="gnav-logo-text">KRIDA</span>
+              <span className="gnav-logo-text">Cloud Krida</span>
               <span className="gnav-logo-sub">Tournament Platform</span>
             </div>
           </button>
@@ -314,7 +316,7 @@ export default function GlobalNav() {
             </AnimatePresence>
 
             {/* Tennis & Darts */}
-            {[{ label: 'Tennis', path: '/tennis' }, { label: 'Darts', path: '/darts' }].map(l => (
+            {[{ label: 'Tennis', path: '/tennis' }, { label: 'Darts', path: '/darts' }, { label: 'About', path: '/about' }, { label: 'Contact', path: '/contact' }].map(l => (
               <button
                 key={l.path}
                 className={`gnav-mobile-link ${isActive(l.path, false) ? 'gnav-mobile-link--active' : ''}`}

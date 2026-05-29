@@ -73,7 +73,13 @@ body,
 .stat-value,
 .stat-label,
 .stat-divider,
-.footer-copy {
+.footer-copy,
+.about-page,
+.contact-page,
+.about-section-title,
+.about-body-text,
+.contact-card-title,
+.contact-label {
   transition:
     background-color 0.4s ease,
     background 0.4s ease,

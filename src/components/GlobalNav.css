@@ -76,9 +76,9 @@
 }
 
 .gnav-logo-text {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 900;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.08em;
   color: var(--text-primary);
   font-family: 'Inter', system-ui, sans-serif;
   line-height: 1;

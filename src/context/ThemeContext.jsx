@@ -4,7 +4,7 @@ const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('krida-theme') || 'dark'
+    return localStorage.getItem('krida-theme') || 'light'
   })
 
   useEffect(() => {

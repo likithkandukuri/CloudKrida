@@ -1,8 +1,9 @@
 import { useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import GlobalNav from '../components/GlobalNav.jsx'
 import GlobalFooter from '../components/GlobalFooter.jsx'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import './Home.css'
 
 // ── Game data ────────────────────────────────────────────────────────────────
@@ -252,6 +253,13 @@ function StatBadge({ value, label, delay }) {
 
 // ── Home ─────────────────────────────────────────────────────────────────────
 export default function Home() {
+  const navigate = useNavigate()
+
+  usePageMeta({
+    title:       'Cloud Krida — Tournament Platform',
+    description: 'Create and manage Chess, Tennis, and Darts tournaments with real-time scoring, live brackets, and Swiss pairings. Free to explore — no account required.',
+  })
+
   const scrollToGames = () => {
     document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -302,7 +310,7 @@ export default function Home() {
                 <path d="M12 5v14M5 12l7 7 7-7"/>
               </svg>
             </button>
-            <button className="btn-ghost">
+            <button className="btn-ghost" onClick={() => navigate('/login')}>
               Sign In
             </button>
           </motion.div>

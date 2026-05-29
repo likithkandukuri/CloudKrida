@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import GlobalNav from '../components/GlobalNav.jsx'
 import GlobalFooter from '../components/GlobalFooter.jsx'
+import { usePageMeta } from '../hooks/usePageMeta.js'
 import './About.css'
 
 const fadeUp = {
@@ -124,6 +125,11 @@ function FeatureCard({ icon, title, desc, index }) {
 
 export default function About() {
   const navigate = useNavigate()
+
+  usePageMeta({
+    title:       'About Cloud Krida — Tournament Platform',
+    description: 'Learn about Cloud Krida\'s mission to make competitive tournament management simple, fair, and accessible — from school chess clubs to national-level brackets.',
+  })
 
   return (
     <div className="about-page">

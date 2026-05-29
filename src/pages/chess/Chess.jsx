@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 import ThemeToggle from '../../components/ThemeToggle.jsx'
 import GlobalFooter from '../../components/GlobalFooter.jsx'
+import { usePageMeta } from '../../hooks/usePageMeta.js'
 import Dashboard from './Dashboard.jsx'
 import TournamentCreator from './TournamentCreator.jsx'
 import TournamentList from './TournamentList.jsx'
@@ -42,6 +43,11 @@ function ChessPage() {
   const { isSuperAdmin, isAdmin, canUploadPhotos, canDeletePhotos } = useAuth()
   const canViewPrivate = isSuperAdmin || isAdmin
 
+  usePageMeta({
+    title:       'Chess Tournaments — Cloud Krida',
+    description: 'Manage chess tournaments with Swiss pairings, single-elimination brackets, live scoring, photo galleries, and display mode — all on Cloud Krida.',
+  })
+
   const [view,        setView]        = useState('dashboard')
   const [displayOpen, setDisplayOpen] = useState(false)
 
@@ -60,28 +66,29 @@ function ChessPage() {
 
   // CSV bulk create: builds a parent event then creates section tournaments inside it
   const handleBulkCreate = async (sectionTournaments, eventData) => {
+    const log = import.meta.env.DEV ? console.log.bind(console) : () => {}
     if (eventData?.name) {
-      console.log('[Import] Creating event in DB:', eventData)
+      log('[Import] Creating event in DB:', eventData)
       const eventId = await createEvent(eventData)
-      console.log('[Import] Event created, id:', eventId)
+      log('[Import] Event created, id:', eventId)
 
       for (let i = 0; i < sectionTournaments.length; i++) {
         const t = sectionTournaments[i]
-        console.log(`[Import] Creating tournament ${i + 1}/${sectionTournaments.length}: "${t.name}" (${t.players.length} players, ${t.totalRounds} rounds)`)
+        log(`[Import] Creating tournament ${i + 1}/${sectionTournaments.length}: "${t.name}" (${t.players.length} players, ${t.totalRounds} rounds)`)
         await createTournament(
           { ...t, eventId, eventOrder: i },
           { setActive: false },
         )
-        console.log(`[Import] Tournament ${i + 1} inserted`)
+        log(`[Import] Tournament ${i + 1} inserted`)
       }
 
-      console.log('[Import] All done — navigating to event view')
+      log('[Import] All done — navigating to event view')
       setActiveEventId(eventId)
       setView('event')
     } else {
       for (let i = 0; i < sectionTournaments.length; i++) {
         const t = sectionTournaments[i]
-        console.log(`[Import] Creating standalone tournament ${i + 1}/${sectionTournaments.length}: "${t.name}"`)
+        log(`[Import] Creating standalone tournament ${i + 1}/${sectionTournaments.length}: "${t.name}"`)
         await createTournament(t, { setActive: false })
       }
       setView('tournaments')
@@ -222,7 +229,7 @@ function ChessPage() {
               </defs>
             </svg>
           </div>
-          <span className="chess-topbar-brand-text">KRIDA</span>
+          <span className="chess-topbar-brand-text">Cloud Krida</span>
         </button>
 
         <div className="chess-topbar-sep" />

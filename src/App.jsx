@@ -8,6 +8,7 @@ import Tennis from './pages/Tennis'
 import Darts from './pages/Darts'
 import About from './pages/About'
 import Contact from './pages/Contact'
+import NotFound from './pages/NotFound'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/darts"   element={<Darts />}   />
             <Route path="/about"   element={<About />}   />
             <Route path="/contact" element={<Contact />} />
+            <Route path="*"        element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

@@ -106,27 +106,30 @@ export default function Contact() {
     setErrors({})
 
     try {
-      console.log('[Contact] Sending via EmailJS — service:', EJS_SERVICE, 'template:', EJS_TEMPLATE)
-      const result = await emailjs.send(
-        EJS_SERVICE,
-        EJS_TEMPLATE,
-        // These variable names must match exactly what your EmailJS template uses:
-        // {{from_name}}, {{from_email}}, {{message}}
-        {
-          from_name:  fields.name.trim(),
-          from_email: fields.email.trim(),
-          message:    fields.message.trim(),
-        },
-        // publicKey already set via init() above — not needed here
-      )
-      console.log('[Contact] Email sent successfully. Status:', result.status, result.text)
+      console.log('[Contact] Sending EmailJS request...')
+      console.log('[Contact] Service ID:', import.meta.env.VITE_EMAILJS_SERVICE_ID)
+      console.log('[Contact] Template ID:', import.meta.env.VITE_EMAILJS_TEMPLATE_ID)
+      console.log('[Contact] Public Key set:', !!import.meta.env.VITE_EMAILJS_PUBLIC_KEY)
+      console.log('[Contact] Raw form state:', fields)
+      const payload = {
+        name:    fields.name.trim(),
+        email:   fields.email.trim(),
+        message: fields.message.trim(),
+        subject: fields.subject || 'New message from Cloud Krida',
+      }
+      console.log('[Contact] Payload being sent:', payload)
+      const response = await emailjs.send(EJS_SERVICE, EJS_TEMPLATE, payload)
+      console.log('[Contact] EmailJS success:', response)
+      if (response.status !== 200) {
+        throw new Error(`Unexpected status ${response.status}: ${response.text}`)
+      }
       setLastSentAt(Date.now())
       setStatus('success')
       setFields({ name: '', email: '', message: '' })
       setTouched({})
-    } catch (err) {
-      console.error('[Contact] EmailJS send failed:', err)
-      const detail = typeof err === 'string' ? err : (err?.text || err?.message || 'Unknown error')
+    } catch (error) {
+      console.error('[Contact] EmailJS error:', error)
+      const detail = typeof error === 'string' ? error : (error?.text || error?.message || 'Unknown error')
       setStatus('idle')
       setErrors({ _form: `Failed to send (${detail}). Please email cloudkrida@gmail.com directly.` })
     }
@@ -239,6 +242,7 @@ export default function Contact() {
                       </label>
                       <input
                         id="ct-name"
+                        name="name"
                         className="contact-input"
                         type="text"
                         placeholder="Your full name"
@@ -266,6 +270,7 @@ export default function Contact() {
                       </label>
                       <input
                         id="ct-email"
+                        name="email"
                         className="contact-input"
                         type="email"
                         placeholder="you@example.com"
@@ -293,6 +298,7 @@ export default function Contact() {
                       </label>
                       <textarea
                         id="ct-msg"
+                        name="message"
                         className="contact-textarea"
                         placeholder="Tell us what's on your mind…"
                         rows={5}

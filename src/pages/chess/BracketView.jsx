@@ -152,7 +152,7 @@ function BracketConnectors({ matches, totalRounds }) {
 }
 
 // ── BracketView ───────────────────────────────────────────────────────────────
-export default function BracketView({ matches, players, totalRounds, meta, playerFields, gallery = [], onUpdate, onRemovePlayer, tournamentId, canUpload = false, canDelete = false, onDisplay, isSuperAdmin = false }) {
+export default function BracketView({ matches, players, totalRounds, meta, playerFields, gallery = [], onUpdate, onRemovePlayer, tournamentId, canUpload = false, canDelete = false, currentUserId = null, currentUserRole = null, onDisplay, isSuperAdmin = false }) {
   const [modal,     setModal]    = useState(null)
   const [imgViewer, setImgViewer] = useState(null)
   const [activeTab, setActiveTab] = useState('bracket')
@@ -300,7 +300,7 @@ export default function BracketView({ matches, players, totalRounds, meta, playe
 
       {/* ── Gallery tab ── */}
       {activeTab === 'gallery' && (
-        <GalleryView gallery={gallery} tournamentId={tournamentId} canUpload={canUpload} canDelete={canDelete} />
+        <GalleryView gallery={gallery} tournamentId={tournamentId} canUpload={canUpload} canDelete={canDelete} currentUserId={currentUserId} currentUserRole={currentUserRole} />
       )}
 
       {/* Score modal */}

@@ -87,11 +87,14 @@ export async function fetchTournament(id) {
     players,
     matches: (ms ?? []).map(m => matchRowToObj(m, playerMap)),
     gallery: (gs ?? []).map(g => ({
-      id:          g.id,
-      imageUrl:    g.public_url,
-      name:        g.file_name,
-      storagePath: g.storage_path,
-      uploadedAt:  new Date(g.uploaded_at).getTime(),
+      id:           g.id,
+      imageUrl:     g.public_url,
+      name:         g.file_name,
+      storagePath:  g.storage_path,
+      uploadedAt:   new Date(g.uploaded_at).getTime(),
+      mediaType:    g.media_type ?? 'image',
+      uploadedBy:   g.uploaded_by,
+      uploaderRole: g.uploader_role,
     })),
   }
 }

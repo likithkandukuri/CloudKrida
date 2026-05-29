@@ -40,8 +40,9 @@ function ChessPage() {
     dataLoading,
   } = useChess()
 
-  const { isSuperAdmin, isAdmin, canUploadPhotos, canDeletePhotos } = useAuth()
-  const canViewPrivate = isSuperAdmin || isAdmin
+  const { isSuperAdmin, isAdmin, canUploadPhotos, canDeletePhotos, userId } = useAuth()
+  const canViewPrivate  = isSuperAdmin || isAdmin
+  const currentUserRole = isSuperAdmin ? 'superadmin' : isAdmin ? 'admin' : 'guest'
 
   usePageMeta({
     title:       'Chess Tournaments — Cloud Krida',
@@ -344,6 +345,8 @@ function ChessPage() {
                   tournamentId={activeTournamentId}
                   canUpload={canUploadPhotos}
                   canDelete={canDeletePhotos}
+                  currentUserId={userId}
+                  currentUserRole={currentUserRole}
                   canViewPrivate={canViewPrivate}
                   onDisplay={() => setDisplayOpen(true)}
                   isSuperAdmin={isSuperAdmin}
@@ -361,6 +364,8 @@ function ChessPage() {
                   tournamentId={activeTournamentId}
                   canUpload={canUploadPhotos}
                   canDelete={canDeletePhotos}
+                  currentUserId={userId}
+                  currentUserRole={currentUserRole}
                   onDisplay={() => setDisplayOpen(true)}
                   isSuperAdmin={isSuperAdmin}
                 />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../lib/supabase.js'
 
@@ -19,18 +19,17 @@ function timeAgo(ts) {
 
 // ── Full-screen viewer ────────────────────────────────────────────────────────
 function Viewer({ items, index, onChange, onClose }) {
-  useEffect(() => {
-    const h = (e) => {
-      if (e.key === 'ArrowRight') onChange((index + 1) % items.length)
-      if (e.key === 'ArrowLeft')  onChange((index - 1 + items.length) % items.length)
-      if (e.key === 'Escape')     onClose()
-    }
-    window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [index, items.length, onChange, onClose])
-
   const item    = items[index]
-  const isVideo = item.mediaType === 'video'
+  const isVideo = item?.mediaType === 'video'
+
+  // key-nav
+  const handleKey = (e) => {
+    if (e.key === 'ArrowRight') onChange((index + 1) % items.length)
+    if (e.key === 'ArrowLeft')  onChange((index - 1 + items.length) % items.length)
+    if (e.key === 'Escape')     onClose()
+  }
+
+  if (!item) return null
 
   return (
     <motion.div
@@ -41,6 +40,8 @@ function Viewer({ items, index, onChange, onClose }) {
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
       onClick={onClose}
+      onKeyDown={handleKey}
+      tabIndex={-1}
     >
       <div style={{ position: 'absolute', top: 20, left: 0, right: 0, textAlign: 'center',
                     fontSize: 13, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em' }}>
@@ -119,14 +120,14 @@ function Viewer({ items, index, onChange, onClose }) {
 // gallery         — array of media objects from DB
 // tournamentId    — Supabase Storage path prefix + DB insert key
 // canUpload       — true for superadmin + admin
-// canDelete       — true for superadmin only (can delete any item)
+// canDelete       — kept for backward compat; actual logic uses currentUserRole
 // currentUserId   — auth.uid() of the logged-in user (for ownership checks)
 // currentUserRole — 'superadmin' | 'admin' | 'guest'
 export default function GalleryView({
   gallery         = [],
   tournamentId,
   canUpload       = false,
-  canDelete       = false,
+  canDelete       = false,   // eslint-disable-line no-unused-vars
   currentUserId   = null,
   currentUserRole = null,
 }) {
@@ -134,15 +135,24 @@ export default function GalleryView({
   const [dragOver,    setDragOver]    = useState(false)
   const [uploading,   setUploading]   = useState(false)
   const [uploadError, setUploadError] = useState('')
+  // Track locally deleted IDs so the UI updates instantly without waiting for Realtime
+  const [deletedIds,  setDeletedIds]  = useState(new Set())
   const fileRef = useRef()
 
-  // Superadmin: delete anything. Admin: delete only their own uploads.
+  // Items still visible (optimistic delete)
+  const visibleGallery = gallery.filter(item => !deletedIds.has(item.id))
+
+  // ── Permission check ────────────────────────────────────────────────────────
+  // Superadmin: delete anything.
+  // Admin: delete only items they uploaded (uploadedBy must match their userId).
+  // Guest / unauthenticated: no delete.
   const canDeleteItem = (item) => {
-    if (canDelete) return true
-    if (!canUpload || !currentUserId) return false
-    return item.uploadedBy === currentUserId
+    if (currentUserRole === 'superadmin') return true
+    if (currentUserRole === 'admin' && currentUserId && item.uploadedBy === currentUserId) return true
+    return false
   }
 
+  // ── Upload ──────────────────────────────────────────────────────────────────
   const handleFiles = async (files) => {
     if (!tournamentId) return
     const valid = Array.from(files).filter(f => ACCEPTED_TYPES.includes(f.type))
@@ -169,7 +179,7 @@ export default function GalleryView({
 
       const { error: uploadErr } = await supabase.storage.from('gallery').upload(path, file)
       if (uploadErr) {
-        console.error('[Krida] gallery upload:', uploadErr)
+        console.error('[Gallery] Upload failed:', uploadErr)
         setUploadError(`Upload failed: ${uploadErr.message}`)
         continue
       }
@@ -185,34 +195,70 @@ export default function GalleryView({
         media_type:    mediaType,
         uploader_role: currentUserRole,
       })
-      if (dbErr) console.error('[Krida] gallery_photos insert:', dbErr)
+      if (dbErr) console.error('[Gallery] DB insert failed:', dbErr)
     }
 
     setUploading(false)
   }
 
+  // ── Delete ──────────────────────────────────────────────────────────────────
   const handleDelete = async (item) => {
     const label = item.mediaType === 'video' ? 'video' : 'photo'
     if (!confirm(`Delete this ${label}? This cannot be undone.`)) return
-    if (viewerIndex !== null && gallery[viewerIndex]?.id === item.id) setViewerIndex(null)
+
+    console.log('[Gallery] Delete request:', {
+      role:        currentUserRole,
+      userId:      currentUserId,
+      itemId:      item.id,
+      uploadedBy:  item.uploadedBy,
+      storagePath: item.storagePath,
+    })
+
+    // Close viewer if open on this item
+    if (viewerIndex !== null && visibleGallery[viewerIndex]?.id === item.id) {
+      setViewerIndex(null)
+    }
+
+    // Optimistic: hide immediately so the user sees instant feedback
+    setDeletedIds(prev => new Set([...prev, item.id]))
 
     const { error: dbErr } = await supabase.from('gallery_photos').delete().eq('id', item.id)
-    if (dbErr) { console.error('[Krida] gallery delete:', dbErr); return }
+    if (dbErr) {
+      console.error('[Gallery] DB delete failed:', {
+        message:     dbErr.message,
+        code:        dbErr.code,
+        details:     dbErr.details,
+        role:        currentUserRole,
+        userId:      currentUserId,
+        itemId:      item.id,
+        uploadedBy:  item.uploadedBy,
+      })
+      // Undo optimistic hide
+      setDeletedIds(prev => { const s = new Set(prev); s.delete(item.id); return s })
+      return
+    }
+
+    console.log('[Gallery] DB delete success:', item.id)
 
     if (item.storagePath) {
-      await supabase.storage.from('gallery').remove([item.storagePath])
+      const { error: storErr } = await supabase.storage.from('gallery').remove([item.storagePath])
+      if (storErr) {
+        console.error('[Gallery] Storage delete failed (file orphaned):', storErr.message)
+      } else {
+        console.log('[Gallery] Storage delete success:', item.storagePath)
+      }
     }
   }
 
-  // Count label for the summary line
-  const photoCount = gallery.filter(i => i.mediaType !== 'video').length
-  const videoCount = gallery.filter(i => i.mediaType === 'video').length
-  const countLabel = gallery.length === 0 ? '' :
+  // ── Count label ─────────────────────────────────────────────────────────────
+  const photoCount = visibleGallery.filter(i => i.mediaType !== 'video').length
+  const videoCount = visibleGallery.filter(i => i.mediaType === 'video').length
+  const countLabel = visibleGallery.length === 0 ? '' :
     videoCount === 0 ? `${photoCount} photo${photoCount !== 1 ? 's' : ''}` :
     photoCount === 0 ? `${videoCount} video${videoCount !== 1 ? 's' : ''}` :
     `${photoCount} photo${photoCount !== 1 ? 's' : ''} · ${videoCount} video${videoCount !== 1 ? 's' : ''}`
 
-  const anyDeleteVisible = gallery.some(item => canDeleteItem(item))
+  const anyDeleteVisible = visibleGallery.some(item => canDeleteItem(item))
 
   return (
     <div className="gallery-view">
@@ -249,13 +295,13 @@ export default function GalleryView({
         <div style={{ fontSize: 13, color: 'var(--cc-warn)', marginBottom: 12 }}>{uploadError}</div>
       )}
 
-      {gallery.length > 0 && (
+      {visibleGallery.length > 0 && (
         <div style={{ fontSize: 12, color: 'var(--cc-muted)', marginBottom: 16 }}>
           {countLabel} · click to view{anyDeleteVisible ? ' · hover to delete' : ''}
         </div>
       )}
 
-      {gallery.length === 0 ? (
+      {visibleGallery.length === 0 ? (
         <div className="empty-state" style={{ paddingTop: 32 }}>
           <div className="empty-state-icon">🖼</div>
           <div className="empty-state-title">No media yet</div>
@@ -266,9 +312,9 @@ export default function GalleryView({
       ) : (
         <div className="gallery-grid">
           <AnimatePresence>
-            {gallery.map((item, i) => {
-              const isVideo     = item.mediaType === 'video'
-              const showDelete  = canDeleteItem(item)
+            {visibleGallery.map((item, i) => {
+              const isVideo    = item.mediaType === 'video'
+              const showDelete = canDeleteItem(item)
               return (
                 <motion.div
                   key={item.id}
@@ -295,7 +341,7 @@ export default function GalleryView({
                     />
                   )}
 
-                  {/* Media type badge — top-left */}
+                  {/* Media type badge */}
                   <div className="gallery-media-badge" aria-label={isVideo ? 'Video' : 'Photo'}>
                     {isVideo ? '🎬' : '📷'}
                   </div>
@@ -305,7 +351,7 @@ export default function GalleryView({
                     <span>{isVideo ? '▶' : '🔍'}</span>
                   </div>
 
-                  {/* Delete button — only for authorized items */}
+                  {/* Delete — only for authorized items */}
                   {showDelete && (
                     <button
                       className="gallery-delete-btn"
@@ -314,7 +360,7 @@ export default function GalleryView({
                     >✕</button>
                   )}
 
-                  {/* Caption with filename + upload time */}
+                  {/* Caption */}
                   <div className="gallery-thumb-caption">
                     <div className="gallery-thumb-caption-name">{item.name}</div>
                     <div className="gallery-thumb-caption-meta">{timeAgo(item.uploadedAt)}</div>
@@ -327,10 +373,10 @@ export default function GalleryView({
       )}
 
       <AnimatePresence>
-        {viewerIndex !== null && gallery.length > 0 && (
+        {viewerIndex !== null && visibleGallery.length > 0 && (
           <Viewer
-            items={gallery}
-            index={Math.min(viewerIndex, gallery.length - 1)}
+            items={visibleGallery}
+            index={Math.min(viewerIndex, visibleGallery.length - 1)}
             onChange={setViewerIndex}
             onClose={() => setViewerIndex(null)}
           />

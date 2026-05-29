@@ -1,0 +1,167 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-base:        #04040e;
+  --bg-surface:     #080816;
+  --bg-card:        rgba(255, 255, 255, 0.03);
+  --border-subtle:  rgba(255, 255, 255, 0.07);
+  --border-glow:    rgba(255, 255, 255, 0.14);
+
+  --text-primary:   #f0f4ff;
+  --text-secondary: #8892b0;
+  --text-muted:     #6b7fa9;
+
+  --purple:   #8b5cf6;
+  --blue:     #3b82f6;
+  --cyan:     #06b6d4;
+  --green:    #10b981;
+
+  /* sport accent colors — theme-aware */
+  --sport-tennis: #4ade80;
+  --sport-darts:  #f87171;
+
+  --font: 'Inter', system-ui, sans-serif;
+
+  /* easing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Light mode CSS variables ───────────────────────── */
+[data-theme="light"] {
+  --bg-base:        #eef2ff;
+  --bg-surface:     #ffffff;
+  --bg-card:        rgba(255, 255, 255, 0.65);
+  --border-subtle:  rgba(99, 102, 241, 0.14);
+  --border-glow:    rgba(99, 102, 241, 0.3);
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #546282;
+
+  /* sport accent colors — dark equivalents for light bg */
+  --sport-tennis: #166534;
+  --sport-darts:  #991b1b;
+}
+
+/* ── Global theme transitions ───────────────────────── */
+body,
+.gnav,
+.gnav-inner,
+.gnav-logo-text,
+.gnav-logo-sub,
+.gnav-link,
+.gnav-signin,
+.gnav-burger,
+.game-card,
+.card-info,
+.hero-stats,
+.hero-badge,
+.btn-ghost,
+.btn-primary,
+.scroll-mouse,
+.footer,
+.section-eyebrow,
+.section-title,
+.section-sub,
+.card-name,
+.card-desc,
+.card-stats,
+.stat-value,
+.stat-label,
+.stat-divider,
+.footer-copy {
+  transition:
+    background-color 0.4s ease,
+    background 0.4s ease,
+    border-color 0.4s ease,
+    color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ──────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.7); }
+
+/* ── Selection ──────────────────────────────────────── */
+::selection {
+  background: rgba(139, 92, 246, 0.35);
+  color: #fff;
+}
+
+/* ── Utility ────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #c4b5fd 0%, #818cf8 35%, #38bdf8 70%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font);
+  border: none;
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── Global contrast fixes ──────────────────────────── */
+/* Ensure --text-secondary is always readable */
+:root {
+  --text-secondary: #94a3b8;   /* was #8892b0 — increased contrast */
+}
+
+[data-theme="light"] {
+  --bg-base:       #eef2ff;
+  --bg-surface:    #ffffff;
+  --bg-card:       rgba(255, 255, 255, 0.65);
+  --border-subtle: rgba(99, 102, 241, 0.14);
+  --border-glow:   rgba(99, 102, 241, 0.3);
+  --text-primary:  #0f172a;
+  --text-secondary: #475569;   /* dark enough on white */
+  --text-muted:    #64748b;
+}
+
+/* Homepage light mode — logo text */
+[data-theme="light"] .logo-text    { color: var(--text-primary); }
+[data-theme="light"] .nav-link     { color: var(--text-secondary); }
+[data-theme="light"] .topbar-name  { color: var(--text-primary); }
+
+/* Ensure all placeholder pages use correct text color in light mode */
+[data-theme="light"] .placeholder-title { color: var(--text-primary); }
+[data-theme="light"] .placeholder-desc  { color: var(--text-secondary); }
+[data-theme="light"] .placeholder-tag   { color: var(--text-muted); }
+
+/* GlobalFooter light mode */
+[data-theme="light"] .gfooter {
+  background: #ffffff;
+  border-top-color: rgba(99,102,241,0.14);
+}
+[data-theme="light"] .gfooter-bottom {
+  border-top-color: rgba(99,102,241,0.12);
+}

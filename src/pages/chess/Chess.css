@@ -1953,7 +1953,8 @@
 /* Users table */
 .um-table-wrap {
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;          /* allow horizontal scroll on narrow screens */
+  overflow-y: hidden;
   border: 1px solid var(--cc-border);
 }
 
@@ -2575,5 +2576,61 @@ tr:hover .player-info-btn,
   background: rgba(160,100,0,0.1);
   border-color: rgba(160,100,0,0.3);
   color: var(--cc-gold);
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Chess page
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Topbar: tablet (≤860px) ─────────────────────────── */
+@media (max-width: 860px) {
+  .chess-topbar { padding: 0 18px; gap: 10px; }
+  .topbar-breadcrumb { display: none; }
+}
+
+/* ── Topbar: phone (≤640px) ─────────────────────────── */
+@media (max-width: 640px) {
+  .chess-topbar { padding: 0 12px; gap: 7px; }
+  .chess-topbar-brand-text { display: none; }
+  .chess-topbar-sep { display: none; }
+  .chess-back-btn { padding: 5px 10px; font-size: 12px; }
+  .topbar-btn { padding: 5px 10px; font-size: 12px; gap: 4px; }
+  .topbar-name { font-size: 13px; letter-spacing: 0.06em; }
+  .chess-section    { padding: 32px 16px 60px; }
+  .chess-section-lg { padding: 24px 16px 60px; }
+}
+
+/* ── Topbar: small phone (≤480px) ───────────────────── */
+@media (max-width: 480px) {
+  .chess-topbar { padding: 0 10px; gap: 5px; }
+  .chess-topbar-brand { display: none; }
+  .topbar-btn { padding: 5px 8px; font-size: 11px; }
+  .chess-back-btn { padding: 5px 8px; font-size: 11px; }
+  /* Let action buttons wrap if they still overflow */
+  .chess-topbar-actions { flex-wrap: wrap; gap: 5px; }
+}
+
+/* ── Section content: small screens ────────────────── */
+@media (max-width: 480px) {
+  .chess-section    { padding: 24px 12px 48px; }
+  .chess-section-lg { padding: 16px 12px 48px; }
+  .chess-heading  { font-size: 20px; }
+  .chess-subhead  { font-size: 13px; }
+}
+
+/* ── Gallery grid: tighter on very small phones ─────── */
+@media (max-width: 400px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+}
+
+/* ── Prevent standings table from pushing page width ── */
+@media (max-width: 640px) {
+  .standings-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 

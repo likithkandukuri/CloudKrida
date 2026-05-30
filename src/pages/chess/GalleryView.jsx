@@ -255,6 +255,13 @@ export default function GalleryView({
 
   const anyDeleteVisible = canDeleteItem()
 
+  console.log('[Gallery] Permissions:', {
+    currentUserRole,
+    currentUserId,
+    canDelete: anyDeleteVisible,
+    itemCount: visibleGallery.length,
+  })
+
   return (
     <div className="gallery-view">
       {/* Upload zone */}

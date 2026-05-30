@@ -143,14 +143,9 @@ export default function GalleryView({
   const visibleGallery = gallery.filter(item => !deletedIds.has(item.id))
 
   // ── Permission check ────────────────────────────────────────────────────────
-  // Superadmin: delete anything.
-  // Admin: delete only items they uploaded (uploadedBy must match their userId).
-  // Guest / unauthenticated: no delete.
-  const canDeleteItem = (item) => {
-    if (currentUserRole === 'superadmin') return true
-    if (currentUserRole === 'admin' && currentUserId && item.uploadedBy === currentUserId) return true
-    return false
-  }
+  // Admin and superadmin can delete any item. Guests: read-only.
+  const canDeleteItem = () =>
+    currentUserRole === 'superadmin' || currentUserRole === 'admin'
 
   // ── Upload ──────────────────────────────────────────────────────────────────
   const handleFiles = async (files) => {
@@ -258,7 +253,7 @@ export default function GalleryView({
     photoCount === 0 ? `${videoCount} video${videoCount !== 1 ? 's' : ''}` :
     `${photoCount} photo${photoCount !== 1 ? 's' : ''} · ${videoCount} video${videoCount !== 1 ? 's' : ''}`
 
-  const anyDeleteVisible = visibleGallery.some(item => canDeleteItem(item))
+  const anyDeleteVisible = canDeleteItem()
 
   return (
     <div className="gallery-view">
@@ -314,7 +309,7 @@ export default function GalleryView({
           <AnimatePresence>
             {visibleGallery.map((item, i) => {
               const isVideo    = item.mediaType === 'video'
-              const showDelete = canDeleteItem(item)
+              const showDelete = canDeleteItem()
               return (
                 <motion.div
                   key={item.id}

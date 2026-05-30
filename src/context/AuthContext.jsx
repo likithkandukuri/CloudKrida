@@ -49,7 +49,7 @@ export function AuthProvider({ children }) {
   const isSuperAdmin    = role === 'superadmin'
   const isAdmin         = role === 'admin'
   const canUploadPhotos = isSuperAdmin || isAdmin
-  const canDeletePhotos = isSuperAdmin
+  const canDeletePhotos = isSuperAdmin || isAdmin
 
   // ── Login / logout ──────────────────────────────────────────────────────────
   const login = async (inputUsername, inputPassword) => {

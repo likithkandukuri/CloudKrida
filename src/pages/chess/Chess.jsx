@@ -316,6 +316,8 @@ function ChessPage() {
                 canUploadPhotos={canUploadPhotos}
                 canDeletePhotos={canDeletePhotos}
                 canViewPrivate={canViewPrivate}
+                currentUserId={userId}
+                currentUserRole={currentUserRole}
               />
             </motion.div>
           )}

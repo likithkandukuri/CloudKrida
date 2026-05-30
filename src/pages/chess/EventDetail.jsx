@@ -29,7 +29,7 @@ function fmtDate(d) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-export default function EventDetail({ event, isSuperAdmin, canUploadPhotos, canDeletePhotos, canViewPrivate }) {
+export default function EventDetail({ event, isSuperAdmin, canUploadPhotos, canDeletePhotos, canViewPrivate, currentUserId = null, currentUserRole = null }) {
   const {
     tournaments,
     activeTournamentId, setActiveTournamentId,
@@ -143,6 +143,8 @@ export default function EventDetail({ event, isSuperAdmin, canUploadPhotos, canD
                 canUpload={canUploadPhotos}
                 canDelete={canDeletePhotos}
                 canViewPrivate={canViewPrivate}
+                currentUserId={currentUserId}
+                currentUserRole={currentUserRole}
                 onDisplay={() => setSectionDisplayOpen(true)}
                 isSuperAdmin={isSuperAdmin}
               />
@@ -159,6 +161,8 @@ export default function EventDetail({ event, isSuperAdmin, canUploadPhotos, canD
                 tournamentId={activeTournamentId}
                 canUpload={canUploadPhotos}
                 canDelete={canDeletePhotos}
+                currentUserId={currentUserId}
+                currentUserRole={currentUserRole}
                 onDisplay={() => setSectionDisplayOpen(true)}
                 isSuperAdmin={isSuperAdmin}
               />

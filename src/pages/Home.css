@@ -751,6 +751,15 @@
   }
 }
 
+/* ── Very small phones (≤430px) ─────────────────────────── */
+@media (max-width: 430px) {
+  .hero { padding: 110px 16px 72px; }
+  .section-head { margin-bottom: 40px; }
+  .games-section { padding: 48px 16px 56px; }
+  .section-sub { font-size: 15px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
 /* ═══════════════════════════════════════════════════════
    LIGHT MODE OVERRIDES
    ═══════════════════════════════════════════════════════ */

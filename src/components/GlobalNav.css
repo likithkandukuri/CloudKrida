@@ -655,3 +655,11 @@
   .gnav-logo-icon { width: 40px; height: 40px; border-radius: 11px; }
   .gnav-logo-text { font-size: 15px; }
 }
+
+/* ── Ultra-narrow phones (≤360px) ───────────────────────── */
+@media (max-width: 360px) {
+  .gnav { padding: 0 12px; }
+  .gnav-logo-text-wrap { display: none; }
+  .gnav-logo-icon { width: 36px; height: 36px; border-radius: 10px; }
+  .gnav-right { gap: 6px; }
+}

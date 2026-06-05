@@ -1845,10 +1845,15 @@
     text-align: center !important;
   }
 
+  .pairings-pts-col {
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
   .pairings-pts {
-    color: #333 !important;
-    font-size: 10pt !important;
-    font-weight: 700 !important;
+    color: #111 !important;
+    font-size: 13pt !important;
+    font-weight: 800 !important;
   }
 
   .pairings-name {
@@ -2638,5 +2643,60 @@ tr:hover .player-info-btn,
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
+}
+
+/* ── Event section tabs: scrollable row on small phones ── */
+@media (max-width: 640px) {
+  .event-section-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .event-section-tabs::-webkit-scrollbar { display: none; }
+  .event-section-tab { flex-shrink: 0; }
+}
+
+/* ── Score modal: narrower padding on small phones ───── */
+@media (max-width: 480px) {
+  .modal-backdrop { padding: 16px 12px; }
+  .score-modal { padding: 22px 18px; border-radius: 16px; }
+  .modal-players { gap: 8px; }
+  .modal-player { padding: 10px 8px; }
+  .modal-player-name { font-size: 13px; }
+  .modal-actions { gap: 8px; }
+}
+
+/* ── TournamentCreator step progress: hide labels ──────── */
+@media (max-width: 480px) {
+  .step-label { display: none; }
+  .step-progress { margin-bottom: 28px; }
+  .creator-container { max-width: 100%; }
+}
+
+/* ── Chess buttons: compact at very small phones ──────── */
+@media (max-width: 375px) {
+  .chess-btn-gold  { padding: 8px 12px; font-size: 12px; }
+  .chess-btn-ghost { padding: 8px 12px; font-size: 12px; }
+  .pairings-controls { gap: 8px; }
+  .chess-input { font-size: 13px; }
+}
+
+/* ── Dashboard grid: full width on very small phones ─── */
+@media (max-width: 375px) {
+  .dashboard-grid { gap: 12px; }
+  .dash-card { padding: 22px 18px; }
+}
+
+/* ── Section head: tighter on very small phones ────────── */
+@media (max-width: 375px) {
+  .chess-section-head { margin-bottom: 24px; }
+  .chess-heading { font-size: 22px; }
+}
+
+/* ── Validation / warning banners: no overflow ─────────── */
+@media (max-width: 480px) {
+  .pairings-view { word-break: break-word; }
 }
 

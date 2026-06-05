@@ -37,7 +37,7 @@ function ActBtn({ onClick, title, children, warn, active }) {
 }
 
 // ── Player cell ───────────────────────────────────────────────────────────────
-function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, onSelect, onRemove, onPlayerClick, editable, large, points }) {
+function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, onSelect, onRemove, onPlayerClick, editable, large }) {
   const pf          = playerFields ?? ['name', 'elo']
   const isBye       = player === 'BYE' || player?.name === 'BYE'
   const isUnpaired  = !player && !isBye
@@ -108,12 +108,6 @@ function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, on
               >ℹ</button>
             )}
           </div>
-          {/* Current points */}
-          {points != null && (
-            <div className="pairings-pts" style={{ fontSize: large ? 24 : 15, color: 'var(--cc-gold)', fontWeight: 800, marginTop: 2 }}>
-              {fmtPts(points)} pts
-            </div>
-          )}
           {playerSubInfo(player, pf) && (
             <div style={{ fontSize: fs.elo, color: 'var(--cc-sub)', marginTop: 2 }}>
               {playerSubInfo(player, pf)}
@@ -179,6 +173,7 @@ export default function PairingsView({
     Object.fromEntries((standings ?? []).map(s => [s.name, s.points ?? 0])),
     [standings]
   )
+  const showPts = (standings?.length ?? 0) > 0 && round > 0
 
   // ── Pairing swap ─────────────────────────────────────────────────────────────
   const handlePlayerSelect = (matchId, slot, player) => {
@@ -513,9 +508,11 @@ export default function PairingsView({
                 <th style={{ fontSize: fs.th }} onClick={() => toggleSort('white')}>
                   ♔ White <SortIcon k="white" />
                 </th>
+                {showPts && <th style={{ fontSize: fs.th, width: 80, textAlign: 'center' }}>Pts</th>}
                 <th style={{ fontSize: fs.th }} onClick={() => toggleSort('black')}>
                   ♚ Black <SortIcon k="black" />
                 </th>
+                {showPts && <th style={{ fontSize: fs.th, width: 80, textAlign: 'center' }}>Pts</th>}
                 <th style={{ fontSize: fs.th, width: 110 }}>Result</th>
                 {editable && <th className="no-print" style={{ fontSize: fs.th, width: 140, textAlign: 'center' }}>Actions</th>}
               </tr>
@@ -530,8 +527,6 @@ export default function PairingsView({
                 const p1Real = m.p1?.name && m.p1 !== 'BYE'
                 const p2Real = m.p2?.name && m.p2 !== 'BYE' && m.p2?.name !== 'BYE'
 
-                // Show points only from round 2 onward (round index > 0)
-                const showPts  = standings?.length > 0 && round > 0
                 const p1Points = showPts && p1Real ? (standingMap[m.p1.name] ?? null) : null
                 const p2Points = showPts && p2Real ? (standingMap[m.p2.name] ?? null) : null
 
@@ -589,8 +584,32 @@ export default function PairingsView({
                       onSelect={handlePlayerSelect} onRemove={handleRemove}
                       onPlayerClick={onPlayerClick}
                       editable={editable} large={displayMode}
-                      points={p1Points}
                     />
+                    {showPts && (
+                      <td
+                        className="pairings-pts-col"
+                        onClick={() => {
+                          if (editable && m.status === 'pending' && !m.locked && p1Real)
+                            handlePlayerSelect(m.id, 'p1', m.p1)
+                        }}
+                        style={{
+                          padding: displayMode ? '18px 14px' : '10px 10px',
+                          textAlign: 'center',
+                          verticalAlign: 'middle',
+                          cursor: editable && m.status === 'pending' && !m.locked && p1Real ? 'pointer' : 'default',
+                          background: sel1 ? 'var(--cc-sel)' : canSw('p1') ? 'var(--cc-hover)' : 'transparent',
+                          borderRadius: 8,
+                          transition: 'background 0.15s',
+                          userSelect: 'none',
+                        }}
+                      >
+                        {p1Real && p1Points != null && (
+                          <div className="pairings-pts" style={{ fontSize: displayMode ? 28 : 20, fontWeight: 800, color: 'var(--cc-gold)', lineHeight: 1 }}>
+                            {fmtPts(p1Points)}
+                          </div>
+                        )}
+                      </td>
+                    )}
                     <PlayerCell
                       match={m} slot="p2" player={m.p2?.name === 'BYE' ? 'BYE' : m.p2}
                       playerFields={pf}
@@ -598,8 +617,32 @@ export default function PairingsView({
                       onSelect={handlePlayerSelect} onRemove={handleRemove}
                       onPlayerClick={onPlayerClick}
                       editable={editable} large={displayMode}
-                      points={p2Points}
                     />
+                    {showPts && (
+                      <td
+                        className="pairings-pts-col"
+                        onClick={() => {
+                          if (editable && m.status === 'pending' && !m.locked && p2Real)
+                            handlePlayerSelect(m.id, 'p2', m.p2)
+                        }}
+                        style={{
+                          padding: displayMode ? '18px 14px' : '10px 10px',
+                          textAlign: 'center',
+                          verticalAlign: 'middle',
+                          cursor: editable && m.status === 'pending' && !m.locked && p2Real ? 'pointer' : 'default',
+                          background: sel2 ? 'var(--cc-sel)' : canSw('p2') ? 'var(--cc-hover)' : 'transparent',
+                          borderRadius: 8,
+                          transition: 'background 0.15s',
+                          userSelect: 'none',
+                        }}
+                      >
+                        {p2Real && p2Points != null && (
+                          <div className="pairings-pts" style={{ fontSize: displayMode ? 28 : 20, fontWeight: 800, color: 'var(--cc-gold)', lineHeight: 1 }}>
+                            {fmtPts(p2Points)}
+                          </div>
+                        )}
+                      </td>
+                    )}
 
                     <td style={{ padding: '10px 14px', textAlign: 'center' }}>
                       <StatusBadge status={m.status} score={getScoreLabel(m)} />

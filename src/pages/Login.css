@@ -383,3 +383,14 @@
   .login-center { padding: 88px 16px 40px; }
   .login-topbar { padding: 14px 16px; }
 }
+
+/* ── Very small phones (≤375px) ─────────────────────── */
+@media (max-width: 375px) {
+  .login-topbar { padding: 12px 12px; }
+  .login-center { padding: 80px 12px 32px; }
+  .login-card { padding: 22px 16px; border-radius: 16px; }
+  .login-brand-icon { width: 46px; height: 46px; border-radius: 13px; }
+  .login-brand-name { font-size: 20px; letter-spacing: 0.16em; }
+  .login-brand { gap: 10px; }
+  .login-heading { font-size: 18px; }
+}

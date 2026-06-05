@@ -304,7 +304,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
               </button>
             </div>
             <div style={{ fontSize: 11, color: 'var(--cc-muted)', marginTop: 8 }}>
-              After adding, use Recalculate in the Round tab to include them in current pairings.
+              After adding, use <strong style={{ color: 'var(--cc-gold)' }}>🩹 Repair</strong> in the Round tab — only the new player gets paired, all other boards stay exactly as-is.
             </div>
           </motion.div>
         )}
@@ -342,6 +342,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
               onRemovePlayer={isSuperAdmin ? handleRemovePlayer : null}
               onScoreClick={isSuperAdmin ? setScoreModal : null}
               onPlayerClick={handlePlayerClick}
+              standings={standings}
             />
           </motion.div>
         )}
@@ -376,6 +377,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
       <AnimatePresence>
         {scoreModal && (
           <ScoreModal
+            key={scoreModal.id}
             match={scoreModal}
             playerFields={pf}
             tournamentId={tournamentId}

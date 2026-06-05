@@ -262,7 +262,7 @@ export function recalculatePairings(matches) {
 export function swapPlayers(matches, matchId1, slot1, matchId2, slot2) {
   const m1 = matches.find(m => m.id === matchId1)
   const m2 = matches.find(m => m.id === matchId2)
-  if (!m1 || !m2 || m1.status !== 'pending' || m2.status !== 'pending') return matches
+  if (!m1 || !m2 || m1.status !== 'pending' || m2.status !== 'pending' || m1.locked || m2.locked) return matches
   const p1copy = m1[slot1]
   const p2copy = m2[slot2]
   return matches.map(m => {
@@ -436,29 +436,29 @@ export function parseCSV(text, playerFields = ['name', 'elo']) {
 
 // ── Recalculate pairings including players not yet in any match ───────────────
 // Extends recalculatePairings to also include newly-added players that have
-// no match in the current round yet.
+// no match in the current round yet. Locked matches are never touched.
 export function recalculatePairingsWithAll(matches, allPlayers) {
   const target = getCurrentRound(matches)
 
-  // Track who already has a complete/bye result this round (don't touch these)
+  // Track who already has a complete/bye/locked result this round (don't touch these)
   const doneInRound = new Set()
-  for (const m of matches.filter(m => m.round === target && (m.status === 'complete' || m.status === 'bye'))) {
+  for (const m of matches.filter(m => m.round === target && (m.status === 'complete' || m.status === 'bye' || m.locked))) {
     if (m.p1?.name) doneInRound.add(m.p1.name)
     if (m.p2?.name && m.p2 !== 'BYE') doneInRound.add(m.p2.name)
   }
 
   // Track everyone in the current round
   const inRound = new Set(doneInRound)
-  for (const m of matches.filter(m => m.round === target && m.status === 'pending')) {
+  for (const m of matches.filter(m => m.round === target && m.status === 'pending' && !m.locked)) {
     if (m.p1?.name) inRound.add(m.p1.name)
     if (m.p2?.name && m.p2 !== 'BYE') inRound.add(m.p2.name)
   }
 
-  // Build pool: pending match players + anyone not in round at all
+  // Build pool: pending (non-locked) match players + anyone not in round at all
   const seen = new Set(doneInRound)
   const pool = []
 
-  for (const m of matches.filter(m => m.round === target && m.status === 'pending')) {
+  for (const m of matches.filter(m => m.round === target && m.status === 'pending' && !m.locked)) {
     for (const p of [m.p1, m.p2]) {
       if (p?.name && p !== 'BYE' && p?.name !== 'BYE' && !seen.has(p.name)) {
         seen.add(p.name); pool.push(p)
@@ -480,8 +480,8 @@ export function recalculatePairingsWithAll(matches, allPlayers) {
     ;[pool[i], pool[j]] = [pool[j], pool[i]]
   }
 
-  // Keep non-pending matches
-  const kept = matches.filter(m => !(m.round === target && m.status === 'pending'))
+  // Keep non-pending matches and locked pending matches
+  const kept = matches.filter(m => !(m.round === target && m.status === 'pending' && !m.locked))
   const completedSlots = kept.filter(m => m.round === target)
   let nextSlot = completedSlots.length > 0 ? Math.max(...completedSlots.map(m => m.slot)) + 1 : 0
 
@@ -501,6 +501,170 @@ export function recalculatePairingsWithAll(matches, allPlayers) {
   }
 
   return propagateAll([...kept, ...newMatches])
+}
+
+// ── Smart Repair: only pair players in null slots or not yet in round ─────────
+// Intact pairings (both slots filled) are never touched. Locked matches are skipped.
+// Use this after player removal/addition to fix only what's broken.
+export function smartRepair(matches, allPlayers) {
+  const target = getCurrentRound(matches)
+  const inRound = matches.filter(m => m.round === target)
+
+  // Identify matches that need repair: pending, not locked, missing an opponent
+  const toRepair = inRound.filter(m =>
+    m.status === 'pending' && !m.locked &&
+    (!m.p1?.name || !m.p2 || m.p2 === null || m.p2 === 'BYE' || m.p2?.name === 'BYE')
+  )
+
+  // Build pool from players in repair matches + players not in round at all
+  const pool = []
+  const poolNames = new Set()
+  for (const m of toRepair) {
+    if (m.p1?.name && m.p1 !== 'BYE' && !poolNames.has(m.p1.name)) {
+      pool.push(m.p1); poolNames.add(m.p1.name)
+    }
+    if (m.p2?.name && m.p2 !== 'BYE' && m.p2?.name !== 'BYE' && !poolNames.has(m.p2.name)) {
+      pool.push(m.p2); poolNames.add(m.p2.name)
+    }
+  }
+  const allInRound = new Set(inRound.flatMap(m => [m.p1?.name, m.p2?.name]).filter(Boolean))
+  for (const p of allPlayers ?? []) {
+    if (!allInRound.has(p.name) && !poolNames.has(p.name)) {
+      pool.push({ name: p.name, elo: p.elo ?? null })
+      poolNames.add(p.name)
+    }
+  }
+
+  if (!pool.length) return matches
+
+  // Shuffle pool
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+
+  // Reuse slot numbers from toRepair (sorted), then continue from max slot
+  const repairSlots = toRepair.map(m => m.slot).sort((a, b) => a - b)
+  const keptInRound = inRound.filter(m => !toRepair.some(r => r.id === m.id))
+  let nextSlot = keptInRound.length ? Math.max(...keptInRound.map(m => m.slot)) + 1 : 0
+
+  // Remove broken matches from base, pair the pool into new matches
+  const base = matches.filter(m => !toRepair.some(r => r.id === m.id))
+  const newMatches = []
+  let pi = 0, si = 0
+  while (pi < pool.length) {
+    const p1 = pool[pi++]
+    const p2 = pi < pool.length ? pool[pi++] : null
+    const bye = p2 === null
+    const slot = si < repairSlots.length ? repairSlots[si++] : nextSlot++
+    newMatches.push({
+      id: uid(), round: target, slot,
+      status: bye ? 'bye' : 'pending',
+      p1, p2: bye ? 'BYE' : p2,
+      score1: bye ? 1 : null, score2: bye ? 0 : null,
+      winner: bye ? p1.name : null,
+    })
+  }
+
+  return propagateAll([...base, ...newMatches])
+}
+
+// ── Toggle a match's locked state ─────────────────────────────────────────────
+export function toggleMatchLock(matches, matchId) {
+  return matches.map(m => m.id === matchId ? { ...m, locked: !m.locked } : m)
+}
+
+// ── Flip colors (swap p1/p2) in a pending match ───────────────────────────────
+export function flipMatchColors(matches, matchId) {
+  return matches.map(m => {
+    if (m.id !== matchId || m.status !== 'pending' || m.locked) return m
+    return { ...m, p1: m.p2, p2: m.p1 }
+  })
+}
+
+// ── Assign BYE to a match — recipientSlot is the player who WINS the BYE ─────
+// Normalizes to p1 = real player, p2 = 'BYE' (standard representation).
+export function assignMatchBye(matches, matchId, recipientSlot) {
+  return matches.map(m => {
+    if (m.id !== matchId || m.status !== 'pending' || m.locked) return m
+    const recipient = m[recipientSlot]
+    if (!recipient?.name) return m
+    return {
+      ...m,
+      p1: recipient,
+      p2: 'BYE',
+      winner: recipient.name,
+      score1: 1,
+      score2: 0,
+      status: 'bye',
+    }
+  })
+}
+
+// ── Remove BYE from a match, reverting to pending with one null slot ──────────
+export function removeMatchBye(matches, matchId) {
+  return matches.map(m => {
+    if (m.id !== matchId || m.status !== 'bye') return m
+    return { ...m, p2: null, winner: null, score1: null, score2: null, status: 'pending' }
+  })
+}
+
+// ── Set match board number (slot = boardNum - 1) ──────────────────────────────
+// Returns { matches, error } — error is null on success
+export function setMatchSlot(matches, matchId, newBoardNum) {
+  const newSlot = Math.max(0, newBoardNum - 1)
+  const target  = matches.find(m => m.id === matchId)
+  if (!target) return { matches, error: null }
+  const dup = matches.find(m => m.round === target.round && m.id !== matchId && m.slot === newSlot)
+  if (dup) return { matches, error: `Board ${newBoardNum} is already taken` }
+  return {
+    matches: matches.map(m => m.id === matchId ? { ...m, slot: newSlot } : m),
+    error: null,
+  }
+}
+
+// ── Validate pairings for a round — returns list of warning strings ───────────
+export function validatePairings(matches, round) {
+  const warnings = []
+  const roundMs  = matches.filter(m => m.round === round)
+  const history  = matches.filter(m => m.round < round && (m.status === 'complete' || m.status === 'bye'))
+
+  // Duplicate board numbers
+  const slots    = roundMs.map(m => m.slot)
+  const dupSlots = slots.filter((s, i) => slots.indexOf(s) !== i)
+  if (dupSlots.length) {
+    warnings.push(`Duplicate board numbers: ${[...new Set(dupSlots)].map(s => `Board ${s + 1}`).join(', ')}`)
+  }
+
+  const byeWinners = []
+  for (const m of roundMs) {
+    const p1    = m.p1?.name
+    const p2    = m.p2?.name
+    const isBye = m.status === 'bye' || m.p2 === 'BYE' || p2 === 'BYE'
+    const board = `Board ${m.slot + 1}`
+
+    if (isBye && p1) {
+      byeWinners.push(p1)
+      const prevBye = history.find(h => h.status === 'bye' && h.p1?.name === p1)
+      if (prevBye) warnings.push(`${p1} is receiving a 2nd BYE (first was Round ${prevBye.round + 1})`)
+    }
+
+    if (!p1 || !p2 || isBye) continue
+
+    const prevMeet = history.find(h =>
+      (h.p1?.name === p1 && h.p2?.name === p2) ||
+      (h.p1?.name === p2 && h.p2?.name === p1)
+    )
+    if (prevMeet) {
+      warnings.push(`${board}: Repeat pairing — ${p1} vs ${p2} (played Round ${prevMeet.round + 1})`)
+    }
+  }
+
+  if (byeWinners.length > 1) {
+    warnings.push(`Multiple BYEs in this round: ${byeWinners.join(', ')}`)
+  }
+
+  return warnings
 }
 
 // ── Player sub-info string (shared across all display components) ─────────────

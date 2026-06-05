@@ -4,9 +4,19 @@ import { playerSubInfo } from './utils.js'
 import { supabase } from '../../lib/supabase.js'
 
 export default function ScoreModal({ match, playerFields, tournamentId, onConfirm, onMarkLive, onClose }) {
-  const pf = playerFields ?? ['name', 'elo']
-  const [result,      setResult]     = useState(null)
-  const [drawWinner,  setDraw]       = useState(null)
+  const pf         = playerFields ?? ['name', 'elo']
+  const isEditMode = match?.status === 'complete'
+  const [result,      setResult]     = useState(() => {
+    if (!match || !isEditMode) return null
+    if (match.score1 === 1) return 'p1'
+    if (match.score2 === 1) return 'p2'
+    if (match.score1 === 0.5) return 'draw'
+    return null
+  })
+  const [drawWinner,  setDraw]       = useState(() => {
+    if (!match || !isEditMode || match.score1 !== 0.5) return null
+    return match.winner === match.p1?.name ? 'p1' : 'p2'
+  })
   const [pendingFile, setPendingFile] = useState(null)
   const [preview,     setPreview]    = useState(null)
   const [dragOver,    setDragOver]   = useState(false)
@@ -81,7 +91,7 @@ export default function ScoreModal({ match, playerFields, tournamentId, onConfir
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="modal-title">Board {board} — Enter Result</div>
+        <div className="modal-title">{isEditMode ? `Edit Result — Board ${board}` : `Board ${board} — Enter Result`}</div>
 
         <div className="modal-players">
           <div className="modal-player">
@@ -97,8 +107,8 @@ export default function ScoreModal({ match, playerFields, tournamentId, onConfir
           </div>
         </div>
 
-        {/* Mark Live */}
-        {match.status !== 'live' && onMarkLive && (
+        {/* Mark Live — only for pending matches */}
+        {match.status !== 'live' && match.status !== 'complete' && onMarkLive && (
           <button
             style={{
               width: '100%', marginBottom: 16,
@@ -177,7 +187,7 @@ export default function ScoreModal({ match, playerFields, tournamentId, onConfir
           <button className="chess-btn-gold" onClick={handleConfirm}
             disabled={!canConfirm || confirming}
             style={{ opacity: canConfirm && !confirming ? 1 : 0.4 }}>
-            {confirming ? 'Saving…' : 'Confirm Result'}
+            {confirming ? 'Saving…' : isEditMode ? 'Save Changes' : 'Confirm Result'}
           </button>
         </div>
       </motion.div>

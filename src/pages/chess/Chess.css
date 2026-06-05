@@ -1845,6 +1845,12 @@
     text-align: center !important;
   }
 
+  .pairings-pts {
+    color: #333 !important;
+    font-size: 10pt !important;
+    font-weight: 700 !important;
+  }
+
   .pairings-name {
     font-size: 12pt !important;
     font-weight: 600 !important;

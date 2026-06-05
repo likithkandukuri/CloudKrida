@@ -110,7 +110,7 @@ function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, on
           </div>
           {/* Current points */}
           {points != null && (
-            <div style={{ fontSize: fs.elo, color: 'var(--cc-gold)', fontWeight: 700, marginTop: 2 }}>
+            <div className="pairings-pts" style={{ fontSize: large ? 24 : 15, color: 'var(--cc-gold)', fontWeight: 800, marginTop: 2 }}>
               {fmtPts(points)} pts
             </div>
           )}
@@ -517,7 +517,7 @@ export default function PairingsView({
                   ♚ Black <SortIcon k="black" />
                 </th>
                 <th style={{ fontSize: fs.th, width: 110 }}>Result</th>
-                {editable && <th style={{ fontSize: fs.th, width: 140, textAlign: 'center' }}>Actions</th>}
+                {editable && <th className="no-print" style={{ fontSize: fs.th, width: 140, textAlign: 'center' }}>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -631,7 +631,7 @@ export default function PairingsView({
 
                     {/* ── Actions column ── */}
                     {editable && (
-                      <td style={{ padding: '8px 10px', verticalAlign: 'middle' }}>
+                      <td className="no-print" style={{ padding: '8px 10px', verticalAlign: 'middle' }}>
                         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
                           {/* Lock / Unlock */}
                           <ActBtn

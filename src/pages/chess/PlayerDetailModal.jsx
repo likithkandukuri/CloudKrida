@@ -1,8 +1,28 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fmtPts } from './pointsUtils.js'
 
-export default function PlayerDetailModal({ player, standing, matches, canViewPrivate, onClose }) {
+export default function PlayerDetailModal({ player, standing, matches, canViewPrivate, onEditPoints = null, onClose }) {
+  const [editingPoints, setEditingPoints] = useState(false)
+  const [pointsInput,   setPointsInput]   = useState('')
+
   if (!player) return null
+
+  const startEditPoints = () => {
+    setPointsInput(String(standing?.points ?? 0))
+    setEditingPoints(true)
+  }
+
+  const commitEditPoints = () => {
+    const val = parseFloat(pointsInput)
+    setEditingPoints(false)
+    if (isNaN(val) || val === standing?.points) return
+    if (!confirm(
+      `Change ${player.name}'s points from ${fmtPts(standing?.points ?? 0)} to ${fmtPts(val)}?\n\n` +
+      `Standings and tie-breaks will update immediately.`
+    )) return
+    onEditPoints(player.name, val)
+  }
 
   const playerMatches = (matches ?? [])
     .filter(m =>
@@ -33,13 +53,39 @@ export default function PlayerDetailModal({ player, standing, matches, canViewPr
         <div className="pdm-header">
           <div className="pdm-name">{player.name}</div>
           {player.section && <div className="pdm-tag">{player.section}</div>}
+          {player.status === 'withdrawn' && (
+            <div className="pdm-tag pdm-tag--withdrawn">WITHDRAWN</div>
+          )}
         </div>
 
         {/* Stats row */}
         {standing && (
           <div className="pdm-stats">
             <div className="pdm-stat">
-              <div className="pdm-stat-val pdm-gold">{fmtPts(standing.points)}</div>
+              {editingPoints ? (
+                <input
+                  type="number"
+                  step="0.5"
+                  autoFocus
+                  value={pointsInput}
+                  onChange={e => setPointsInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter')  commitEditPoints()
+                    if (e.key === 'Escape') setEditingPoints(false)
+                  }}
+                  onBlur={commitEditPoints}
+                  className="pdm-points-input"
+                />
+              ) : (
+                <div
+                  className="pdm-stat-val pdm-gold"
+                  style={onEditPoints ? { cursor: 'pointer' } : undefined}
+                  onClick={onEditPoints ? startEditPoints : undefined}
+                  title={onEditPoints ? 'Click to manually edit points' : undefined}
+                >
+                  {fmtPts(standing.points)}{onEditPoints && <span className="pdm-edit-icon">✏</span>}
+                </div>
+              )}
               <div className="pdm-stat-label">Points</div>
             </div>
             <div className="pdm-stat">

@@ -37,7 +37,7 @@ function ActBtn({ onClick, title, children, warn, active }) {
 }
 
 // ── Player cell ───────────────────────────────────────────────────────────────
-function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, onSelect, onRemove, onPlayerClick, editable, large }) {
+function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, onSelect, onRemove, onPlayerClick, editable, large, removeTitle = 'Remove' }) {
   const pf          = playerFields ?? ['name', 'elo']
   const isBye       = player === 'BYE' || player?.name === 'BYE'
   const isUnpaired  = !player && !isBye
@@ -119,7 +119,7 @@ function PlayerCell({ match, slot, player, playerFields, isSelected, canSwap, on
       {editable && isPending && !isBye && !isUnpaired && !isLocked && (
         <button
           onClick={handleRemove}
-          title={`Remove ${player?.name}`}
+          title={`${removeTitle} ${player?.name}`}
           style={{
             position: 'absolute', top: 8, right: 8,
             background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)',
@@ -146,6 +146,7 @@ export default function PairingsView({
   onPlayerClick = null,
   displayMode = false,
   standings = [],
+  withdrawMode = false,
 }) {
   const pf = playerFields ?? ['name', 'elo']
   const activeRound = getCurrentRound(matches)
@@ -189,11 +190,15 @@ export default function PairingsView({
   // ── Remove player ─────────────────────────────────────────────────────────────
   const handleRemove = (matchId, slot, playerName) => {
     if (!onRemovePlayer || !playerName) return
-    if (!confirm(
-      `Remove "${playerName}" from the tournament?\n\n` +
-      `Their opponent will need re-pairing.\n` +
-      `Use "🩹 Repair" to fix only the affected board, leaving other pairings intact.`
-    )) return
+    const msg = withdrawMode
+      ? `Withdraw "${playerName}" from active play?\n\n` +
+        `They'll be pulled from this round's pairings, but their standings, points, and match history stay intact.\n` +
+        `Their opponent will need re-pairing — use "🩹 Repair" to fix just that board.\n` +
+        `Reactivate them anytime from "➕ Add Player".`
+      : `Remove "${playerName}" from the tournament?\n\n` +
+        `Their opponent will need re-pairing.\n` +
+        `Use "🩹 Repair" to fix only the affected board, leaving other pairings intact.`
+    if (!confirm(msg)) return
     onRemovePlayer(playerName)
     setSelected(null)
   }
@@ -584,6 +589,7 @@ export default function PairingsView({
                       onSelect={handlePlayerSelect} onRemove={handleRemove}
                       onPlayerClick={onPlayerClick}
                       editable={editable} large={displayMode}
+                      removeTitle={withdrawMode ? 'Withdraw' : 'Remove'}
                     />
                     {showPts && (
                       <td
@@ -617,6 +623,7 @@ export default function PairingsView({
                       onSelect={handlePlayerSelect} onRemove={handleRemove}
                       onPlayerClick={onPlayerClick}
                       editable={editable} large={displayMode}
+                      removeTitle={withdrawMode ? 'Withdraw' : 'Remove'}
                     />
                     {showPts && (
                       <td

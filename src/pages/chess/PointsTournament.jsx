@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { uid, recordScore, markMatchLive, removePlayerFromPairing, getRoundLabel } from './utils.js'
-import { computeStandings, generateSwissPairings, isRoundComplete, getTieStatus, fmtPts } from './pointsUtils.js'
+import { computeStandings, generateSwissPairings, isRoundComplete, getTieStatus, fmtPts, setPlayerStatus, setPlayerPoints } from './pointsUtils.js'
 import PairingsView from './PairingsView.jsx'
 import StandingsView from './StandingsView.jsx'
 import ScoreModal from './ScoreModal.jsx'
@@ -97,6 +97,9 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const standings         = computeStandings(players, matches).map((s, i) => ({ ...s, rank: i + 1 }))
+  const activeStandings   = standings.filter(s => s.status !== 'withdrawn')
+  const activePlayers     = players.filter(p => (p.status ?? 'active') !== 'withdrawn')
+  const withdrawnPlayers  = players.filter(p => p.status === 'withdrawn')
   const roundComplete     = isRoundComplete(matches, currentRound)
   const isFinalRound      = currentRound >= totalRounds - 1
   const allDone           = isFinalRound && roundComplete
@@ -130,10 +133,21 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
     setAddPlayerOpen(false)
   }
 
-  const handleRemovePlayer = (playerName) => {
+  // Withdraw: pull from active pairing pool only — standings/history/points stay intact
+  const handleWithdrawPlayer = (playerName) => {
     const updatedMatches = removePlayerFromPairing(matches, playerName)
-    const updatedPlayers = players.filter(p => p.name !== playerName)
+    const updatedPlayers = setPlayerStatus(players, playerName, 'withdrawn')
     onUpdate({ matches: updatedMatches, players: updatedPlayers })
+  }
+
+  // Reactivate: player becomes eligible for pairing again, nothing resets
+  const handleReactivatePlayer = (playerName) => {
+    onUpdate({ players: setPlayerStatus(players, playerName, 'active') })
+  }
+
+  // Manual points correction — director ruling / fixing a scoring error
+  const handleEditPoints = (playerName, newTotal) => {
+    onUpdate({ players: setPlayerPoints(players, matches, playerName, newTotal) })
   }
 
   const handleScoreConfirm = (matchId, s1, s2, winnerName, imageUrl) => {
@@ -148,7 +162,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
   const handleStartNextRound = () => {
     if (!confirm(`Start Round ${currentRound + 2} of ${totalRounds}?\n\nPairings will be generated based on current standings.`)) return
     const nextRound  = currentRound + 1
-    const newMatches = generateSwissPairings(standings, nextRound)
+    const newMatches = generateSwissPairings(activeStandings, nextRound)
     onUpdate({ matches: [...matches, ...newMatches], currentRound: nextRound })
     setActiveTab('round')
   }
@@ -156,7 +170,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
   const handleStartTiebreak = () => {
     if (!confirm(`Start a Tiebreak Round for ${tiedPlayers.map(t => t.name).join(' and ')}?`)) return
     const nextRound      = currentRound + 1
-    const tiedStandings  = standings.filter(s => tiedPlayers.some(t => t.name === s.name))
+    const tiedStandings  = activeStandings.filter(s => tiedPlayers.some(t => t.name === s.name))
     const newMatches     = generateSwissPairings(tiedStandings, nextRound)
     onUpdate({
       matches:      [...matches, ...newMatches],
@@ -306,6 +320,35 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
             <div style={{ fontSize: 11, color: 'var(--cc-muted)', marginTop: 8 }}>
               After adding, use <strong style={{ color: 'var(--cc-gold)' }}>🩹 Repair</strong> in the Round tab — only the new player gets paired, all other boards stay exactly as-is.
             </div>
+
+            {withdrawnPlayers.length > 0 && (
+              <div className="add-player-list-section">
+                <div className="add-player-list-title">↩ Withdrawn Players — click to reactivate</div>
+                <div className="add-player-chip-row">
+                  {withdrawnPlayers.map(p => (
+                    <button
+                      key={p.name}
+                      className="add-player-chip add-player-chip--withdrawn"
+                      onClick={() => handleReactivatePlayer(p.name)}
+                      title={`Reactivate ${p.name} — points, tie-breaks, and match history are preserved, and they become eligible for the next round's pairings`}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activePlayers.length > 0 && (
+              <div className="add-player-list-section">
+                <div className="add-player-list-title">Active Players ({activePlayers.length})</div>
+                <div className="add-player-chip-row">
+                  {activePlayers.map(p => (
+                    <span key={p.name} className="add-player-chip">{p.name}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -334,15 +377,16 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
           <motion.div key="round" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
             <PairingsView
               matches={matches}
-              players={players}
+              players={activePlayers}
               totalRounds={totalRounds}
               meta={{ name }}
               playerFields={pf}
               onMatchesUpdate={isSuperAdmin ? handleMatchesUpdate : null}
-              onRemovePlayer={isSuperAdmin ? handleRemovePlayer : null}
+              onRemovePlayer={isSuperAdmin ? handleWithdrawPlayer : null}
               onScoreClick={isSuperAdmin ? setScoreModal : null}
               onPlayerClick={handlePlayerClick}
               standings={standings}
+              withdrawMode
             />
           </motion.div>
         )}
@@ -396,6 +440,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
             standing={playerModal.standing}
             matches={matches}
             canViewPrivate={canViewPrivate}
+            onEditPoints={isSuperAdmin ? handleEditPoints : null}
             onClose={() => setPlayerModal(null)}
           />
         )}

@@ -87,6 +87,7 @@ export default function StandingsView({ standings, playerFields, currentRound, t
         <tbody>
           {standings.map((s, i) => {
             const tied = s.points === topScore && i > 0
+            const isWithdrawn = s.status === 'withdrawn'
             return (
               <motion.tr
                 key={s.name}
@@ -94,7 +95,7 @@ export default function StandingsView({ standings, playerFields, currentRound, t
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: Math.min(i * 0.03, 0.4) }}
-                style={{ background: i < 3 && hasWinner ? 'var(--cc-surface)' : undefined }}
+                style={{ background: i < 3 && hasWinner ? 'var(--cc-surface)' : undefined, opacity: isWithdrawn ? 0.55 : 1 }}
               >
                 <td style={{ textAlign: 'center' }}>
                   {i < 3 ? (
@@ -105,11 +106,12 @@ export default function StandingsView({ standings, playerFields, currentRound, t
                 </td>
                 <td>
                   <div
-                    style={{ fontSize: fs.name, fontWeight: i === 0 ? 800 : 600, color: 'var(--cc-text)', lineHeight: 1.2 }}
+                    style={{ fontSize: fs.name, fontWeight: i === 0 ? 800 : 600, color: 'var(--cc-text)', lineHeight: 1.2, display: 'flex', alignItems: 'center', gap: 6 }}
                     className={onPlayerClick ? 'standings-player-name--clickable' : ''}
                     onClick={onPlayerClick ? () => onPlayerClick(s.name) : undefined}
                   >
                     {s.name}
+                    {isWithdrawn && <span className="standings-withdrawn-badge">WD</span>}
                   </div>
                   {playerSubInfo(s, pf) && (
                     <div style={{ fontSize: fs.th, color: 'var(--cc-muted)', marginTop: 3 }}>

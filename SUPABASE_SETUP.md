@@ -48,7 +48,7 @@ You should see "Success" with no errors. This creates all tables, security polic
 2. Create **two** buckets:
 
    | Bucket name     | Public? |
-   |-----------------|---------|
+   | --------------- | ------- |
    | `gallery`       | ✅ Yes  |
    | `score-records` | ✅ Yes  |
 
@@ -65,7 +65,7 @@ The Super Admin is a real Supabase Auth user. Create it manually:
 1. In Supabase → **Authentication** → **Users** → **Add user** → **Create new user**.
 2. Enter:
    - **Email:** `superadmin@chess-arena.app`
-   - **Password:** *(choose anything secure — this is your Super Admin login password)*
+   - **Password:** _(choose anything secure — this is your Super Admin login password)_
 3. Click **Create user**.
 4. Copy the **UUID** shown in the users table (looks like `a1b2c3d4-…`).
 
@@ -147,25 +147,25 @@ Test that everything works end-to-end:
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| "Supabase not configured" error | Check `.env.local` has the correct URL and Anon Key, then restart `npm run dev` |
-| Login fails for superadmin | Make sure you ran Step 5b — the `user_profiles` row must exist |
-| Gallery upload fails | Confirm both Storage buckets (`gallery`, `score-records`) are created and set to **Public** |
-| User creation fails from User Management panel | Make sure the Edge Function was deployed (Step 7) |
-| Real-time not working | Check that the SQL schema ran successfully — the `ALTER PUBLICATION` lines at the bottom enable real-time |
-| `edge function error: 403 Forbidden` | The calling user's profile doesn't have `role = 'superadmin'` — re-check Step 5b |
+| Problem                                        | Fix                                                                                                       |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| "Supabase not configured" error                | Check `.env.local` has the correct URL and Anon Key, then restart `npm run dev`                           |
+| Login fails for superadmin                     | Make sure you ran Step 5b — the `user_profiles` row must exist                                            |
+| Gallery upload fails                           | Confirm both Storage buckets (`gallery`, `score-records`) are created and set to **Public**               |
+| User creation fails from User Management panel | Make sure the Edge Function was deployed (Step 7)                                                         |
+| Real-time not working                          | Check that the SQL schema ran successfully — the `ALTER PUBLICATION` lines at the bottom enable real-time |
+| `edge function error: 403 Forbidden`           | The calling user's profile doesn't have `role = 'superadmin'` — re-check Step 5b                          |
 
 ---
 
 ## Architecture Notes
 
-| Feature | How it works |
-|---------|-------------|
-| Auth sessions | Supabase Auth (JWT tokens, auto-refresh) — stored in localStorage as a session token only |
-| Tournament data | PostgreSQL via Supabase — `tournaments`, `players`, `matches` tables |
-| Real-time sync | Supabase Realtime (WebSocket subscriptions on each table) |
-| Photos | Supabase Storage — `gallery` and `score-records` buckets |
-| User management | Edge Function `manage-user` — uses service role to create/delete auth users securely |
-| Permissions | Row Level Security (RLS) enforced at the database level |
-| Theme preference | localStorage only (dark/light — this is a UI preference, not data) |
+| Feature          | How it works                                                                              |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| Auth sessions    | Supabase Auth (JWT tokens, auto-refresh) — stored in localStorage as a session token only |
+| Tournament data  | PostgreSQL via Supabase — `tournaments`, `players`, `matches` tables                      |
+| Real-time sync   | Supabase Realtime (WebSocket subscriptions on each table)                                 |
+| Photos           | Supabase Storage — `gallery` and `score-records` buckets                                  |
+| User management  | Edge Function `manage-user` — uses service role to create/delete auth users securely      |
+| Permissions      | Row Level Security (RLS) enforced at the database level                                   |
+| Theme preference | localStorage only (dark/light — this is a UI preference, not data)                        |

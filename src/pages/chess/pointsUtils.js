@@ -12,6 +12,8 @@ export function computeStandings(players, matches) {
       elo:              p.elo ?? p.rating ?? null,
       grade:            p.grade ?? null,
       age:              p.age   ?? null,
+      status:           p.status ?? 'active',
+      pointsAdjustment: p.pointsAdjustment ?? 0,
       points:           0,
       wins:             0,
       draws:            0,
@@ -53,9 +55,28 @@ export function computeStandings(players, matches) {
     }
   }
 
+  // Apply manual point adjustments (director corrections/rulings) on top of computed match points
+  for (const s of Object.values(map)) s.points += s.pointsAdjustment
+
   return Object.values(map).sort((a, b) =>
     (b.points - a.points) || (b.wins - a.wins) || ((b.elo ?? b.rating ?? 0) - (a.elo ?? a.rating ?? 0))
   )
+}
+
+// ── Withdraw / reactivate a player — keeps them in the roster & history ───────
+// 'withdrawn' players stay in standings/history but are excluded from pairing pools
+export function setPlayerStatus(players, playerName, status) {
+  return (players ?? []).map(p => p.name === playerName ? { ...p, status } : p)
+}
+
+// ── Manually set a player's total points (director correction/ruling) ─────────
+// newTotal is the desired displayed total; stored as a delta on top of computed match points
+// so future match results keep accumulating correctly on top of the correction.
+export function setPlayerPoints(players, matches, playerName, newTotal) {
+  const standing    = computeStandings(players, matches).find(s => s.name === playerName)
+  const basePoints  = (standing?.points ?? 0) - (standing?.pointsAdjustment ?? 0)
+  const adjustment  = newTotal - basePoints
+  return (players ?? []).map(p => p.name === playerName ? { ...p, pointsAdjustment: adjustment } : p)
 }
 
 // ── Generate Swiss pairings for a round ──────────────────────────────────────
@@ -65,7 +86,7 @@ export function generateSwissPairings(standings, roundIndex) {
   if (!standings?.length) return []
   const safeRound = typeof roundIndex === 'number' && isFinite(roundIndex) ? roundIndex : 0
 
-  const pool = standings.filter(s => s?.name)   // filter out any null/invalid entries
+  const pool = standings.filter(s => s?.name && s.status !== 'withdrawn')   // withdrawn players sit out
   if (pool.length === 0) return []
 
   const used = new Set()

@@ -18,28 +18,30 @@ const SECTION_SUBTITLE = {
   summer:     'Learning Programs',
 }
 
-// Home and Tournament Management share the same top-level link set — Tournament
-// sub-pages (Chess/Tennis/Darts) are reached via the Tournament Hub, not the navbar.
-// Learning Programs gets its own smaller, self-contained set (no generic About/Contact,
-// since Contact & Enrollment already covers that) and never shows auth UI.
+// Home shows the site-level 5 links. Tournament Management shows itself, its two
+// sports (Chess live, Pickleball scaffolded — more sports land here as they're built),
+// and About/Contact. Learning Programs gets its own smaller, self-contained set (no
+// generic About/Contact, since Contact & Enrollment already covers that) and never
+// shows auth UI.
 const SECTION_LINKS = {
   home: [
-    { label: 'Home',                  path: '/',               exact: true  },
-    { label: 'Tournament Management', path: '/tournaments',    exact: false },
-    { label: 'Learning Programs',     path: '/summerclasses',  exact: false },
-    { label: 'About',                 path: '/about',          exact: false },
-    { label: 'Contact',               path: '/contact',        exact: false },
+    { label: 'Home',                  path: '/',                  exact: true  },
+    { label: 'Tournament Management', path: '/tournaments',       exact: false },
+    { label: 'Learning Programs',     path: '/summerclasses',     exact: false },
+    { label: 'About',                 path: '/about',             exact: false },
+    { label: 'Contact',               path: '/contact',           exact: false },
   ],
   tournament: [
-    { label: 'Home',                  path: '/',               exact: true  },
-    { label: 'Tournament Management', path: '/tournaments',    exact: false },
-    { label: 'Learning Programs',     path: '/summerclasses',  exact: false },
-    { label: 'About',                 path: '/about',          exact: false },
-    { label: 'Contact',               path: '/contact',        exact: false },
+    { label: 'Home',                  path: '/',                     exact: true  },
+    { label: 'Tournament Management', path: '/tournaments',          exact: true  },
+    { label: 'Chess',                 path: '/tournaments/chess',     exact: false },
+    { label: 'Pickleball',            path: '/tournaments/pickleball',exact: false },
+    { label: 'About',                 path: '/about',                exact: false },
+    { label: 'Contact',               path: '/contact',              exact: false },
   ],
   summer: [
     { label: 'Home',                  path: '/',                          exact: true  },
-    { label: 'Programs',              path: '/summerclasses',             exact: true  },
+    { label: 'Learning Programs',     path: '/summerclasses',             exact: true  },
     { label: 'About the Instructor',  path: '/summerclasses/instructor',  exact: false },
     { label: 'Mathematics Program',   path: '/summerclasses/mathematics', exact: false },
     { label: 'Contact & Enrollment',  path: '/summerclasses/enroll',      exact: false },

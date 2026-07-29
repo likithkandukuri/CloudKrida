@@ -9,6 +9,7 @@ import Privacy from './pages/Privacy/Privacy'
 import NotFound from './pages/NotFound/NotFound'
 import TournamentsHub from './tournament/pages/TournamentsHub'
 import Chess from './tournament/chess/Chess'
+import Pickleball from './tournament/pickleball/Pickleball'
 import Tennis from './tournament/tennis/Tennis'
 import Darts from './tournament/darts/Darts'
 import SummerClassesHome from './summerClasses/pages/SummerClassesHome'
@@ -36,10 +37,11 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
 
-            <Route path="/tournaments"        element={<TournamentsHub />} />
-            <Route path="/tournaments/chess"  element={<Chess />}          />
-            <Route path="/tournaments/tennis" element={<Tennis />}         />
-            <Route path="/tournaments/darts"  element={<Darts />}         />
+            <Route path="/tournaments"            element={<TournamentsHub />} />
+            <Route path="/tournaments/chess"      element={<Chess />}          />
+            <Route path="/tournaments/pickleball" element={<Pickleball />}     />
+            <Route path="/tournaments/tennis"     element={<Tennis />}         />
+            <Route path="/tournaments/darts"      element={<Darts />}          />
 
             <Route path="/summerclasses"              element={<SummerClassesHome />} />
             <Route path="/summerclasses/instructor"    element={<Instructor />}        />

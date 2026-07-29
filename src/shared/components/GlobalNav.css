@@ -103,15 +103,23 @@
 }
 
 /* ── Centered nav links ──────────────────────────────────── */
+/* Outer wrapper: takes the remaining space between logo and right-side controls and
+   centers its content there — purely a positioning container, no visible chrome.
+   This is what stops a short link set (Tournament Management) from rendering as a
+   near-empty wide box, and a long one (Learning Programs) from feeling cramped —
+   the visible "chip" below sizes itself to its own content, not to this wrapper. */
 .gnav-links {
-  /* Centered WITHIN the remaining space between the logo and right-side controls —
-     not absolutely centered against the full header width, which is what let a wide
-     link set overlap the logo or the sign-in/role-badge cluster on laptop-width screens. */
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Inner chip: auto width, hugs exactly as many links as the section has */
+.gnav-links-inner {
+  display: flex;
+  align-items: center;
   gap: 1px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -119,7 +127,7 @@
   padding: 3px;
 }
 
-[data-theme="light"] .gnav-links {
+[data-theme="light"] .gnav-links-inner {
   background: rgba(99, 102, 241, 0.04);
   border-color: rgba(99, 102, 241, 0.1);
 }
@@ -429,226 +437,6 @@
   color: #b91c1c;
   background: rgba(185, 28, 28, 0.07);
   border-color: rgba(185, 28, 28, 0.22);
-}
-
-/* ── Chess nav item wrapper ──────────────────────────────── */
-.gnav-chess-wrap {
-  position: relative;
-}
-
-/* Chess button — same base as gnav-link but with chevron gap */
-.gnav-chess-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.gnav-chess-btn--open {
-  color: var(--text-primary);
-  background: rgba(212, 163, 54, 0.08);
-}
-
-[data-theme="light"] .gnav-chess-btn--open {
-  background: rgba(212, 163, 54, 0.1);
-}
-
-.gnav-chess-chevron {
-  transition: transform 0.2s ease;
-  opacity: 0.55;
-  flex-shrink: 0;
-}
-
-.gnav-chess-chevron--open {
-  transform: rotate(180deg);
-  opacity: 0.9;
-}
-
-/* ── Desktop dropdown panel ──────────────────────────────── */
-.gnav-chess-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 252px;
-  background: rgba(7, 7, 21, 0.97);
-  backdrop-filter: blur(28px) saturate(200%);
-  border: 1px solid rgba(212, 163, 54, 0.2);
-  border-radius: 16px;
-  box-shadow:
-    0 24px 56px rgba(0, 0, 0, 0.65),
-    0 8px 24px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-    0 0 48px rgba(212, 163, 54, 0.07);
-  overflow: hidden;
-  z-index: 200;
-  padding: 8px;
-}
-
-[data-theme="light"] .gnav-chess-dropdown {
-  background: rgba(255, 255, 255, 0.98);
-  border-color: rgba(212, 163, 54, 0.24);
-  box-shadow:
-    0 20px 48px rgba(0, 0, 0, 0.14),
-    0 6px 16px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(212, 163, 54, 0.1) inset;
-}
-
-/* Gold accent line at top */
-.gnav-chess-dropdown-accent {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(212, 163, 54, 0.65), transparent);
-  margin: 0 14px 8px;
-  border-radius: 2px;
-}
-
-/* ── Dropdown action rows ─────────────────────────────────── */
-.gnav-chess-action {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  /* Use min-height + zero vertical padding so all rows are exactly the same height
-     regardless of emoji rendering differences */
-  min-height: 42px;
-  padding: 0 12px;
-  border: none;
-  border-radius: 10px;
-  background: transparent;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: rgba(237, 229, 213, 0.86);
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s, color 0.15s;
-}
-
-.gnav-chess-action:hover {
-  background: rgba(212, 163, 54, 0.11);
-  color: #f0c060;
-}
-
-[data-theme="light"] .gnav-chess-action {
-  color: rgba(20, 10, 0, 0.72);
-}
-
-[data-theme="light"] .gnav-chess-action:hover {
-  background: rgba(212, 163, 54, 0.1);
-  color: #6a4000;
-}
-
-/* Superadmin-only action (Create Tournament) — separated from the rest */
-.gnav-chess-action--admin {
-  font-weight: 700;
-  color: rgba(237, 229, 213, 0.96);
-  /* Use a bottom margin + pseudo separator so vertical rhythm stays even */
-  margin-bottom: 3px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(212, 163, 54, 0.16);
-}
-
-.gnav-chess-action--admin:hover {
-  background: rgba(212, 163, 54, 0.14);
-  color: #f0c060;
-}
-
-[data-theme="light"] .gnav-chess-action--admin {
-  color: rgba(10, 5, 0, 0.9);
-  border-bottom-color: rgba(212, 163, 54, 0.2);
-}
-
-/* Icon container — flex-centered so emojis sit consistently */
-.gnav-chess-action-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  font-size: 15px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.gnav-chess-action-label {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.gnav-chess-action-arrow {
-  flex-shrink: 0;
-  opacity: 0.38;
-  transition: opacity 0.15s, transform 0.15s;
-}
-
-.gnav-chess-action:hover .gnav-chess-action-arrow {
-  opacity: 0.9;
-  transform: translateX(3px);
-}
-
-/* ── Mobile Chess sub-section ────────────────────────────── */
-.gnav-chess-mobile-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.gnav-chess-mobile-sub {
-  overflow: hidden;
-  padding: 2px 0 6px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  /* Subtle left border to group the sub-items under Chess */
-  border-left: 2px solid rgba(212, 163, 54, 0.2);
-  margin: 0 0 4px 22px;
-}
-
-[data-theme="light"] .gnav-chess-mobile-sub {
-  border-left-color: rgba(212, 163, 54, 0.3);
-}
-
-.gnav-chess-mobile-action {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 42px;
-  padding: 0 14px;
-  border-radius: 10px;
-  background: none;
-  border: none;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-family: 'Inter', system-ui, sans-serif;
-  text-align: left;
-  width: 100%;
-  transition: color 0.18s, background 0.18s;
-}
-
-.gnav-chess-mobile-action:hover,
-.gnav-chess-mobile-action:active {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="light"] .gnav-chess-mobile-action:hover,
-[data-theme="light"] .gnav-chess-mobile-action:active {
-  background: rgba(212, 163, 54, 0.08);
-}
-
-/* Superadmin action in mobile (Create Tournament) */
-.gnav-chess-mobile-action--admin {
-  color: rgba(212, 163, 54, 0.9);
-  font-weight: 700;
-}
-
-[data-theme="light"] .gnav-chess-mobile-action--admin {
-  color: #6a4000;
 }
 
 /* ── Responsive ──────────────────────────────────────────── */

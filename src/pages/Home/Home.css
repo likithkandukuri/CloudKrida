@@ -1,0 +1,144 @@
+/* ═══════════════════════════════════════════════════════
+   HOME PAGE STYLES — Cloud Krida parent landing
+   ═══════════════════════════════════════════════════════ */
+
+.home {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ── Background Layer ─────────────────────────────────── */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  animation: drift 12s ease-in-out infinite;
+}
+
+.orb-purple {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 70%);
+  top: -220px;
+  left: -180px;
+  animation-delay: 0s;
+}
+
+.orb-blue {
+  width: 580px;
+  height: 580px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.18), transparent 70%);
+  top: 40%;
+  right: -160px;
+  animation-delay: -4s;
+  animation-duration: 15s;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -40px) scale(1.06); }
+  66%       { transform: translate(-20px, 20px) scale(0.94); }
+}
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 100% at 50% 0%, transparent 40%, var(--bg-base) 100%);
+}
+
+/* ── Main — the two blocks are the page ────────────────── */
+.home-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  /* Top-aligned under the header rather than centered in 100vh — centering a
+     short two-card block in the full viewport was what created the large gap
+     above the cards; any leftover space now falls below the footer instead. */
+  padding: 112px 24px 56px;
+}
+
+.sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
+  max-width: 900px;
+  width: 100%;
+}
+
+.section-card {
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 44px 36px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.section-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--accent);
+}
+
+.section-card-icon {
+  font-size: 44px;
+  margin-bottom: 16px;
+}
+
+.section-card-name {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.section-card-desc {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.section-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ── Light theme overrides ────────────────────────────── */
+[data-theme="light"] .orb-purple { background: radial-gradient(circle, rgba(99, 102, 241, 0.14), transparent 70%); }
+[data-theme="light"] .orb-blue   { background: radial-gradient(circle, rgba(79, 70, 229, 0.12), transparent 70%); }
+[data-theme="light"] .vignette   { background: radial-gradient(ellipse 100% 100% at 50% 0%, transparent 40%, var(--bg-base) 100%); }
+
+[data-theme="light"] .section-card {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: var(--border-subtle);
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 640px) {
+  .home-main { padding: 88px 20px 40px; }
+  .sections-grid { grid-template-columns: 1fr; }
+}

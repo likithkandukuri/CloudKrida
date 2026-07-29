@@ -1,14 +1,28 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { ThemeProvider } from './context/ThemeContext'
-import { AuthProvider } from './context/AuthContext'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import Chess from './pages/chess/Chess'
-import Tennis from './pages/Tennis'
-import Darts from './pages/Darts'
-import About from './pages/About'
-import Contact from './pages/Contact'
-import NotFound from './pages/NotFound'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { ThemeProvider } from './shared/context/ThemeContext'
+import { AuthProvider } from './auth/AuthContext'
+import Home from './pages/Home/Home'
+import Login from './pages/Login/Login'
+import About from './pages/About/About'
+import Contact from './pages/Contact/Contact'
+import Privacy from './pages/Privacy/Privacy'
+import NotFound from './pages/NotFound/NotFound'
+import TournamentsHub from './tournament/pages/TournamentsHub'
+import Chess from './tournament/chess/Chess'
+import Tennis from './tournament/tennis/Tennis'
+import Darts from './tournament/darts/Darts'
+import SummerClassesHome from './summerClasses/pages/SummerClassesHome'
+import Instructor from './summerClasses/pages/Instructor'
+import Mathematics from './summerClasses/pages/Mathematics'
+import Enroll from './summerClasses/pages/Enroll'
+import SchedulePricing from './summerClasses/pages/SchedulePricing'
+import Tools from './summerClasses/pages/Tools'
+import Materials from './summerClasses/pages/Materials'
+import Testimonials from './summerClasses/pages/Testimonials'
+import Registration from './summerClasses/pages/Registration'
+import Students from './summerClasses/pages/Students'
+import Schedule from './summerClasses/pages/Schedule'
+import SummerClassesAdmin from './summerClasses/pages/admin/SummerClassesAdmin'
 
 export default function App() {
   return (
@@ -18,12 +32,36 @@ export default function App() {
           <Routes>
             <Route path="/"        element={<Home />}    />
             <Route path="/login"   element={<Login />}   />
-            <Route path="/chess"   element={<Chess />}   />
-            <Route path="/tennis"  element={<Tennis />}  />
-            <Route path="/darts"   element={<Darts />}   />
             <Route path="/about"   element={<About />}   />
             <Route path="/contact" element={<Contact />} />
-            <Route path="*"        element={<NotFound />} />
+            <Route path="/privacy" element={<Privacy />} />
+
+            <Route path="/tournaments"        element={<TournamentsHub />} />
+            <Route path="/tournaments/chess"  element={<Chess />}          />
+            <Route path="/tournaments/tennis" element={<Tennis />}         />
+            <Route path="/tournaments/darts"  element={<Darts />}         />
+
+            <Route path="/summerclasses"              element={<SummerClassesHome />} />
+            <Route path="/summerclasses/instructor"    element={<Instructor />}        />
+            <Route path="/summerclasses/mathematics"   element={<Mathematics />}       />
+            <Route path="/summerclasses/enroll"        element={<Enroll />}             />
+            <Route path="/summerclasses/schedule-pricing" element={<SchedulePricing />} />
+            <Route path="/summerclasses/tools"         element={<Tools />}              />
+            <Route path="/summerclasses/materials"     element={<Materials />}          />
+            <Route path="/summerclasses/testimonials"  element={<Testimonials />}       />
+            <Route path="/summerclasses/registration"  element={<Registration />}      />
+            <Route path="/summerclasses/students"      element={<Students />}          />
+            <Route path="/summerclasses/schedule"      element={<Schedule />}          />
+
+            <Route path="/admin/summer-classes" element={<SummerClassesAdmin />} />
+
+            {/* Legacy redirects — keep old bookmarks/QR codes working */}
+            <Route path="/chess"          element={<Navigate to="/tournaments/chess"  replace />} />
+            <Route path="/tennis"         element={<Navigate to="/tournaments/tennis" replace />} />
+            <Route path="/darts"          element={<Navigate to="/tournaments/darts"  replace />} />
+            <Route path="/summer-classes" element={<Navigate to="/summerclasses"      replace />} />
+
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

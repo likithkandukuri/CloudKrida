@@ -1,0 +1,75 @@
+.crumb-bar {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  z-index: 90;
+  padding: 8px 32px;
+  pointer-events: none;
+}
+
+.crumb-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+  width: fit-content;
+}
+
+.crumb-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.crumb-link {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  /* Dedicated (not --text-muted) — measured below WCAG AA at 12px; calibrated to clear 4.5:1 */
+  color: #9caedb;
+  cursor: pointer;
+  padding: 3px 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+[data-theme="light"] .crumb-link {
+  color: #3f4b60;
+}
+
+.crumb-link:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .crumb-link:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.crumb-current {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 3px 4px;
+}
+
+.crumb-sep {
+  font-size: 12px;
+  /* Same dedicated color as .crumb-link, no opacity reduction — opacity:0.5 on top of
+     an already-borderline color was the main reason separators measured below AA. */
+  color: #9caedb;
+}
+
+[data-theme="light"] .crumb-sep {
+  color: #3f4b60;
+}
+
+@media (max-width: 640px) {
+  .crumb-bar { padding: 6px 16px; }
+  .crumb-link, .crumb-current, .crumb-sep { font-size: 11px; }
+}

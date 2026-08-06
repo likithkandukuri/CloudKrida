@@ -3,6 +3,7 @@ import { ThemeProvider } from './shared/context/ThemeContext'
 import { AuthProvider } from './auth/AuthContext'
 import Home from './pages/Home/Home'
 import Login from './pages/Login/Login'
+import Account from './pages/Account/Account'
 import About from './pages/About/About'
 import Contact from './pages/Contact/Contact'
 import Privacy from './pages/Privacy/Privacy'
@@ -33,6 +34,7 @@ export default function App() {
           <Routes>
             <Route path="/"        element={<Home />}    />
             <Route path="/login"   element={<Login />}   />
+            <Route path="/account" element={<Account />} />
             <Route path="/about"   element={<About />}   />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />

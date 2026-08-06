@@ -1,0 +1,268 @@
+/* ═══════════════════════════════════════════════════
+   ACCOUNT SETTINGS PAGE
+   ═══════════════════════════════════════════════════ */
+
+.acct-page {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Background ─────────────────────────────────────── */
+.acct-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.acct-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+}
+
+.acct-orb-1 {
+  width: 560px; height: 560px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent 70%);
+  top: -180px; left: -140px;
+}
+
+.acct-orb-2 {
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, rgba(212, 163, 54, 0.14), transparent 70%);
+  bottom: -120px; right: -100px;
+}
+
+/* ── Topbar ─────────────────────────────────────────── */
+.acct-topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: 18px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.acct-back {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.acct-back:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+  transform: translateX(-2px);
+}
+
+[data-theme="light"] .acct-back {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: rgba(99, 102, 241, 0.14);
+}
+
+/* ── Center layout ──────────────────────────────────── */
+.acct-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Card ───────────────────────────────────────────── */
+.acct-card {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 22px;
+  padding: 38px 36px;
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="light"] .acct-card {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(99, 102, 241, 0.13);
+  box-shadow:
+    0 40px 80px rgba(99, 102, 241, 0.08),
+    0 0 0 1px rgba(99, 102, 241, 0.05);
+}
+
+.acct-heading {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.acct-subheading {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.acct-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 24px 0;
+}
+
+[data-theme="light"] .acct-divider {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.acct-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+/* ── Form ───────────────────────────────────────────── */
+.acct-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.acct-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.acct-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.acct-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 11px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.acct-input:focus {
+  border-color: rgba(139, 92, 246, 0.55);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.13);
+}
+
+.acct-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.acct-input::placeholder { color: var(--text-muted); }
+
+[data-theme="light"] .acct-input {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(99, 102, 241, 0.16);
+}
+
+[data-theme="light"] .acct-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* ── Messages ───────────────────────────────────────── */
+.acct-error {
+  padding: 11px 14px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.24);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #f87171;
+  line-height: 1.5;
+}
+
+[data-theme="light"] .acct-error { color: #b91c1c; background: rgba(185, 28, 28, 0.06); border-color: rgba(185, 28, 28, 0.2); }
+
+.acct-success {
+  padding: 11px 14px;
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.24);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #4ade80;
+  line-height: 1.5;
+}
+
+[data-theme="light"] .acct-success { color: #15803d; background: rgba(21, 128, 61, 0.06); border-color: rgba(21, 128, 61, 0.2); }
+
+/* ── Submit button ──────────────────────────────────── */
+.acct-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #7c3aed, #6366f1);
+  border: none;
+  border-radius: 11px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 28px rgba(124, 58, 237, 0.32);
+  letter-spacing: 0.01em;
+}
+
+.acct-btn:hover:not(:disabled) {
+  opacity: 0.91;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 36px rgba(124, 58, 237, 0.42);
+}
+
+.acct-btn:active:not(:disabled) { transform: translateY(0); }
+
+.acct-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  .acct-card { padding: 28px 22px; border-radius: 18px; }
+  .acct-center { padding: 88px 16px 40px; }
+  .acct-topbar { padding: 14px 16px; }
+}

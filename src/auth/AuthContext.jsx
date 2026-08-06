@@ -104,6 +104,26 @@ export function AuthProvider({ children }) {
     await fetchUsers()
   }
 
+  // ── Self-service account settings (any logged-in user) ──────────────────────
+  const changeUsername = async (newUsername) => {
+    const { data, error } = await supabase.functions.invoke('manage-user', {
+      body: { action: 'update-username', newUsername },
+    })
+    if (error) return { ok: false, error: error.message }
+    if (data?.error) return { ok: false, error: data.error }
+    await fetchProfile(userId)
+    return { ok: true }
+  }
+
+  const changePassword = async (currentPassword, newPassword) => {
+    const { data, error } = await supabase.functions.invoke('manage-user', {
+      body: { action: 'update-password', currentPassword, newPassword },
+    })
+    if (error) return { ok: false, error: error.message }
+    if (data?.error) return { ok: false, error: data.error }
+    return { ok: true }
+  }
+
   return (
     <AuthCtx.Provider value={{
       role, username, userId, loading,
@@ -111,6 +131,7 @@ export function AuthProvider({ children }) {
       canUploadPhotos, canDeletePhotos,
       login, logout,
       users, addUser, updateUser, removeUser,
+      changeUsername, changePassword,
     }}>
       {children}
     </AuthCtx.Provider>

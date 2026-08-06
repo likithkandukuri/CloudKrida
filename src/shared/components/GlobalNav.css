@@ -290,6 +290,40 @@
   transform: translateY(-1px);
 }
 
+/* ── Account settings button ─────────────────────────────── */
+.gnav-account {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+.gnav-account:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .gnav-account {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: rgba(99, 102, 241, 0.18);
+}
+
+[data-theme="light"] .gnav-account:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
 /* ── Sign In button ──────────────────────────────────────── */
 .gnav-signin {
   display: flex;
@@ -408,7 +442,8 @@
 }
 
 .gnav-mobile-signin,
-.gnav-mobile-signout {
+.gnav-mobile-signout,
+.gnav-mobile-account {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -421,10 +456,18 @@
   text-align: left;
 }
 
-.gnav-mobile-signin {
+.gnav-mobile-signin,
+.gnav-mobile-account {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.09);
   color: var(--text-primary);
+}
+
+.gnav-mobile-account { margin-bottom: 8px; }
+
+[data-theme="light"] .gnav-mobile-account {
+  background: rgba(99, 102, 241, 0.06);
+  border-color: rgba(99, 102, 241, 0.18);
 }
 
 .gnav-mobile-signout {
@@ -443,8 +486,9 @@
 @media (max-width: 1180px) {
   .gnav-links  { display: none; }
   .gnav-signin { display: none; }
-  /* Full sign-out button moves into the mobile dropdown menu */
+  /* Full sign-out / account buttons move into the mobile dropdown menu */
   .gnav-signout { display: none; }
+  .gnav-account { display: none; }
   .gnav-burger  { display: flex; }
 
   /* Role badge: shrink to icon-only so it stays visible without overflowing */

@@ -40,21 +40,121 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Verify the caller is superadmin
     const { data: profile } = await supabaseAdmin
       .from('user_profiles')
       .select('role')
       .eq('id', user.id)
       .single()
 
+    const body = await req.json()
+    const { action } = body
+
+    // ── Change my own username (any authenticated user) ─────────────────────────
+    if (action === 'update-username') {
+      const { newUsername } = body
+      const cleaned = (newUsername ?? '').trim().toLowerCase()
+
+      if (!/^[a-z0-9_]{3,20}$/.test(cleaned)) {
+        return new Response(JSON.stringify({ error: 'Username must be 3-20 characters: letters, numbers, and underscores only.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      if (cleaned === 'superadmin') {
+        return new Response(JSON.stringify({ error: 'That username is reserved.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      const { data: existing } = await supabaseAdmin
+        .from('user_profiles')
+        .select('id')
+        .eq('username', cleaned)
+        .neq('id', user.id)
+        .maybeSingle()
+
+      if (existing) {
+        return new Response(JSON.stringify({ error: 'Username already taken.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      const newEmail = `${cleaned}@chess-arena.app`
+      const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+        email: newEmail,
+        email_confirm: true,
+      })
+      if (authError) {
+        return new Response(JSON.stringify({ error: authError.message }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      const { error: profileError } = await supabaseAdmin
+        .from('user_profiles')
+        .update({ username: cleaned })
+        .eq('id', user.id)
+
+      if (profileError) {
+        return new Response(JSON.stringify({ error: profileError.message }), {
+          status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      return new Response(JSON.stringify({ ok: true, username: cleaned }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // ── Change my own password (any authenticated user) ─────────────────────────
+    if (action === 'update-password') {
+      const { currentPassword, newPassword } = body
+
+      if (!currentPassword || !newPassword) {
+        return new Response(JSON.stringify({ error: 'Current and new password are required.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      if (newPassword.length < 6) {
+        return new Response(JSON.stringify({ error: 'New password must be at least 6 characters.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      // Re-verify the caller actually knows their current password before changing it
+      const supabaseVerify = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      )
+      const { error: verifyError } = await supabaseVerify.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      })
+      if (verifyError) {
+        return new Response(JSON.stringify({ error: 'Current password is incorrect.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+        password: newPassword,
+      })
+      if (authError) {
+        return new Response(JSON.stringify({ error: authError.message }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    // ── Everything below this point is superadmin-only ───────────────────────────
     if (profile?.role !== 'superadmin') {
       return new Response(JSON.stringify({ error: 'Forbidden — superadmin only' }), {
         status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
-
-    const body = await req.json()
-    const { action } = body
 
     // ── Create user ────────────────────────────────────────────────────────────
     if (action === 'create') {

@@ -14,6 +14,7 @@ const ROLE_LABEL = {
 
 function UsernameForm() {
   const { username, changeUsername } = useAuth()
+  const [currentPassword, setCurrentPassword] = useState('')
   const [value,   setValue]   = useState('')
   const [error,   setError]   = useState('')
   const [success, setSuccess] = useState('')
@@ -24,14 +25,16 @@ function UsernameForm() {
     setError('')
     setSuccess('')
     const trimmed = value.trim()
+    if (!currentPassword) return setError('Enter your current password.')
     if (!trimmed) return setError('Enter a new username.')
     if (trimmed.toLowerCase() === username) return setError('That is already your username.')
 
     setSaving(true)
-    const result = await changeUsername(trimmed)
+    const result = await changeUsername(currentPassword, trimmed)
     setSaving(false)
 
     if (!result.ok) return setError(result.error)
+    setCurrentPassword('')
     setValue('')
     setSuccess('Username updated.')
   }
@@ -41,6 +44,19 @@ function UsernameForm() {
       <div className="acct-field">
         <label className="acct-label">Current Username</label>
         <input className="acct-input" value={username ?? ''} disabled />
+      </div>
+
+      <div className="acct-field">
+        <label className="acct-label" htmlFor="acct-username-current-pw">Current Password</label>
+        <input
+          id="acct-username-current-pw"
+          className="acct-input"
+          type="password"
+          value={currentPassword}
+          onChange={e => { setCurrentPassword(e.target.value); setError(''); setSuccess('') }}
+          autoComplete="current-password"
+          disabled={saving}
+        />
       </div>
 
       <div className="acct-field">

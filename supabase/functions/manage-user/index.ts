@@ -5,6 +5,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Re-verify a user actually knows their current password (used before username/password changes)
+async function verifyPassword(email: string, password: string): Promise<boolean> {
+  const supabaseVerify = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+  )
+  const { error } = await supabaseVerify.auth.signInWithPassword({ email, password })
+  return !error
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -51,7 +61,7 @@ Deno.serve(async (req) => {
 
     // ── Change my own username (any authenticated user) ─────────────────────────
     if (action === 'update-username') {
-      const { newUsername } = body
+      const { newUsername, currentPassword } = body
       const cleaned = (newUsername ?? '').trim().toLowerCase()
 
       if (!/^[a-z0-9_]{3,20}$/.test(cleaned)) {
@@ -61,6 +71,16 @@ Deno.serve(async (req) => {
       }
       if (cleaned === 'superadmin') {
         return new Response(JSON.stringify({ error: 'That username is reserved.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      if (!currentPassword) {
+        return new Response(JSON.stringify({ error: 'Current password is required.' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+      if (!(await verifyPassword(user.email, currentPassword))) {
+        return new Response(JSON.stringify({ error: 'Current password is incorrect.' }), {
           status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
       }
@@ -121,15 +141,7 @@ Deno.serve(async (req) => {
       }
 
       // Re-verify the caller actually knows their current password before changing it
-      const supabaseVerify = createClient(
-        Deno.env.get('SUPABASE_URL') ?? '',
-        Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      )
-      const { error: verifyError } = await supabaseVerify.auth.signInWithPassword({
-        email: user.email,
-        password: currentPassword,
-      })
-      if (verifyError) {
+      if (!(await verifyPassword(user.email, currentPassword))) {
         return new Response(JSON.stringify({ error: 'Current password is incorrect.' }), {
           status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
@@ -142,6 +154,14 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: authError.message }), {
           status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         })
+      }
+
+      // Password changed — sign the account out of every OTHER active session,
+      // keeping this one (the request that just changed the password) alive.
+      const callerJwt = authHeader.replace(/^Bearer\s+/i, '')
+      const { error: signOutError } = await supabaseAdmin.auth.admin.signOut(callerJwt, 'others')
+      if (signOutError) {
+        console.error('[manage-user] failed to sign out other sessions:', signOutError.message)
       }
 
       return new Response(JSON.stringify({ ok: true }), {

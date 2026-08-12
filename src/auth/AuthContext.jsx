@@ -3,6 +3,18 @@ import { supabase } from '../shared/utilities/supabase.js'
 
 const AuthCtx = createContext(null)
 
+// supabase-js sets error.message to a generic "non-2xx status code" string on Edge
+// Function errors — the real message we returned is on error.context (the raw Response).
+async function extractFunctionError(error) {
+  if (error?.context && typeof error.context.json === 'function') {
+    try {
+      const body = await error.context.json()
+      if (body?.error) return body.error
+    } catch { /* not JSON — fall back below */ }
+  }
+  return error.message
+}
+
 export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null)
   const [userId,  setUserId]  = useState(null)
@@ -53,7 +65,8 @@ export function AuthProvider({ children }) {
 
   // ── Login / logout ──────────────────────────────────────────────────────────
   const login = async (inputUsername, inputPassword) => {
-    const email = `${inputUsername.trim().toLowerCase()}@chess-arena.app`
+    const trimmed = inputUsername.trim().toLowerCase()
+    const email = trimmed.includes('@') ? trimmed : `${trimmed}@chess-arena.app`
     const { error } = await supabase.auth.signInWithPassword({ email, password: inputPassword })
     if (error) return { ok: false, error: 'Incorrect username or password.' }
     return { ok: true }
@@ -105,11 +118,11 @@ export function AuthProvider({ children }) {
   }
 
   // ── Self-service account settings (any logged-in user) ──────────────────────
-  const changeUsername = async (newUsername) => {
+  const changeUsername = async (currentPassword, newUsername) => {
     const { data, error } = await supabase.functions.invoke('manage-user', {
-      body: { action: 'update-username', newUsername },
+      body: { action: 'update-username', currentPassword, newUsername },
     })
-    if (error) return { ok: false, error: error.message }
+    if (error) return { ok: false, error: await extractFunctionError(error) }
     if (data?.error) return { ok: false, error: data.error }
     await fetchProfile(userId)
     return { ok: true }
@@ -119,7 +132,7 @@ export function AuthProvider({ children }) {
     const { data, error } = await supabase.functions.invoke('manage-user', {
       body: { action: 'update-password', currentPassword, newPassword },
     })
-    if (error) return { ok: false, error: error.message }
+    if (error) return { ok: false, error: await extractFunctionError(error) }
     if (data?.error) return { ok: false, error: data.error }
     return { ok: true }
   }

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   validateTournamentConfig, validateEntrantMembership, findDuplicateParticipants,
   validatePoolGeneration, getPoolGenerationState, validatePoolMove,
+  validateDeleteConfirmation,
 } from '../pickleballValidation.js'
 
 const validConfig = () => ({
@@ -178,6 +179,35 @@ describe('validatePoolMove', () => {
     const matches = [{ poolId: 'poolA', status: 'live', games: [{ score_a: 5, score_b: 3 }], entrant1: { id: 'e1' }, entrant2: { id: 'e2' } }]
     const errors = validatePoolMove(e('e1', 'poolA'), 'poolB', matches)
     expect(errors.length).toBeGreaterThan(0)
+  })
+})
+
+describe('validateDeleteConfirmation', () => {
+  it('accepts an exact match', () => {
+    expect(validateDeleteConfirmation('Spring Open', 'Spring Open')).toBe(true)
+  })
+
+  it('rejects a mismatch', () => {
+    expect(validateDeleteConfirmation('Spring open', 'Spring Open')).toBe(false)
+    expect(validateDeleteConfirmation('Spring', 'Spring Open')).toBe(false)
+  })
+
+  it('is case-sensitive — a lowercase guess does not accidentally pass', () => {
+    expect(validateDeleteConfirmation('spring open', 'Spring Open')).toBe(false)
+  })
+
+  it('tolerates surrounding whitespace from the input field, but not internal differences', () => {
+    expect(validateDeleteConfirmation('  Spring Open  ', 'Spring Open')).toBe(true)
+    expect(validateDeleteConfirmation('Spring  Open', 'Spring Open')).toBe(false)
+  })
+
+  it('rejects an empty confirmation against a non-empty name', () => {
+    expect(validateDeleteConfirmation('', 'Spring Open')).toBe(false)
+  })
+
+  it('handles null/undefined input defensively', () => {
+    expect(validateDeleteConfirmation(null, 'Spring Open')).toBe(false)
+    expect(validateDeleteConfirmation(undefined, 'Spring Open')).toBe(false)
   })
 })
 

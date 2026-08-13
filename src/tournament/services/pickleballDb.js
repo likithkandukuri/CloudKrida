@@ -210,7 +210,26 @@ export async function updatePickleballTournament(id, data) {
   return tournamentRowToObj(row)
 }
 
+// Superadmin-only (pb_tournaments_delete RLS, migration 005) — enforced
+// server-side, this call is rejected outright for any non-superadmin even if
+// the UI gate were bypassed. entrants/entrant_members/pools/courts/matches/
+// gallery rows all cascade automatically via their tournament_id ON DELETE
+// CASCADE fk (migration 005); pickleball_players (the reusable, cross-
+// tournament identity table) is intentionally never touched here. Gallery
+// Storage objects have no DB-level cascade, so they're removed explicitly
+// first — a failure there is logged (orphaned files) rather than blocking
+// the actual deletion, since the row delete is the source of truth.
 export async function deletePickleballTournament(id) {
+  const { data: galleryRows } = await supabase
+    .from('pickleball_gallery_photos')
+    .select('storage_path')
+    .eq('tournament_id', id)
+  const paths = (galleryRows ?? []).map(r => r.storage_path).filter(Boolean)
+  if (paths.length) {
+    const { error: storErr } = await supabase.storage.from(PB_GALLERY_BUCKET).remove(paths)
+    if (storErr) console.error('[Krida/Pickleball] deleteTournament gallery storage cleanup (files orphaned):', storErr.message)
+  }
+
   const { error } = await supabase.from('pickleball_tournaments').delete().eq('id', id)
   if (error) { console.error('[Krida/Pickleball] deleteTournament:', error); throw error }
 }

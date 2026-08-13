@@ -12,6 +12,7 @@ import {
   STATUS_LABELS, EVENT_TYPE_LABELS, FORMAT_LABELS,
   formatGames, entrantLabel, formatDate,
 } from './pickleballDisplay.js'
+import { validateDeleteConfirmation } from './pickleballValidation.js'
 
 const READ_ONLY_TABS = [
   { id: 'pools',     label: 'Pools' },
@@ -33,10 +34,16 @@ function EmptyTab({ icon, title, sub }) {
 }
 
 export default function PickleballTournamentDetail({ tournamentId, onBack }) {
-  const { activeTournament, detailLoading, updateTournament } = usePickleball()
+  const { activeTournament, detailLoading, updateTournament, deleteTournament } = usePickleball()
   const { isSuperAdmin, canUploadPhotos, canDeletePhotos, userId, role } = useAuth()
   const [tab, setTab] = useState('pools')
   const [editing, setEditing] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [deleteBusy, setDeleteBusy] = useState(false)
+  const [deleteError, setDeleteError] = useState(null)
+
+  const cancelDelete = () => { setDeleting(false); setDeleteConfirmText(''); setDeleteError(null) }
 
   const TABS = isSuperAdmin ? [{ id: 'entrants', label: 'Entrants' }, ...READ_ONLY_TABS] : READ_ONLY_TABS
 
@@ -62,10 +69,24 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
   const t = activeTournament
   const entrants = t.entrants ?? []
   const matches  = t.matches ?? []
+  const gallery  = t.gallery ?? []
 
   const historyMatches = matches
     .filter(m => m.status === 'complete' || m.status === 'bye')
     .sort((a, b) => (b.completedAt ?? 0) - (a.completedAt ?? 0))
+
+  const handleDeleteTournament = async () => {
+    if (!validateDeleteConfirmation(deleteConfirmText, t.name)) return
+    setDeleteBusy(true)
+    setDeleteError(null)
+    try {
+      await deleteTournament(t.id)
+      onBack()
+    } catch (err) {
+      setDeleteError(err?.message ?? 'Failed to delete tournament. Please try again.')
+      setDeleteBusy(false)
+    }
+  }
 
   return (
     <>
@@ -84,13 +105,16 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span className={`pb-status pb-status--${t.status}`}>{STATUS_LABELS[t.status] ?? t.status}</span>
-            {isSuperAdmin && !editing && (
+            {isSuperAdmin && !editing && !deleting && (
               <button className="pb-btn-small pb-btn-small--ghost" onClick={() => setEditing(true)}>Edit</button>
+            )}
+            {isSuperAdmin && !editing && !deleting && (
+              <button className="pb-btn-danger" onClick={() => setDeleting(true)}>Delete Tournament</button>
             )}
           </div>
         </div>
 
-        {!editing && (
+        {!editing && !deleting && (
           <div className="pb-tabs" role="tablist" aria-label="Tournament sections">
             {TABS.map(tb => (
               <button
@@ -108,7 +132,45 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
       </div>
 
       <div className="pb-section pb-container">
-        {editing ? (
+        {deleting ? (
+          <div className="pb-form">
+            <div className="pb-error-list">
+              <strong>Permanently delete "{t.name}"?</strong>
+              <div style={{ marginTop: 8 }}>
+                This cannot be undone. It will remove {entrants.length} entrant{entrants.length !== 1 ? 's' : ''},
+                {' '}all pools, courts, matches, bracket data, and {gallery.length} gallery item{gallery.length !== 1 ? 's' : ''}
+                {' '}for this tournament only. Other tournaments and player records are not affected.
+              </div>
+            </div>
+            <div className="pb-field" style={{ maxWidth: 420 }}>
+              <label className="pb-field-label" htmlFor="pb-delete-confirm">
+                Type the tournament name to confirm: <strong>{t.name}</strong>
+              </label>
+              <input
+                id="pb-delete-confirm"
+                className="pb-input"
+                value={deleteConfirmText}
+                onChange={e => setDeleteConfirmText(e.target.value)}
+                placeholder={t.name}
+                autoFocus
+                disabled={deleteBusy}
+              />
+            </div>
+            {deleteError && <div className="pb-error-list" style={{ marginTop: 16 }}>{deleteError}</div>}
+            <div className="pb-form-actions">
+              <button
+                className="pb-btn-danger"
+                disabled={deleteBusy || !validateDeleteConfirmation(deleteConfirmText, t.name)}
+                onClick={handleDeleteTournament}
+              >
+                {deleteBusy ? 'Deleting…' : 'Permanently Delete Tournament'}
+              </button>
+              <button className="pb-btn-small pb-btn-small--ghost" disabled={deleteBusy} onClick={cancelDelete}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : editing ? (
           <PickleballTournamentForm
             initial={t}
             onSubmit={async (data) => { await updateTournament(t.id, data); setEditing(false) }}
@@ -192,7 +254,7 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
         </div>
         )}
 
-        {!editing && entrants.length > 0 && (
+        {!editing && !deleting && entrants.length > 0 && (
           <div style={{ marginTop: 40, fontSize: 12, color: 'var(--text-muted)' }}>
             {entrants.length} entrant{entrants.length !== 1 ? 's' : ''} registered
           </div>

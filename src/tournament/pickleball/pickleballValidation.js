@@ -194,6 +194,19 @@ export function validateGameScore(scoreA, scoreB) {
   return errors
 }
 
+// ── Tournament deletion (new work — Superadmin-only, permanent) ────────────
+
+// The "strong confirmation" gate for permanent tournament deletion: the
+// Superadmin must type the tournament's exact name (trimmed, case-sensitive —
+// a loose/case-insensitive match would let a mistyped guess through, which
+// defeats the point of requiring the name at all). This is a UI-level
+// double-check only; the actual authorization boundary is the
+// pb_tournaments_delete RLS policy (is_superadmin(), migration 005), which
+// rejects the request server-side regardless of what the user typed here.
+export function validateDeleteConfirmation(inputText, tournamentName) {
+  return (inputText ?? '').trim() === (tournamentName ?? '').trim()
+}
+
 // ── Duplicate participation within one tournament ──────────────────────────
 
 // existingEntrants: [{ id, members: [{ playerId }] }] for the tournament.

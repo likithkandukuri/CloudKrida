@@ -45,6 +45,18 @@ const GAMES = [
     gradient: 'linear-gradient(160deg, #140000 0%, #2d0505 60%, #140000 100%)',
     stats: { tournaments: 5, players: 20 },
   },
+  {
+    id: 'pickleball',
+    name: 'Pickleball',
+    tag: 'NEW',
+    description: 'Singles, doubles, and mixed doubles tournaments with pool play, brackets, and live standings.',
+    path: '/tournaments/pickleball',
+    accent: '#38bdf8',
+    accentSoft: 'rgba(56, 189, 248, 0.15)',
+    glow: 'rgba(56, 189, 248, 0.28)',
+    gradient: 'linear-gradient(160deg, #000a14 0%, #001c2e 60%, #000a14 100%)',
+    stats: { tournaments: 0, players: 0 },
+  },
 ]
 
 // ── Animation variants ───────────────────────────────────────────────────────
@@ -130,7 +142,29 @@ function DartsArt() {
   )
 }
 
-const ART = { chess: ChessArt, tennis: TennisArt, darts: DartsArt }
+// ── Pickleball Art ───────────────────────────────────────────────────────────
+function PickleballArt() {
+  return (
+    <div className="art pickleball-art">
+      <div className="pb-hub-court">
+        <div className="pb-hub-court-line pb-hub-court-outer" />
+        <div className="pb-hub-court-line pb-hub-court-net" />
+        <div className="pb-hub-court-line pb-hub-court-kitchen-top" />
+        <div className="pb-hub-court-line pb-hub-court-kitchen-bottom" />
+      </div>
+      <div className="pb-hub-paddle-wrap">
+        <div className="pb-hub-paddle">
+          <div className="pb-hub-paddle-head" />
+          <div className="pb-hub-paddle-handle" />
+        </div>
+        <div className="pb-hub-ball" />
+        <div className="pb-hub-glow" />
+      </div>
+    </div>
+  )
+}
+
+const ART = { chess: ChessArt, tennis: TennisArt, darts: DartsArt, pickleball: PickleballArt }
 
 // ── GameCard ─────────────────────────────────────────────────────────────────
 function GameCard({ game, index }) {
@@ -258,7 +292,7 @@ export default function TournamentsHub() {
 
   usePageMeta({
     title:       'Tournaments — Cloud Krida',
-    description: 'Create and manage Chess, Tennis, and Darts tournaments with real-time scoring, live brackets, and Swiss pairings. Free to explore — no account required.',
+    description: 'Create and manage Chess, Tennis, Darts, and Pickleball tournaments with real-time scoring, live brackets, and pool play. Free to explore — no account required.',
   })
 
   const scrollToGames = () => {
@@ -305,7 +339,7 @@ export default function TournamentsHub() {
 
           <motion.p className="hero-subtitle" variants={fadeUp} custom={2}>
             Create tournaments, track scores in real-time, and compete<br className="desktop-br" />
-            across Chess, Tennis, and Darts on one platform.
+            across Chess, Tennis, Darts, and Pickleball on one platform.
           </motion.p>
 
           <motion.div className="hero-actions" variants={fadeUp} custom={3}>
@@ -321,7 +355,7 @@ export default function TournamentsHub() {
           </motion.div>
 
           <motion.div className="hero-stats" variants={fadeUp} custom={4}>
-            <StatBadge value="3" label="Games" delay={0} />
+            <StatBadge value="4" label="Games" delay={0} />
             <div className="stat-divider" />
             <StatBadge value="16" label="Tournaments" delay={1} />
             <div className="stat-divider" />

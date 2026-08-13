@@ -1,5 +1,13 @@
 import { uid } from './utils.js'
 
+// isRoundComplete/getTieStatus/fmtPts are genuinely sport-agnostic (status/number
+// checks only) and now live in src/tournament/engine/standings.js. Re-exported
+// here so every existing import path keeps working unchanged. computeStandings
+// and generateSwissPairings below were deliberately NOT moved — see the Phase 1
+// audit: computeStandings hardcodes chess's win/draw/loss point system, and
+// generateSwissPairings' color-balance step is White/Black-specific.
+export { isRoundComplete, getTieStatus, fmtPts } from '../engine/standings.js'
+
 // ── Compute standings from all matches ────────────────────────────────────────
 export function computeStandings(players, matches) {
   if (!players?.length) return []
@@ -170,28 +178,4 @@ export function generateSwissPairings(standings, roundIndex) {
   ]
 }
 
-// ── Check if all matches in a round are done ──────────────────────────────────
-export function isRoundComplete(matches, round) {
-  if (!matches?.length || typeof round !== 'number') return false
-  const rms = matches.filter(m => m.round === round)
-  return rms.length > 0 && rms.every(m => m.status === 'complete' || m.status === 'bye')
-}
-
-// ── Tie detection after the final round ───────────────────────────────────────
-export function getTieStatus(standings) {
-  if (!standings?.length) return { hasTie: false, tiedPlayers: [], winner: null }
-  const top  = standings[0].points
-  const tied = standings.filter(s => s.points === top)
-  return {
-    hasTie:      tied.length > 1,
-    tiedPlayers: tied,
-    winner:      tied.length === 1 ? standings[0].name : null,
-  }
-}
-
-// ── Format points for display ─────────────────────────────────────────────────
-export function fmtPts(n) {
-  if (n === Math.floor(n)) return String(n)
-  return n.toFixed(1)
-}
 

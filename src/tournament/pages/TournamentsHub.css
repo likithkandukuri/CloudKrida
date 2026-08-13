@@ -673,6 +673,100 @@
   pointer-events: none;
 }
 
+/* ── Pickleball Art ───────────────────────────────────── */
+.pickleball-art { overflow: hidden; }
+
+.pb-hub-court {
+  position: absolute;
+  inset: 20px;
+}
+
+.pb-hub-court-line {
+  position: absolute;
+  background: rgba(56, 189, 248, 0.18);
+}
+
+.pb-hub-court-outer {
+  inset: 0;
+  border: 2px solid rgba(56, 189, 248, 0.25);
+  border-radius: 2px;
+  background: transparent;
+}
+
+.pb-hub-court-net {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  background: rgba(56, 189, 248, 0.4);
+  transform: translateX(-50%);
+}
+
+/* The "kitchen" — pickleball's non-volley zone, the sport's most distinctive court marking */
+.pb-hub-court-kitchen-top,
+.pb-hub-court-kitchen-bottom {
+  left: 0;
+  right: 0;
+  height: 1px;
+  opacity: 0.5;
+}
+
+.pb-hub-court-kitchen-top    { top: 32%; }
+.pb-hub-court-kitchen-bottom { bottom: 32%; }
+
+.pb-hub-paddle-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  animation: float-piece 3.8s ease-in-out infinite;
+}
+
+.pb-hub-paddle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pb-hub-paddle-head {
+  width: 58px;
+  height: 68px;
+  border-radius: 46% 46% 50% 50%;
+  background: radial-gradient(circle at 35% 30%, #7dd3fc, #0284c7);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), 0 0 60px rgba(56, 189, 248, 0.2);
+}
+
+.pb-hub-paddle-handle {
+  width: 12px;
+  height: 26px;
+  margin-top: -2px;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #0284c7, #075985);
+}
+
+.pb-hub-ball {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fef9c3, #fde047);
+  box-shadow: 0 0 18px rgba(253, 224, 71, 0.5);
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.pb-hub-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.2), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
 /* ── Footer ───────────────────────────────────────────── */
 .footer {
   position: relative;

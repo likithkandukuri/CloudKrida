@@ -21,8 +21,9 @@
   --green:    #10b981;
 
   /* sport accent colors — theme-aware */
-  --sport-tennis: #4ade80;
-  --sport-darts:  #f87171;
+  --sport-tennis:     #4ade80;
+  --sport-darts:      #f87171;
+  --sport-pickleball: #38bdf8;   /* pickleball court blue */
 
   /* summer classes accent — theme-aware */
   --summer-accent: #fbbf24;
@@ -56,8 +57,9 @@
   --text-muted:     #546282;
 
   /* sport accent colors — dark equivalents for light bg */
-  --sport-tennis: #166534;
-  --sport-darts:  #991b1b;
+  --sport-tennis:     #166534;
+  --sport-darts:      #991b1b;
+  --sport-pickleball: #0369a1;
 
   /* summer classes accent — dark equivalent for light bg */
   --summer-accent: #b45309;

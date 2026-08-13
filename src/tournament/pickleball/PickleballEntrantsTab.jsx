@@ -11,6 +11,7 @@ export default function PickleballEntrantsTab({ tournament }) {
 
   const entrants = tournament.entrants ?? []
   const editingEntrant = mode && mode !== 'add' ? entrants.find(e => e.id === mode) : null
+  const poolLabelById = Object.fromEntries((tournament.pools ?? []).map(p => [p.id, p.label]))
 
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
 
@@ -90,7 +91,12 @@ export default function PickleballEntrantsTab({ tournament }) {
         entrants.map(entrant => (
           <div className={`pb-entrant-row ${entrant.status === 'withdrawn' ? 'pb-entrant-row--withdrawn' : ''}`} key={entrant.id}>
             <div className="pb-entrant-info">
-              <div className="pb-entrant-name">{entrant.displayName}{entrant.status === 'withdrawn' ? ' (withdrawn)' : ''}</div>
+              <div className="pb-entrant-name">
+                {entrant.displayName}{entrant.status === 'withdrawn' ? ' (withdrawn)' : ''}
+                {entrant.poolId && poolLabelById[entrant.poolId] && (
+                  <span className="pb-tag" style={{ marginLeft: 8 }}>{poolLabelById[entrant.poolId]}</span>
+                )}
+              </div>
               <div className="pb-entrant-sub">{entrant.members.map(m => m.name).join(' & ')}</div>
             </div>
             <div className="pb-entrant-actions">

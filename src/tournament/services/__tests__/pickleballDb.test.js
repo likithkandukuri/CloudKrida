@@ -91,6 +91,19 @@ describe('entrantRowToObj', () => {
     const row = { id: 'e3', display_name: 'x', status: 'withdrawn', seed_order: 0, points_adjustment: 0, members: null }
     expect(entrantRowToObj(row).members).toEqual([])
   })
+
+  it('maps pool_id to poolId, and defaults to null when unassigned', () => {
+    const assigned = { id: 'e4', display_name: 'x', status: 'active', seed_order: 0, points_adjustment: 0, pool_id: 'pool-a', members: [] }
+    expect(entrantRowToObj(assigned).poolId).toBe('pool-a')
+
+    const unassigned = { id: 'e5', display_name: 'x', status: 'active', seed_order: 0, points_adjustment: 0, members: [] }
+    expect(entrantRowToObj(unassigned).poolId).toBeNull()
+  })
+
+  it('a withdrawn entrant keeps its historical poolId (withdrawal never clears it client-side)', () => {
+    const row = { id: 'e6', display_name: 'x', status: 'withdrawn', seed_order: 0, points_adjustment: 0, pool_id: 'pool-a', members: [] }
+    expect(entrantRowToObj(row).poolId).toBe('pool-a')
+  })
 })
 
 describe('matchRowToObj', () => {

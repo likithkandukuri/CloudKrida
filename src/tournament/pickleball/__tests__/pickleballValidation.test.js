@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { validateTournamentConfig, validateEntrantMembership, findDuplicateParticipants } from '../pickleballValidation.js'
+import {
+  validateTournamentConfig, validateEntrantMembership, findDuplicateParticipants,
+  validatePoolGeneration, getPoolGenerationState,
+} from '../pickleballValidation.js'
 
 const validConfig = () => ({
   name: 'Spring Open', eventType: 'doubles', format: 'pool_to_single_elim',
@@ -83,6 +86,61 @@ describe('validateEntrantMembership', () => {
   it('rejects an unknown event type explicitly rather than silently passing', () => {
     const errors = validateEntrantMembership('triples', ['p1', 'p2', 'p3'])
     expect(errors.length).toBeGreaterThan(0)
+  })
+})
+
+describe('validatePoolGeneration', () => {
+  const activeEntrants = (n) => Array.from({ length: n }, (_, i) => ({ id: `e${i}`, status: 'active' }))
+
+  it('accepts a valid tournament config with enough active entrants', () => {
+    expect(validatePoolGeneration({ poolSize: 4 }, activeEntrants(8))).toEqual([])
+  })
+
+  it('rejects generation when poolSize is unset', () => {
+    const errors = validatePoolGeneration({ poolSize: null }, activeEntrants(8))
+    expect(errors.some(e => e.includes('pool size'))).toBe(true)
+  })
+
+  it('rejects generation when poolSize is below 2', () => {
+    const errors = validatePoolGeneration({ poolSize: 1 }, activeEntrants(8))
+    expect(errors.length).toBeGreaterThan(0)
+  })
+
+  it('rejects generation when fewer than 2 active entrants exist', () => {
+    const errors = validatePoolGeneration({ poolSize: 4 }, activeEntrants(1))
+    expect(errors.some(e => e.includes('At least 2'))).toBe(true)
+  })
+
+  it('rejects generation when poolSize exceeds the active entrant count', () => {
+    const errors = validatePoolGeneration({ poolSize: 10 }, activeEntrants(4))
+    expect(errors.some(e => e.includes('cannot exceed'))).toBe(true)
+  })
+})
+
+describe('getPoolGenerationState', () => {
+  it('returns "empty" when no pools exist', () => {
+    expect(getPoolGenerationState([], [])).toBe('empty')
+  })
+
+  it('returns "unscored" when pools exist but no match has results', () => {
+    const pools = [{ id: 'p1', label: 'Pool A' }]
+    const matches = [{ status: 'pending', games: [] }]
+    expect(getPoolGenerationState(pools, matches)).toBe('unscored')
+  })
+
+  it('returns "scored" when any match has a non-empty games array', () => {
+    const pools = [{ id: 'p1', label: 'Pool A' }]
+    const matches = [
+      { status: 'pending', games: [] },
+      { status: 'live', games: [{ game: 1, score_a: 5, score_b: 3 }] },
+    ]
+    expect(getPoolGenerationState(pools, matches)).toBe('scored')
+  })
+
+  it('returns "scored" when any match status is complete, even with an empty games array', () => {
+    const pools = [{ id: 'p1', label: 'Pool A' }]
+    const matches = [{ status: 'complete', games: [] }]
+    expect(getPoolGenerationState(pools, matches)).toBe('scored')
   })
 })
 

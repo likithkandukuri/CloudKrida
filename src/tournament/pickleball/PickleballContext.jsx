@@ -5,7 +5,13 @@ import {
   createPickleballTournament, updatePickleballTournament, deletePickleballTournament,
   createPickleballEntrant, updatePickleballEntrant, deletePickleballEntrant,
   withdrawPickleballEntrant, reinstatePickleballEntrant, setPickleballEntrantMembers,
+  generatePickleballPools, resetPickleballPools,
+  createPickleballCourt, deletePickleballCourt, assignPickleballMatchCourt,
+  recordPickleballMatchScore, generatePickleballBracket,
 } from '../services/pickleballDb.js'
+import { generatePoolAssignments, generatePoolMatches } from './pickleballPools.js'
+import { computeMatchOutcome } from './pickleballScoring.js'
+import { computeBracketSeeds, generateBracketRows } from './pickleballBracket.js'
 
 // Mirrors ChessContext.jsx's data-flow pattern (lazy-hydrate on activation,
 // Realtime scoped to the active tournament). Write callbacks are thin
@@ -176,7 +182,65 @@ export function PickleballProvider({ children }) {
     await reloadActiveTournament()
   }, [reloadActiveTournament])
 
+  // ── Pools (Superadmin only, enforced by RLS + the RPC's own re-validation) ─
+  // Seeding/pairing (which entrant goes in which pool, which pairs get
+  // generated) is computed here in JS via pickleballPools.js — pure,
+  // Vitest-testable. generatePickleballPools/resetPickleballPools then apply
+  // that plan through a single atomic Postgres RPC call; there is no
+  // client-side rollback here because the database function guarantees it.
+  const generatePools = useCallback(async (tournamentId, activeEntrants, poolSize, forceRegenerate = false) => {
+    const assignments = generatePoolAssignments(activeEntrants, poolSize)
+    const matches = generatePoolMatches(assignments.pools)
+    await generatePickleballPools(tournamentId, poolSize, assignments, matches, forceRegenerate)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const resetPools = useCallback(async (tournamentId) => {
+    await resetPickleballPools(tournamentId)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  // ── Courts (Superadmin only, enforced by RLS) ──────────────────────────────
+  const addCourt = useCallback(async (tournamentId, label) => {
+    await createPickleballCourt(tournamentId, label)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const removeCourt = useCallback(async (id) => {
+    await deletePickleballCourt(id)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const assignMatchCourt = useCallback(async (matchId, courtId) => {
+    await assignPickleballMatchCourt(matchId, courtId)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
   const activeTournament = tournaments.find(t => t.id === activeTournamentId) ?? null
+
+  // ── Scoring (Superadmin only, enforced by RLS + the RPC's own re-check) ───
+  // games is the raw per-game score array the UI collected; outcome (which
+  // side won the match, and whether it's now complete) is computed here via
+  // pickleballScoring.js against the tournament's own gamesTo/winBy2/bestOf,
+  // then handed to the atomic RPC (which also performs elimination
+  // advancement in the same transaction, for phase='elimination' matches).
+  const scoreMatch = useCallback(async (matchId, games) => {
+    const match = activeTournament?.matches?.find(m => m.id === matchId)
+    if (!match) throw new Error('Match not found')
+    const { status, winnerSeat } = computeMatchOutcome(games, activeTournament.bestOf, activeTournament.gamesTo, activeTournament.winBy2)
+    const winnerEntrantId = winnerSeat === 1 ? match.entrant1?.id ?? null : winnerSeat === 2 ? match.entrant2?.id ?? null : null
+    await recordPickleballMatchScore(matchId, games, status, winnerEntrantId)
+    await reloadActiveTournament()
+  }, [activeTournament, reloadActiveTournament])
+
+  // ── Bracket generation (Superadmin only, enforced by RLS + the RPC's own
+  // re-validation of "pool play complete" and the scored/unscored guards) ───
+  const generateBracket = useCallback(async (tournamentId, activeEntrants, poolMatches, forceRegenerate = false) => {
+    const seeds = computeBracketSeeds(activeEntrants, poolMatches)
+    const rows = generateBracketRows(seeds)
+    await generatePickleballBracket(tournamentId, rows, forceRegenerate)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
 
   return (
     <PickleballCtx.Provider value={{
@@ -185,6 +249,9 @@ export function PickleballProvider({ children }) {
       reloadActiveTournament,
       createTournament, updateTournament, deleteTournament,
       addEntrant, editEntrant, withdrawEntrant, reinstateEntrant, removeEntrant, setEntrantMembers,
+      generatePools, resetPools,
+      addCourt, removeCourt, assignMatchCourt,
+      scoreMatch, generateBracket,
     }}>
       {children}
     </PickleballCtx.Provider>

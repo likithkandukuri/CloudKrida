@@ -2,12 +2,14 @@ import { useState, useMemo } from 'react'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { usePickleball } from './PickleballContext.jsx'
 import { computePickleballStandings } from './pickleballStandings.js'
-import { getRoundLabel } from '../engine/bracket.js'
 import PickleballEntrantsTab from './PickleballEntrantsTab.jsx'
+import PickleballPoolsTab from './PickleballPoolsTab.jsx'
+import PickleballBracketTab from './PickleballBracketTab.jsx'
+import PickleballScheduleTab from './PickleballScheduleTab.jsx'
 import PickleballTournamentForm from './PickleballTournamentForm.jsx'
 import {
   STATUS_LABELS, EVENT_TYPE_LABELS, FORMAT_LABELS,
-  formatGames, entrantLabel, formatDate, formatTime,
+  formatGames, entrantLabel, formatDate,
 } from './pickleballDisplay.js'
 
 const READ_ONLY_TABS = [
@@ -58,13 +60,6 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
   const t = activeTournament
   const entrants = t.entrants ?? []
   const matches  = t.matches ?? []
-  const pools    = t.pools ?? []
-  const courts   = t.courts ?? []
-
-  const poolMatches = matches.filter(m => m.phase === 'pool')
-  const elimMatches = matches.filter(m => m.phase === 'elimination')
-  const totalRounds = elimMatches.length ? Math.max(...elimMatches.map(m => m.round)) + 1 : 0
-  const roundsAsc    = [...new Set(elimMatches.map(m => m.round))].sort((a, b) => a - b)
 
   const historyMatches = matches
     .filter(m => m.status === 'complete' || m.status === 'bye')
@@ -130,104 +125,11 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
                 <PickleballEntrantsTab tournament={t} />
               )}
 
-              {tab === 'pools' && (
-                pools.length === 0 ? (
-                  <EmptyTab icon="🏓" title="Pool play hasn't been scheduled yet" sub="Pools will appear here once the tournament director generates them." />
-                ) : (
-                  <div className="pb-pool-grid">
-                    {pools.map(pool => {
-                      const rows = poolMatches.filter(m => m.poolId === pool.id)
-                      return (
-                        <div className="pb-pool-card" key={pool.id}>
-                          <div className="pb-pool-card-title">{pool.label}</div>
-                          {rows.length === 0 ? (
-                            <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>No matches assigned yet.</div>
-                          ) : rows.map(m => (
-                            <div className="pb-pool-match" key={m.id}>
-                              <div className="pb-pool-match-names">
-                                <span>{entrantLabel(m.entrant1)}</span>
-                                <span>{entrantLabel(m.entrant2)}</span>
-                              </div>
-                              <div className="pb-pool-match-score">
-                                {m.status === 'complete' || m.status === 'bye' ? formatGames(m.games) : STATUS_LABELS[m.status] ?? m.status}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )
-              )}
+              {tab === 'pools' && <PickleballPoolsTab tournament={t} />}
 
-              {tab === 'bracket' && (
-                elimMatches.length === 0 ? (
-                  <EmptyTab icon="🏆" title="Bracket not generated yet" sub="The elimination bracket will appear here once pool play is complete." />
-                ) : (
-                  <div className="pb-bracket-scroll">
-                    <div className="pb-bracket-rounds">
-                      {roundsAsc.map(r => (
-                        <div className="pb-bracket-round" key={r}>
-                          <div className="pb-bracket-round-label">{getRoundLabel(r, totalRounds)}</div>
-                          {elimMatches.filter(m => m.round === r).sort((a, b) => a.slot - b.slot).map(m => (
-                            <div className={`pb-bracket-match ${m.status === 'complete' ? 'pb-bracket-match--complete' : ''}`} key={m.id}>
-                              <div className={`pb-bracket-seat ${m.status === 'complete' && m.winnerEntrantId === m.entrant1?.id ? 'pb-bracket-seat--winner' : ''} ${!m.entrant1 ? 'pb-bracket-seat--empty' : ''}`}>
-                                <span>{m.entrant1 ? entrantLabel(m.entrant1) : 'TBD'}</span>
-                                {m.status === 'complete' && <span className="pb-bracket-seat-score">{m.games?.filter(g => g.score_a > g.score_b).length ?? ''}</span>}
-                              </div>
-                              <div className={`pb-bracket-seat ${m.status === 'complete' && m.winnerEntrantId === m.entrant2?.id ? 'pb-bracket-seat--winner' : ''} ${!m.entrant2 ? 'pb-bracket-seat--empty' : ''}`}>
-                                <span>{m.entrant2 ? entrantLabel(m.entrant2) : 'TBD'}</span>
-                                {m.status === 'complete' && <span className="pb-bracket-seat-score">{m.games?.filter(g => g.score_b > g.score_a).length ?? ''}</span>}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              )}
+              {tab === 'bracket' && <PickleballBracketTab tournament={t} />}
 
-              {tab === 'schedule' && (
-                matches.length === 0 ? (
-                  <EmptyTab icon="📅" title="No matches scheduled yet" sub="Court assignments and match times will appear here." />
-                ) : (
-                  <>
-                    {courts.map(court => {
-                      const rows = matches.filter(m => m.courtId === court.id)
-                      if (!rows.length) return null
-                      return (
-                        <div className="pb-schedule-group" key={court.id}>
-                          <div className="pb-schedule-group-title">{court.label}</div>
-                          {rows.map(m => (
-                            <div className="pb-schedule-row" key={m.id}>
-                              <span>{entrantLabel(m.entrant1)} vs {entrantLabel(m.entrant2)}</span>
-                              <span style={{ color: 'var(--text-secondary)' }}>
-                                {m.scheduledAt ? `${formatDate(m.scheduledAt)} · ${formatTime(m.scheduledAt)}` : 'Time TBD'}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    })}
-                    {(() => {
-                      const unscheduled = matches.filter(m => !m.courtId)
-                      if (!unscheduled.length) return null
-                      return (
-                        <div className="pb-schedule-group">
-                          <div className="pb-schedule-group-title">Not Yet Assigned to a Court</div>
-                          {unscheduled.map(m => (
-                            <div className="pb-schedule-row" key={m.id}>
-                              <span>{entrantLabel(m.entrant1)} vs {entrantLabel(m.entrant2)}</span>
-                              <span style={{ color: 'var(--text-muted)' }}>Court TBD</span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    })()}
-                  </>
-                )
-              )}
+              {tab === 'schedule' && <PickleballScheduleTab tournament={t} />}
 
               {tab === 'standings' && (
                 standings.length === 0 ? (

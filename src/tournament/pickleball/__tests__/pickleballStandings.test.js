@@ -73,6 +73,22 @@ describe('computePickleballStandings', () => {
     expect(a.wins).toBe(1)
   })
 
+  it('excluding a withdrawn entrant from the input (per-pool standings usage) produces no row for them, without crashing on their opponent', () => {
+    // Mirrors how PickleballPoolsTab computes per-pool standings: withdrawn
+    // entrants are filtered out of the `entrants` array before calling this,
+    // even though the match they played in is still passed through.
+    const activeOnly = [E('e2', 'B')] // e1 withdrew and is deliberately omitted
+    const matches = [{
+      status: 'complete', winnerEntrantId: 'e1', entrant1: { id: 'e1' }, entrant2: { id: 'e2' },
+      games: [{ score_a: 11, score_b: 5 }],
+    }]
+    const standings = computePickleballStandings(activeOnly, matches)
+    expect(standings).toHaveLength(1)
+    expect(standings[0].id).toBe('e2')
+    expect(standings[0].losses).toBe(1)
+    expect(standings.find(s => s.id === 'e1')).toBeUndefined()
+  })
+
   it('a match referencing an entrant not in the roster (data edge case) does not throw', () => {
     const entrants = [E('e1', 'A')]
     const matches = [{

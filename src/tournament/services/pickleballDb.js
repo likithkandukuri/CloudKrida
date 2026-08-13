@@ -65,6 +65,7 @@ export function entrantRowToObj(row) {
     status:           row.status,
     seedOrder:        row.seed_order ?? 0,
     pointsAdjustment: Number(row.points_adjustment ?? 0),
+    poolId:           row.pool_id ?? null,
     members:          (row.members ?? []).map(memberRowToObj).sort((a, b) => a.seat - b.seat),
   }
 }
@@ -320,4 +321,93 @@ export async function setPickleballEntrantMembers(entrantId, memberPlayerIds) {
   const rows = memberPlayerIds.map((playerId, i) => ({ entrant_id: entrantId, player_id: playerId, seat: i + 1 }))
   const { error: insErr } = await supabase.from('pickleball_entrant_members').insert(rows)
   if (insErr) { console.error('[Krida/Pickleball] setEntrantMembers — insert failed:', insErr); throw insErr }
+}
+
+// ── Pools (Track B Phase 2) ─────────────────────────────────────────────────
+// Both functions below are thin supabase.rpc() wrappers around the
+// generate_pickleball_pools / reset_pickleball_pools Postgres functions
+// (migration 009). No client-side rollback logic here on purpose — the
+// database function runs as one transaction and rolls back everything on any
+// RAISE EXCEPTION, so there is nothing left for the client to clean up.
+// pools/matches are computed by the pure functions in pickleballPools.js
+// (seeding, round-robin pairing); this file only serializes that plan into
+// the RPC's params and surfaces whatever error Postgres raises (pool_size
+// mismatch, already-scored block, missing force_regenerate flag, etc.) — the
+// UI is expected to render that message the same way it renders any other
+// validation error.
+export async function generatePickleballPools(tournamentId, poolSize, poolAssignments, poolMatches, forceRegenerate = false) {
+  const { data, error } = await supabase.rpc('generate_pickleball_pools', {
+    p_tournament_id: tournamentId,
+    p_pool_size: poolSize,
+    p_pools: poolAssignments.pools.map(p => ({ label: p.label, entrant_ids: p.entrantIds })),
+    p_matches: poolMatches.map(m => ({
+      pool_label: m.poolLabel, entrant1_id: m.entrant1Id, entrant2_id: m.entrant2Id,
+    })),
+    p_force_regenerate: forceRegenerate,
+  })
+  if (error) { console.error('[Krida/Pickleball] generatePools:', error); throw error }
+  return (data ?? []).map(poolRowToObj)
+}
+
+export async function resetPickleballPools(tournamentId) {
+  const { error } = await supabase.rpc('reset_pickleball_pools', { p_tournament_id: tournamentId })
+  if (error) { console.error('[Krida/Pickleball] resetPools:', error); throw error }
+}
+
+// ── Courts (Track B Phase 3) ────────────────────────────────────────────────
+// Label-only assignment, no date/time — pickleball_courts/matches.court_id
+// already existed from migration 005, so no new schema is needed here.
+// Conflict detection (double-booked court/entrant) is deliberately out of
+// scope without a time dimension to conflict over — this is informational
+// grouping only ("which physical court is this match on"), matching how the
+// existing read-only Schedule tab already groups matches by court.
+
+export async function createPickleballCourt(tournamentId, label) {
+  const { data: row, error } = await supabase
+    .from('pickleball_courts')
+    .insert({ tournament_id: tournamentId, label })
+    .select().single()
+  if (error) { console.error('[Krida/Pickleball] createCourt:', error); throw error }
+  return courtRowToObj(row)
+}
+
+export async function deletePickleballCourt(id) {
+  const { error } = await supabase.from('pickleball_courts').delete().eq('id', id)
+  if (error) { console.error('[Krida/Pickleball] deleteCourt:', error); throw error }
+}
+
+export async function assignPickleballMatchCourt(matchId, courtId) {
+  const { error } = await supabase.from('pickleball_matches').update({ court_id: courtId }).eq('id', matchId)
+  if (error) { console.error('[Krida/Pickleball] assignMatchCourt:', error); throw error }
+}
+
+// ── Match scoring (Track B Phase 4 + Phase 5 advancement) ──────────────────
+// Thin RPC wrapper — record_pickleball_match_score (migration 011) applies
+// the already-computed {status, winnerEntrantId} atomically and, for
+// elimination matches, advances the winner into the next round in the same
+// transaction. games/status/winnerSeat are computed beforehand by
+// pickleballScoring.js, not here.
+export async function recordPickleballMatchScore(matchId, games, status, winnerEntrantId) {
+  const { error } = await supabase.rpc('record_pickleball_match_score', {
+    p_match_id: matchId, p_games: games, p_status: status, p_winner_entrant_id: winnerEntrantId,
+  })
+  if (error) { console.error('[Krida/Pickleball] recordMatchScore:', error); throw error }
+}
+
+// ── Bracket generation (Track B Phase 5) ────────────────────────────────────
+// Thin RPC wrapper — generate_pickleball_bracket (migration 012) atomically
+// clears any existing (unscored) elimination matches and inserts the new
+// plan. rows are computed by pickleballBracket.js, not here.
+export async function generatePickleballBracket(tournamentId, rows, forceRegenerate = false) {
+  const { data, error } = await supabase.rpc('generate_pickleball_bracket', {
+    p_tournament_id: tournamentId,
+    p_rows: rows.map(r => ({
+      round: r.round, slot: r.slot,
+      entrant1_id: r.entrant1Id, entrant2_id: r.entrant2Id,
+      status: r.status, winner_entrant_id: r.winnerEntrantId,
+    })),
+    p_force_regenerate: forceRegenerate,
+  })
+  if (error) { console.error('[Krida/Pickleball] generateBracket:', error); throw error }
+  return data
 }

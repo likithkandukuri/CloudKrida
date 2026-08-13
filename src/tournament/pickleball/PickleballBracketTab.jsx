@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { usePickleball } from './PickleballContext.jsx'
 import { validateBracketGeneration, getBracketGenerationState } from './pickleballValidation.js'
+import { validateBracketSwap, validateBracketByeAssign, validateBracketByeRemove, validateBracketIntegrity } from './pickleballBracketEdit.js'
 import { getRoundLabel } from '../engine/bracket.js'
 import { entrantLabel } from './pickleballDisplay.js'
 import PickleballScoreEntry from './PickleballScoreEntry.jsx'
@@ -12,11 +13,16 @@ import PickleballScoreEntry from './PickleballScoreEntry.jsx'
 // generate_pickleball_bracket RPC (migration 012).
 export default function PickleballBracketTab({ tournament }) {
   const { isSuperAdmin } = useAuth()
-  const { generateBracket, updateTournament } = usePickleball()
+  const {
+    generateBracket, updateTournament,
+    toggleMatchLock, swapBracketEntrants, assignMatchBye, removeMatchBye,
+  } = usePickleball()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [confirmRegenerate, setConfirmRegenerate] = useState(false)
   const [scoringMatchId, setScoringMatchId] = useState(null)
+  const [swapSelection, setSwapSelection] = useState([]) // [{matchId, seat}, ...] up to 2
+  const [showValidate, setShowValidate] = useState(false)
 
   const pools          = tournament.pools ?? []
   const matches         = tournament.matches ?? []
@@ -59,6 +65,60 @@ export default function PickleballBracketTab({ tournament }) {
     }
   }
 
+  const handleToggleLock = async (m) => {
+    setBusy(true); setError(null)
+    try { await toggleMatchLock(m.id, !m.locked) }
+    catch (err) { setError(err?.message ?? 'Failed to update lock.') }
+    finally { setBusy(false) }
+  }
+
+  const handleSelectSeat = (matchId, seat) => {
+    setSwapSelection(prev => {
+      const already = prev.find(s => s.matchId === matchId && s.seat === seat)
+      if (already) return prev.filter(s => !(s.matchId === matchId && s.seat === seat))
+      if (prev.length >= 2) return prev
+      return [...prev, { matchId, seat }]
+    })
+  }
+
+  const handleSwap = async () => {
+    if (swapSelection.length !== 2) return
+    const [a, b] = swapSelection
+    const matchA = elimMatches.find(m => m.id === a.matchId)
+    const matchB = elimMatches.find(m => m.id === b.matchId)
+    const errors = validateBracketSwap(matchA, matchB)
+    if (errors.length) { setError(errors[0]); return }
+    setBusy(true); setError(null)
+    try {
+      await swapBracketEntrants(a.matchId, a.seat, b.matchId, b.seat)
+      setSwapSelection([])
+    } catch (err) {
+      setError(err?.message ?? 'Failed to swap entrants.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const handleAssignBye = async (m, winnerEntrantId) => {
+    const errors = validateBracketByeAssign(m, winnerEntrantId)
+    if (errors.length) { setError(errors[0]); return }
+    setBusy(true); setError(null)
+    try { await assignMatchBye(m.id, winnerEntrantId) }
+    catch (err) { setError(err?.message ?? 'Failed to assign bye.') }
+    finally { setBusy(false) }
+  }
+
+  const handleRemoveBye = async (m) => {
+    const errors = validateBracketByeRemove(m)
+    if (errors.length) { setError(errors[0]); return }
+    setBusy(true); setError(null)
+    try { await removeMatchBye(m.id) }
+    catch (err) { setError(err?.message ?? 'Failed to undo bye.') }
+    finally { setBusy(false) }
+  }
+
+  const integrityWarnings = validateBracketIntegrity(elimMatches)
+
   return (
     <div>
       {isSuperAdmin && (
@@ -89,7 +149,25 @@ export default function PickleballBracketTab({ tournament }) {
             {champion && tournament.status !== 'complete' && (
               <button className="pb-btn-primary" disabled={busy} onClick={markComplete}>Mark Tournament Complete</button>
             )}
+            {elimMatches.length > 0 && (
+              <button className="pb-btn-small pb-btn-small--ghost" onClick={() => setShowValidate(v => !v)}>✓ Validate</button>
+            )}
+            {swapSelection.length === 2 && (
+              <>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Swap the 2 selected entrants?</span>
+                <button className="pb-btn-primary" disabled={busy} onClick={handleSwap}>Swap</button>
+                <button className="pb-btn-small pb-btn-small--ghost" onClick={() => setSwapSelection([])}>Cancel</button>
+              </>
+            )}
           </div>
+
+          {showValidate && (
+            <div className="pb-notice" style={{ fontSize: 13 }}>
+              {integrityWarnings.length === 0
+                ? '✓ No issues found.'
+                : <ul style={{ margin: 0, paddingLeft: 18 }}>{integrityWarnings.map((w, i) => <li key={i}>{w}</li>)}</ul>}
+            </div>
+          )}
 
           {genState === 'empty' && configErrors.length > 0 && (
             <ul className="pb-error-list">
@@ -120,25 +198,50 @@ export default function PickleballBracketTab({ tournament }) {
                 <div className="pb-bracket-round-label">{getRoundLabel(r, totalRounds)}</div>
                 {elimMatches.filter(m => m.round === r).sort((a, b) => a.slot - b.slot).map(m => {
                   const decided = m.status === 'complete' || m.status === 'bye'
+                  const canEdit = isSuperAdmin && m.status === 'pending' && !m.locked
+                  const isSelected = seat => swapSelection.some(s => s.matchId === m.id && s.seat === seat)
                   return (
                     <div key={m.id}>
                       <div className={`pb-bracket-match ${decided ? 'pb-bracket-match--complete' : ''}`}>
-                        <div className={`pb-bracket-seat ${decided && m.winnerEntrantId === m.entrant1?.id ? 'pb-bracket-seat--winner' : ''} ${!m.entrant1 ? 'pb-bracket-seat--empty' : ''}`}>
+                        <div
+                          className={`pb-bracket-seat ${decided && m.winnerEntrantId === m.entrant1?.id ? 'pb-bracket-seat--winner' : ''} ${!m.entrant1 ? 'pb-bracket-seat--empty' : ''}`}
+                          style={canEdit && m.entrant1 ? { outline: isSelected(1) ? '2px solid var(--sport-pickleball)' : 'none', cursor: 'pointer' } : undefined}
+                          onClick={canEdit && m.entrant1 ? () => handleSelectSeat(m.id, 1) : undefined}
+                        >
                           <span>{m.entrant1 ? entrantLabel(m.entrant1) : 'TBD'}</span>
                           {m.status === 'complete' && <span className="pb-bracket-seat-score">{m.games?.filter(g => g.score_a > g.score_b).length ?? ''}</span>}
                         </div>
-                        <div className={`pb-bracket-seat ${decided && m.winnerEntrantId === m.entrant2?.id ? 'pb-bracket-seat--winner' : ''} ${!m.entrant2 ? 'pb-bracket-seat--empty' : ''}`}>
+                        <div
+                          className={`pb-bracket-seat ${decided && m.winnerEntrantId === m.entrant2?.id ? 'pb-bracket-seat--winner' : ''} ${!m.entrant2 ? 'pb-bracket-seat--empty' : ''}`}
+                          style={canEdit && m.entrant2 ? { outline: isSelected(2) ? '2px solid var(--sport-pickleball)' : 'none', cursor: 'pointer' } : undefined}
+                          onClick={canEdit && m.entrant2 ? () => handleSelectSeat(m.id, 2) : undefined}
+                        >
                           <span>{m.entrant2 ? entrantLabel(m.entrant2) : 'TBD'}</span>
                           {m.status === 'complete' && <span className="pb-bracket-seat-score">{m.games?.filter(g => g.score_b > g.score_a).length ?? ''}</span>}
                         </div>
-                        {isSuperAdmin && m.status !== 'bye' && m.entrant1 && m.entrant2 && (
-                          <button
-                            className="pb-btn-small pb-btn-small--ghost"
-                            style={{ marginTop: 6 }}
-                            onClick={() => setScoringMatchId(scoringMatchId === m.id ? null : m.id)}
-                          >
-                            {m.status === 'complete' ? 'Edit Score' : 'Enter Score'}
-                          </button>
+
+                        {isSuperAdmin && (
+                          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+                            {m.status !== 'bye' && m.entrant1 && m.entrant2 && (
+                              <button className="pb-btn-small pb-btn-small--ghost" onClick={() => setScoringMatchId(scoringMatchId === m.id ? null : m.id)}>
+                                {m.status === 'complete' ? 'Edit Score' : 'Enter Score'}
+                              </button>
+                            )}
+                            {m.status === 'pending' && m.entrant1 && m.entrant2 && !m.locked && (
+                              <>
+                                <button className="pb-btn-small pb-btn-small--ghost" onClick={() => handleAssignBye(m, m.entrant1.id)}>Bye → {entrantLabel(m.entrant1)}</button>
+                                <button className="pb-btn-small pb-btn-small--ghost" onClick={() => handleAssignBye(m, m.entrant2.id)}>Bye → {entrantLabel(m.entrant2)}</button>
+                              </>
+                            )}
+                            {m.status === 'bye' && (
+                              <button className="pb-btn-small pb-btn-small--ghost" onClick={() => handleRemoveBye(m)}>Undo Bye</button>
+                            )}
+                            {m.status !== 'complete' && (
+                              <button className="pb-btn-small pb-btn-small--ghost" onClick={() => handleToggleLock(m)}>
+                                {m.locked ? '🔒 Locked' : '🔓 Lock'}
+                              </button>
+                            )}
+                          </div>
                         )}
                       </div>
                       {scoringMatchId === m.id && (

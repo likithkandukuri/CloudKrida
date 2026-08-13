@@ -394,6 +394,99 @@ export async function recordPickleballMatchScore(matchId, games, status, winnerE
   if (error) { console.error('[Krida/Pickleball] recordMatchScore:', error); throw error }
 }
 
+// ── Pool placement (new work) ───────────────────────────────────────────────
+// Thin RPC wrapper — move_pickleball_entrant_to_pool (migration 013)
+// atomically re-validates and moves one entrant into a different
+// already-generated pool. No client-side logic beyond the call itself.
+export async function movePickleballEntrantToPool(entrantId, targetPoolId) {
+  const { error } = await supabase.rpc('move_pickleball_entrant_to_pool', {
+    p_entrant_id: entrantId, p_target_pool_id: targetPoolId,
+  })
+  if (error) { console.error('[Krida/Pickleball] moveEntrantToPool:', error); throw error }
+}
+
+// ── Bracket granular editing (new work) ─────────────────────────────────────
+// Lock toggle needs no RPC — `locked` is a plain boolean already covered by
+// the existing pb_matches_update RLS policy. Swap/bye-assign/bye-remove are
+// thin wrappers around migration 014's brand-new RPCs (none of which touch
+// record_pickleball_match_score or any other Track B function).
+export async function togglePickleballMatchLock(matchId, locked) {
+  const { error } = await supabase.from('pickleball_matches').update({ locked }).eq('id', matchId)
+  if (error) { console.error('[Krida/Pickleball] toggleMatchLock:', error); throw error }
+}
+
+export async function swapPickleballBracketEntrants(match1Id, seat1, match2Id, seat2) {
+  const { error } = await supabase.rpc('swap_pickleball_bracket_entrants', {
+    p_match1_id: match1Id, p_seat1: seat1, p_match2_id: match2Id, p_seat2: seat2,
+  })
+  if (error) { console.error('[Krida/Pickleball] swapBracketEntrants:', error); throw error }
+}
+
+export async function assignPickleballMatchBye(matchId, winnerEntrantId) {
+  const { error } = await supabase.rpc('assign_pickleball_match_bye', {
+    p_match_id: matchId, p_winner_entrant_id: winnerEntrantId,
+  })
+  if (error) { console.error('[Krida/Pickleball] assignMatchBye:', error); throw error }
+}
+
+export async function removePickleballMatchBye(matchId) {
+  const { error } = await supabase.rpc('remove_pickleball_match_bye', { p_match_id: matchId })
+  if (error) { console.error('[Krida/Pickleball] removeMatchBye:', error); throw error }
+}
+
+// ── Gallery (Phase B — media) ────────────────────────────────────────────────
+// Mirrors Chess's GalleryView.jsx storage/DB pattern (bucket + path scheme +
+// table shape are already generic media handling, not chess-specific) but
+// factored into pickleballDb.js functions rather than inlined in the
+// component, matching this file's own established convention. Table
+// (pickleball_gallery_photos), bucket (pickleball-gallery), and RLS
+// (is_admin_or_above() insert/delete) all already existed from migration 005 —
+// this is the first code that actually writes to them.
+const PB_GALLERY_BUCKET = 'pickleball-gallery'
+export const PB_GALLERY_ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+export const PB_GALLERY_ACCEPTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime']
+export const PB_GALLERY_MAX_IMAGE_BYTES = 12 * 1024 * 1024   // 12 MB
+export const PB_GALLERY_MAX_VIDEO_BYTES = 100 * 1024 * 1024  // 100 MB
+
+export async function uploadPickleballGalleryFile(tournamentId, file, userId, userRole) {
+  const isVideo   = file.type.startsWith('video/')
+  const mediaType = isVideo ? 'video' : 'image'
+  const safeName  = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+  const path      = `${tournamentId}/${Date.now()}-${safeName}`
+
+  const { error: uploadErr } = await supabase.storage.from(PB_GALLERY_BUCKET).upload(path, file)
+  if (uploadErr) { console.error('[Krida/Pickleball] gallery upload:', uploadErr); throw uploadErr }
+
+  const { data: { publicUrl } } = supabase.storage.from(PB_GALLERY_BUCKET).getPublicUrl(path)
+
+  const { data: row, error: dbErr } = await supabase.from('pickleball_gallery_photos').insert({
+    tournament_id: tournamentId,
+    storage_path:  path,
+    public_url:    publicUrl,
+    file_name:     file.name,
+    uploaded_by:   userId,
+    media_type:    mediaType,
+    uploader_role: userRole,
+  }).select().single()
+  if (dbErr) {
+    // Roll back the storage object if the DB insert failed, so an
+    // unauthorized/failed upload never leaves an orphaned file behind.
+    await supabase.storage.from(PB_GALLERY_BUCKET).remove([path])
+    console.error('[Krida/Pickleball] gallery DB insert:', dbErr)
+    throw dbErr
+  }
+  return galleryRowToObj(row)
+}
+
+export async function deletePickleballGalleryItem(item) {
+  const { error: dbErr } = await supabase.from('pickleball_gallery_photos').delete().eq('id', item.id)
+  if (dbErr) { console.error('[Krida/Pickleball] gallery delete:', dbErr); throw dbErr }
+  if (item.storagePath) {
+    const { error: storErr } = await supabase.storage.from(PB_GALLERY_BUCKET).remove([item.storagePath])
+    if (storErr) console.error('[Krida/Pickleball] gallery storage delete (file orphaned):', storErr.message)
+  }
+}
+
 // ── Bracket generation (Track B Phase 5) ────────────────────────────────────
 // Thin RPC wrapper — generate_pickleball_bracket (migration 012) atomically
 // clears any existing (unscored) elimination matches and inserts the new

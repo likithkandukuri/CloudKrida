@@ -36,10 +36,21 @@ export default function PickleballPlayerField({ label, value, onChange }) {
     onChange({ playerId: player.id, name: player.name })
   }
 
+  // A genuinely new name (zero exact matches) is auto-created here — this is
+  // the fix for the bug found during the Track B smoke test: previously,
+  // typing a brand-new name did nothing on blur (only the dupWarning ->
+  // "Create new anyway" path ever called createPickleballPlayer), so
+  // playerId stayed null and entrant submission failed even though both
+  // name fields were visibly filled in.
   const checkForDuplicateBeforeCreate = async () => {
     if (!query.trim() || value?.playerId) return
     const matches = await findPlayersByExactName(query)
-    if (matches.length > 0) setDupWarning(matches[0])
+    if (matches.length > 0) {
+      setDupWarning(matches[0])
+    } else {
+      const player = await createPickleballPlayer({ name: query.trim() })
+      onChange({ playerId: player.id, name: player.name })
+    }
   }
 
   const createNewAnyway = async () => {

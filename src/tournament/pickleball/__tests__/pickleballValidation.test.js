@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   validateTournamentConfig, validateEntrantMembership, findDuplicateParticipants,
-  validatePoolGeneration, getPoolGenerationState,
+  validatePoolGeneration, getPoolGenerationState, validatePoolMove,
 } from '../pickleballValidation.js'
 
 const validConfig = () => ({
@@ -141,6 +141,43 @@ describe('getPoolGenerationState', () => {
     const pools = [{ id: 'p1', label: 'Pool A' }]
     const matches = [{ status: 'complete', games: [] }]
     expect(getPoolGenerationState(pools, matches)).toBe('scored')
+  })
+})
+
+describe('validatePoolMove', () => {
+  const e = (id, poolId) => ({ id, poolId })
+
+  it('rejects an entrant with no current pool', () => {
+    const errors = validatePoolMove({ id: 'e1', poolId: null }, 'poolB', [])
+    expect(errors.some(x => x.includes('not currently assigned'))).toBe(true)
+  })
+
+  it('rejects moving into the same pool', () => {
+    const errors = validatePoolMove(e('e1', 'poolA'), 'poolA', [])
+    expect(errors.some(x => x.includes('already in that pool'))).toBe(true)
+  })
+
+  it('allows a move when nothing is scored', () => {
+    const matches = [{ poolId: 'poolA', status: 'pending', games: [], entrant1: { id: 'e1' }, entrant2: { id: 'e2' } }]
+    expect(validatePoolMove(e('e1', 'poolA'), 'poolB', matches)).toEqual([])
+  })
+
+  it('rejects when the entrant has a scored match in their current pool', () => {
+    const matches = [{ poolId: 'poolA', status: 'complete', games: [{ score_a: 11, score_b: 5 }], entrant1: { id: 'e1' }, entrant2: { id: 'e2' } }]
+    const errors = validatePoolMove(e('e1', 'poolA'), 'poolB', matches)
+    expect(errors.some(x => x.includes('current pool'))).toBe(true)
+  })
+
+  it('rejects when the target pool already has any scored match', () => {
+    const matches = [{ poolId: 'poolB', status: 'complete', games: [{ score_a: 11, score_b: 5 }], entrant1: { id: 'e3' }, entrant2: { id: 'e4' } }]
+    const errors = validatePoolMove(e('e1', 'poolA'), 'poolB', matches)
+    expect(errors.some(x => x.includes('target pool'))).toBe(true)
+  })
+
+  it('a match with a non-empty games array but not yet marked complete still counts as scored', () => {
+    const matches = [{ poolId: 'poolA', status: 'live', games: [{ score_a: 5, score_b: 3 }], entrant1: { id: 'e1' }, entrant2: { id: 'e2' } }]
+    const errors = validatePoolMove(e('e1', 'poolA'), 'poolB', matches)
+    expect(errors.length).toBeGreaterThan(0)
   })
 })
 

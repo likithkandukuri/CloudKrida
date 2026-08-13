@@ -22,30 +22,6 @@ const GAMES = [
     stats: { tournaments: 8, players: 24 },
   },
   {
-    id: 'tennis',
-    name: 'Tennis',
-    tag: 'SPORTS',
-    description: 'Track sets, games, and points in professional-style tennis tournaments with live score feeds.',
-    path: '/tournaments/tennis',
-    accent: '#4ade80',
-    accentSoft: 'rgba(74, 222, 128, 0.15)',
-    glow: 'rgba(74, 222, 128, 0.28)',
-    gradient: 'linear-gradient(160deg, #00150a 0%, #002e14 60%, #00150a 100%)',
-    stats: { tournaments: 3, players: 16 },
-  },
-  {
-    id: 'darts',
-    name: 'Darts',
-    tag: 'PRECISION',
-    description: 'Compete in 501, 301, or Cricket format with automatic score calculation and live leaderboards.',
-    path: '/tournaments/darts',
-    accent: '#f87171',
-    accentSoft: 'rgba(248, 113, 113, 0.15)',
-    glow: 'rgba(248, 113, 113, 0.28)',
-    gradient: 'linear-gradient(160deg, #140000 0%, #2d0505 60%, #140000 100%)',
-    stats: { tournaments: 5, players: 20 },
-  },
-  {
     id: 'pickleball',
     name: 'Pickleball',
     tag: 'NEW',
@@ -57,6 +33,21 @@ const GAMES = [
     gradient: 'linear-gradient(160deg, #000a14 0%, #001c2e 60%, #000a14 100%)',
     stats: { tournaments: 0, players: 0 },
   },
+  {
+    id: 'tennis',
+    name: 'Tennis',
+    tag: 'SPORTS',
+    description: 'Track sets, games, and points in professional-style tennis tournaments with live score feeds.',
+    path: '/tournaments/tennis',
+    accent: '#4ade80',
+    accentSoft: 'rgba(74, 222, 128, 0.15)',
+    glow: 'rgba(74, 222, 128, 0.28)',
+    gradient: 'linear-gradient(160deg, #00150a 0%, #002e14 60%, #00150a 100%)',
+    stats: { tournaments: 3, players: 16 },
+  },
+  // Darts intentionally omitted from the sport-card grid (frontend stub,
+  // zero backend data — nothing deleted, just not shown here). Its route,
+  // stub page, and footer link are untouched.
 ]
 
 // ── Animation variants ───────────────────────────────────────────────────────
@@ -292,7 +283,7 @@ export default function TournamentsHub() {
 
   usePageMeta({
     title:       'Tournaments — Cloud Krida',
-    description: 'Create and manage Chess, Tennis, Darts, and Pickleball tournaments with real-time scoring, live brackets, and pool play. Free to explore — no account required.',
+    description: 'Create and manage Chess, Pickleball, and Tennis tournaments with real-time scoring, live brackets, and pool play. Free to explore — no account required.',
   })
 
   const scrollToGames = () => {
@@ -339,7 +330,7 @@ export default function TournamentsHub() {
 
           <motion.p className="hero-subtitle" variants={fadeUp} custom={2}>
             Create tournaments, track scores in real-time, and compete<br className="desktop-br" />
-            across Chess, Tennis, Darts, and Pickleball on one platform.
+            across Chess, Pickleball, and Tennis on one platform.
           </motion.p>
 
           <motion.div className="hero-actions" variants={fadeUp} custom={3}>
@@ -355,11 +346,11 @@ export default function TournamentsHub() {
           </motion.div>
 
           <motion.div className="hero-stats" variants={fadeUp} custom={4}>
-            <StatBadge value="4" label="Games" delay={0} />
+            <StatBadge value="3" label="Games" delay={0} />
             <div className="stat-divider" />
-            <StatBadge value="16" label="Tournaments" delay={1} />
+            <StatBadge value="11" label="Tournaments" delay={1} />
             <div className="stat-divider" />
-            <StatBadge value="60" label="Players" delay={2} />
+            <StatBadge value="40" label="Players" delay={2} />
           </motion.div>
         </motion.div>
 

@@ -147,6 +147,39 @@ export function getBracketGenerationState(elimMatches) {
   return hasScored ? 'scored' : 'unscored'
 }
 
+// ── Pool placement (new work — move an entrant between already-generated
+// pools without a full regenerate) ─────────────────────────────────────────
+
+// entrant: {id, poolId, status}. poolMatches: full tournament pool-phase
+// matches. Blocks the move if the entrant has a scored match in their
+// current pool, or the target pool has ANY scored match — moving into/out
+// of a pool with live results would corrupt standings history, same
+// "never silently overwrite scored data" principle as pool regeneration.
+export function validatePoolMove(entrant, targetPoolId, poolMatches) {
+  const errors = []
+  if (!entrant?.poolId) {
+    errors.push('This entrant is not currently assigned to a pool.')
+    return errors
+  }
+  if (entrant.poolId === targetPoolId) {
+    errors.push('Entrant is already in that pool.')
+    return errors
+  }
+
+  const isScored = m => m.status === 'complete' || (m.games?.length ?? 0) > 0
+
+  const scoredInCurrentPool = (poolMatches ?? []).some(m =>
+    m.poolId === entrant.poolId && isScored(m) &&
+    (m.entrant1?.id === entrant.id || m.entrant2?.id === entrant.id)
+  )
+  if (scoredInCurrentPool) errors.push('Cannot move — this entrant already has a scored match in their current pool.')
+
+  const scoredInTargetPool = (poolMatches ?? []).some(m => m.poolId === targetPoolId && isScored(m))
+  if (scoredInTargetPool) errors.push('Cannot move — the target pool already has scored matches.')
+
+  return errors
+}
+
 // ── Score entry (Track B Phase 4) ──────────────────────────────────────────
 
 // Basic input sanity only — whether a game/match is actually "complete" is

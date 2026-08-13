@@ -1,17 +1,24 @@
 import { useState } from 'react'
 import { usePickleball } from './PickleballContext.jsx'
 import PickleballEntrantForm from './PickleballEntrantForm.jsx'
+import { validatePoolMove } from './pickleballValidation.js'
 
 export default function PickleballEntrantsTab({ tournament }) {
-  const { addEntrant, editEntrant, withdrawEntrant, reinstateEntrant, removeEntrant, setEntrantMembers } = usePickleball()
+  const {
+    addEntrant, editEntrant, withdrawEntrant, reinstateEntrant, removeEntrant, setEntrantMembers,
+    moveEntrantToPool,
+  } = usePickleball()
   const [mode, setMode] = useState(null)          // null | 'add' | entrantId being edited
   const [busyId, setBusyId] = useState(null)
   const [confirmRemoveId, setConfirmRemoveId] = useState(null)
   const [toast, setToast] = useState(null)
+  const [moveError, setMoveError] = useState(null)
 
   const entrants = tournament.entrants ?? []
+  const pools = tournament.pools ?? []
+  const poolMatches = (tournament.matches ?? []).filter(m => m.phase === 'pool')
   const editingEntrant = mode && mode !== 'add' ? entrants.find(e => e.id === mode) : null
-  const poolLabelById = Object.fromEntries((tournament.pools ?? []).map(p => [p.id, p.label]))
+  const poolLabelById = Object.fromEntries(pools.map(p => [p.id, p.label]))
 
   const flash = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2500) }
 
@@ -53,9 +60,26 @@ export default function PickleballEntrantsTab({ tournament }) {
     flash('Entrant removed.')
   }
 
+  const handleMovePool = async (entrant, targetPoolId) => {
+    if (!targetPoolId) return
+    setMoveError(null)
+    const errors = validatePoolMove(entrant, targetPoolId, poolMatches)
+    if (errors.length) { setMoveError(errors[0]); return }
+    setBusyId(entrant.id)
+    try {
+      await moveEntrantToPool(entrant.id, targetPoolId)
+      flash('Entrant moved.')
+    } catch (err) {
+      setMoveError(err?.message ?? 'Failed to move entrant.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   return (
     <div>
       {toast && <div className="pb-success-toast">{toast}</div>}
+      {moveError && <div className="pb-error-list"><div>{moveError}</div></div>}
 
       {mode === 'add' && (
         <PickleballEntrantForm
@@ -108,6 +132,21 @@ export default function PickleballEntrantsTab({ tournament }) {
                 disabled={busyId === entrant.id}
                 aria-label={`Seed for ${entrant.displayName}`}
               />
+              {entrant.poolId && pools.length > 1 && (
+                <select
+                  className="pb-select"
+                  style={{ fontSize: 12, padding: '4px 6px' }}
+                  value=""
+                  onChange={e => handleMovePool(entrant, e.target.value)}
+                  disabled={busyId === entrant.id}
+                  aria-label={`Move ${entrant.displayName} to a different pool`}
+                >
+                  <option value="">Move to Pool…</option>
+                  {pools.filter(p => p.id !== entrant.poolId).map(p => (
+                    <option key={p.id} value={p.id}>{p.label}</option>
+                  ))}
+                </select>
+              )}
               <button className="pb-btn-small pb-btn-small--ghost" onClick={() => setMode(entrant.id)} disabled={busyId === entrant.id}>Edit</button>
               <button className="pb-btn-small pb-btn-small--ghost" onClick={() => handleWithdrawToggle(entrant)} disabled={busyId === entrant.id}>
                 {entrant.status === 'withdrawn' ? 'Reinstate' : 'Withdraw'}

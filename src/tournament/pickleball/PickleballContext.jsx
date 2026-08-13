@@ -8,6 +8,10 @@ import {
   generatePickleballPools, resetPickleballPools,
   createPickleballCourt, deletePickleballCourt, assignPickleballMatchCourt,
   recordPickleballMatchScore, generatePickleballBracket,
+  uploadPickleballGalleryFile, deletePickleballGalleryItem,
+  movePickleballEntrantToPool,
+  togglePickleballMatchLock, swapPickleballBracketEntrants,
+  assignPickleballMatchBye, removePickleballMatchBye,
 } from '../services/pickleballDb.js'
 import { generatePoolAssignments, generatePoolMatches } from './pickleballPools.js'
 import { computeMatchOutcome } from './pickleballScoring.js'
@@ -200,6 +204,11 @@ export function PickleballProvider({ children }) {
     await reloadActiveTournament()
   }, [reloadActiveTournament])
 
+  const moveEntrantToPool = useCallback(async (entrantId, targetPoolId) => {
+    await movePickleballEntrantToPool(entrantId, targetPoolId)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
   // ── Courts (Superadmin only, enforced by RLS) ──────────────────────────────
   const addCourt = useCallback(async (tournamentId, label) => {
     await createPickleballCourt(tournamentId, label)
@@ -242,6 +251,40 @@ export function PickleballProvider({ children }) {
     await reloadActiveTournament()
   }, [reloadActiveTournament])
 
+  // ── Gallery (Phase B — media; upload gated by isSuperAdmin||isAdmin at the
+  // call site, delete the same, matching Chess's exact AuthContext rule) ────
+  const uploadGalleryFile = useCallback(async (tournamentId, file, userId, userRole) => {
+    await uploadPickleballGalleryFile(tournamentId, file, userId, userRole)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const deleteGalleryItem = useCallback(async (item) => {
+    await deletePickleballGalleryItem(item)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  // ── Bracket granular editing (new work; Superadmin only, RLS + RPC
+  // re-validation enforced server-side, not just in the UI) ─────────────────
+  const toggleMatchLock = useCallback(async (matchId, locked) => {
+    await togglePickleballMatchLock(matchId, locked)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const swapBracketEntrants = useCallback(async (match1Id, seat1, match2Id, seat2) => {
+    await swapPickleballBracketEntrants(match1Id, seat1, match2Id, seat2)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const assignMatchBye = useCallback(async (matchId, winnerEntrantId) => {
+    await assignPickleballMatchBye(matchId, winnerEntrantId)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
+  const removeMatchBye = useCallback(async (matchId) => {
+    await removePickleballMatchBye(matchId)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
   return (
     <PickleballCtx.Provider value={{
       tournaments, dataLoading, loadError, detailLoading,
@@ -249,9 +292,11 @@ export function PickleballProvider({ children }) {
       reloadActiveTournament,
       createTournament, updateTournament, deleteTournament,
       addEntrant, editEntrant, withdrawEntrant, reinstateEntrant, removeEntrant, setEntrantMembers,
-      generatePools, resetPools,
+      generatePools, resetPools, moveEntrantToPool,
       addCourt, removeCourt, assignMatchCourt,
       scoreMatch, generateBracket,
+      uploadGalleryFile, deleteGalleryItem,
+      toggleMatchLock, swapBracketEntrants, assignMatchBye, removeMatchBye,
     }}>
       {children}
     </PickleballCtx.Provider>

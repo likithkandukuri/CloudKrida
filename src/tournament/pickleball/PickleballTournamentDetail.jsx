@@ -6,6 +6,7 @@ import PickleballEntrantsTab from './PickleballEntrantsTab.jsx'
 import PickleballPoolsTab from './PickleballPoolsTab.jsx'
 import PickleballBracketTab from './PickleballBracketTab.jsx'
 import PickleballScheduleTab from './PickleballScheduleTab.jsx'
+import PickleballGalleryView from './PickleballGalleryView.jsx'
 import PickleballTournamentForm from './PickleballTournamentForm.jsx'
 import {
   STATUS_LABELS, EVENT_TYPE_LABELS, FORMAT_LABELS,
@@ -18,6 +19,7 @@ const READ_ONLY_TABS = [
   { id: 'schedule',  label: 'Schedule' },
   { id: 'standings', label: 'Standings' },
   { id: 'history',   label: 'History' },
+  { id: 'gallery',   label: 'Gallery' },
 ]
 
 function EmptyTab({ icon, title, sub }) {
@@ -32,7 +34,7 @@ function EmptyTab({ icon, title, sub }) {
 
 export default function PickleballTournamentDetail({ tournamentId, onBack }) {
   const { activeTournament, detailLoading, updateTournament } = usePickleball()
-  const { isSuperAdmin } = useAuth()
+  const { isSuperAdmin, canUploadPhotos, canDeletePhotos, userId, role } = useAuth()
   const [tab, setTab] = useState('pools')
   const [editing, setEditing] = useState(false)
 
@@ -174,6 +176,16 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
                     </div>
                   ))
                 )
+              )}
+
+              {tab === 'gallery' && (
+                <PickleballGalleryView
+                  tournament={t}
+                  canUpload={canUploadPhotos}
+                  canDelete={canDeletePhotos}
+                  currentUserId={userId}
+                  currentUserRole={role}
+                />
               )}
             </>
           )}

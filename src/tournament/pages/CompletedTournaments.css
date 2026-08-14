@@ -103,6 +103,7 @@
   border: 1px solid var(--border-subtle);
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
   transition: transform 0.25s var(--ease-out-expo), box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
@@ -110,6 +111,11 @@
   transform: translateY(-6px);
   border-color: var(--ct-accent, var(--border-glow));
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35), 0 0 0 1px var(--ct-accent, var(--border-glow));
+}
+
+.ct-card:focus-visible {
+  outline: 2px solid var(--ct-accent, var(--focus-ring));
+  outline-offset: 3px;
 }
 
 .ct-card-cover {
@@ -230,6 +236,32 @@
 .ct-card-photos {
   font-size: 12.5px;
   color: var(--text-muted);
+}
+
+.ct-card-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ct-card-brochure-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.ct-card-brochure-pill:hover {
+  border-color: var(--ct-accent, var(--border-glow));
+  color: var(--ct-accent, var(--text-primary));
 }
 
 .ct-card-cta {

@@ -75,6 +75,7 @@ export async function fetchCompletedTournaments() {
       coverUrl:     coverByChess[t.id]?.public_url ?? null,
       photoCount:   countByChess[t.id] ?? 0,
       galleryPath:  `/tournaments/chess/gallery/${t.id}`,
+      brochureUrl:  event?.brochureUrl ?? null,
     }
   })
 
@@ -89,6 +90,7 @@ export async function fetchCompletedTournaments() {
     coverUrl:     coverByPb[t.id]?.public_url ?? null,
     photoCount:   countByPb[t.id] ?? 0,
     galleryPath:  `/tournaments/pickleball/gallery/${t.id}`,
+    brochureUrl:  t.brochureUrl ?? null,
   }))
 
   return [...chessItems, ...pickleballItems].sort((a, b) => {

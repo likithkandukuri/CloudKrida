@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   findBracketChampion, isBracketComplete,
-  isPointsTournamentComplete, isPickleballComplete,
+  isPointsTournamentComplete, isPickleballComplete, isEventComplete,
   coverPhotoByTournament, photoCountByTournament,
 } from '../completion.js'
 
@@ -59,6 +59,21 @@ describe('isPickleballComplete', () => {
     expect(isPickleballComplete('complete')).toBe(true)
     expect(isPickleballComplete('in_progress')).toBe(false)
     expect(isPickleballComplete(undefined)).toBe(false)
+  })
+})
+
+describe('isEventComplete', () => {
+  it('is false for an event with no sections yet', () => {
+    expect(isEventComplete([], () => true)).toBe(false)
+    expect(isEventComplete(undefined, () => true)).toBe(false)
+  })
+
+  it('is true only when every section is complete', () => {
+    const sections = [{ id: 'a' }, { id: 'b' }, { id: 'c' }]
+    const allComplete = { a: true, b: true, c: true }
+    const oneIncomplete = { a: true, b: false, c: true }
+    expect(isEventComplete(sections, s => allComplete[s.id])).toBe(true)
+    expect(isEventComplete(sections, s => oneIncomplete[s.id])).toBe(false)
   })
 })
 

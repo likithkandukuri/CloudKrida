@@ -767,76 +767,368 @@
   z-index: -1;
 }
 
-/* ── Completed Tournaments banner ──────────────────────── */
-.archive-banner-section {
+/* ── Events Section ──────────────────────────────────────
+   The homepage's "major secondary feature" — visually substantial (its own
+   header, tabs, and a preview grid reusing the .ct-card family from
+   CompletedTournaments.css) but deliberately lighter than the GameCards
+   above: no 3D tilt, no full-bleed hero image, individual cards are shorter
+   than a GameCard. Cards use flexbox+justify-content:center rather than a
+   fixed 3-column grid so a sparse tab (often just 1-2 Upcoming entries)
+   centers gracefully instead of leaving a lopsided empty grid cell. */
+.events-section {
   position: relative;
   z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px 100px;
+  padding: 0 24px 130px;
 }
 
-.archive-banner {
-  width: 100%;
+.events-head {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.events-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #f0b429;
+  margin-bottom: 14px;
+}
+
+.events-title {
+  font-size: clamp(28px, 4.5vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.events-sub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.events-tabbar {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 24px 28px;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.events-tabs {
+  display: inline-flex;
+  padding: 5px;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 16px;
+  border-radius: 100px;
+  gap: 4px;
+}
+
+.events-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 100px;
+  border: none;
+  background: transparent;
   cursor: pointer;
   font-family: inherit;
-  transition: border-color 0.25s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.archive-banner:hover {
-  transform: translateY(-3px);
-  border-color: rgba(212, 163, 54, 0.4);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(212, 163, 54, 0.12);
+.events-tab:hover:not(.events-tab--active) {
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.archive-banner-icon {
-  font-size: 32px;
-  flex-shrink: 0;
+.events-tab--active {
+  background: linear-gradient(135deg, rgba(240, 180, 41, 0.22), rgba(184, 134, 11, 0.22));
+  color: #f0b429;
 }
 
-.archive-banner-text {
-  flex: 1;
+.events-tab-count {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+.events-add-btn {
+  position: absolute;
+  right: 0;
+  padding: 9px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.events-add-btn:hover {
+  border-color: #f0b429;
+  color: #f0b429;
+}
+
+.events-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.events-empty {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 16px;
+}
+
+.events-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+
+.events-grid > div {
+  flex: 1 1 340px;
+  max-width: 380px;
+}
+
+.events-viewall {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 32px auto 0;
+  padding: 12px 24px;
+  width: fit-content;
+  border-radius: 100px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.events-viewall:hover {
+  border-color: #f0b429;
+  transform: translateY(-2px);
+}
+
+.events-viewall svg { transition: transform 0.2s ease; }
+.events-viewall:hover svg { transform: translateX(3px); }
+
+/* Upcoming card's PDF-brochure cover fallback (image brochures render as a
+   real <img> instead, via the shared .ct-card-cover* classes). */
+.ue-doc-cover {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  text-align: left;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--ct-accent, #8892b0) 22%, var(--bg-base)) 0%, var(--bg-base) 75%);
 }
 
-.archive-banner-title {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.01em;
-}
+.ue-doc-icon { font-size: 44px; }
 
-.archive-banner-sub {
-  font-size: 13.5px;
+.ue-doc-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   color: var(--text-secondary);
 }
 
-.archive-banner-arrow {
-  flex-shrink: 0;
+/* Upcoming variant of the shared .ct-card-status-pill — same position/shape,
+   blue instead of green. */
+.ct-card-status-pill--upcoming {
+  background: var(--sport-pickleball);
+  color: #04121c;
+}
+
+@media (max-width: 640px) {
+  .events-tabbar { flex-direction: column; gap: 14px; }
+  .events-add-btn { position: static; }
+}
+
+@media (max-width: 430px) {
+  .events-section { padding: 0 16px 90px; }
+  .events-title { font-size: 26px; }
+}
+
+/* ── Add Upcoming Event modal ────────────────────────────
+   No pre-existing modal pattern lives in this file's neighborhood to reuse,
+   so this is a new, minimal treatment built from the same tokens/radii as
+   everything else here — not a third visual language. */
+.ue-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(4, 4, 14, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ue-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+}
+
+.ue-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ue-modal-head h3 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ue-modal-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ue-modal-close:hover { color: var(--text-primary); }
+
+.ue-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px 24px;
+}
+
+.ue-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ue-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ue-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.ue-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+}
+
+.ue-input:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.ue-textarea { resize: vertical; min-height: 64px; }
+
+.ue-file-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.ue-hint {
+  font-size: 11.5px;
   color: var(--text-muted);
-  transition: transform 0.2s ease, color 0.2s ease;
+  line-height: 1.5;
 }
 
-.archive-banner:hover .archive-banner-arrow {
-  transform: translateX(4px);
-  color: #d4a336;
+.ue-error {
+  padding: 10px 14px;
+  border-radius: 9px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: #f87171;
+  font-size: 13px;
 }
 
-@media (max-width: 600px) {
-  .archive-banner { padding: 18px 20px; gap: 14px; }
-  .archive-banner-icon { font-size: 26px; }
-  .archive-banner-title { font-size: 15px; }
-  .archive-banner-sub { font-size: 12.5px; }
+.ue-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.ue-btn-ghost, .ue-btn-primary {
+  padding: 10px 20px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ue-btn-ghost {
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.ue-btn-primary {
+  border: none;
+  background: linear-gradient(135deg, #f0b429, #b8860b);
+  color: #1a1305;
+}
+
+.ue-btn-primary:disabled, .ue-btn-ghost:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .ue-field-row { grid-template-columns: 1fr; }
 }
 
 /* ── Footer ───────────────────────────────────────────── */

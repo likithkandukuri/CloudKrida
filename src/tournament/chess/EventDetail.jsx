@@ -1,12 +1,78 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useChess } from './ChessContext.jsx'
 import { computeStandings } from './pointsUtils.js'
 import { removePlayerFromPairing } from './utils.js'
+import { uploadBrochureFile, removeBrochureFile } from '../services/upcomingEvents.js'
 import PointsTournament from './PointsTournament.jsx'
 import BracketView from './BracketView.jsx'
 import DisplayMode from './DisplayMode.jsx'
 import EventDisplay from './EventDisplay.jsx'
+
+const BROCHURE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf']
+
+// Superadmin-only brochure attach/replace/remove for a Chess event — the one
+// admin surface this feature needs on the existing event-management page.
+// Storage upload uses the shared uploadBrochureFile()/removeBrochureFile()
+// helpers (services/upcomingEvents.js); persisting the URL reuses the
+// existing updateEvent() context method (already whitelist-extended for the
+// new brochure_* columns in db.js) rather than adding a new write path.
+function EventBrochureControl({ event, onUpdate }) {
+  const fileRef = useRef()
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleFile = async (file) => {
+    if (!file) return
+    if (!BROCHURE_TYPES.includes(file.type)) { setError('Use JPG, PNG, WEBP, or PDF.'); return }
+    setUploading(true)
+    setError(null)
+    try {
+      const brochure = await uploadBrochureFile(event.id, file)
+      await onUpdate(event.id, brochure)
+    } catch (err) {
+      setError(err?.message ?? 'Upload failed.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRemove = async () => {
+    if (!confirm('Remove this brochure?')) return
+    await removeBrochureFile(event.brochurePath)
+    await onUpdate(event.id, { brochurePath: null, brochureUrl: null, brochureUploadedAt: null })
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
+      <input
+        ref={fileRef}
+        type="file"
+        accept={BROCHURE_TYPES.join(',')}
+        style={{ display: 'none' }}
+        onChange={e => handleFile(e.target.files?.[0])}
+      />
+      {event.brochureUrl ? (
+        <>
+          <a href={event.brochureUrl} target="_blank" rel="noopener noreferrer" className="topbar-btn" style={{ fontSize: 12 }}>
+            📄 View Brochure
+          </a>
+          <button className="topbar-btn" style={{ fontSize: 12 }} onClick={() => fileRef.current?.click()} disabled={uploading}>
+            {uploading ? 'Uploading…' : 'Replace'}
+          </button>
+          <button className="topbar-btn" style={{ fontSize: 12, color: 'var(--cc-warn)' }} onClick={handleRemove}>
+            Remove
+          </button>
+        </>
+      ) : (
+        <button className="topbar-btn topbar-btn--gold" style={{ fontSize: 12 }} onClick={() => fileRef.current?.click()} disabled={uploading}>
+          {uploading ? 'Uploading…' : '📄 Add Brochure'}
+        </button>
+      )}
+      {error && <span style={{ fontSize: 12, color: 'var(--cc-warn)' }}>{error}</span>}
+    </div>
+  )
+}
 
 const SECTION_ORDER = [
   'Kindergarten - 2nd Grade',
@@ -35,6 +101,7 @@ export default function EventDetail({ event, isSuperAdmin, canUploadPhotos, canD
     activeTournamentId, setActiveTournamentId,
     activeTournament,
     updateTournament,
+    updateEvent,
   } = useChess()
 
   const [sectionDisplayOpen, setSectionDisplayOpen] = useState(false)
@@ -87,6 +154,10 @@ export default function EventDetail({ event, isSuperAdmin, canUploadPhotos, canD
             {sections.length} section{sections.length !== 1 ? 's' : ''}
           </span>
         </div>
+
+        {isSuperAdmin && (
+          <EventBrochureControl event={event} onUpdate={(id, partial) => updateEvent(id, partial)} />
+        )}
       </div>
 
       {/* Section tabs + Event Display button */}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useAuth } from '../../auth/AuthContext.jsx'
 import { usePickleball } from './PickleballContext.jsx'
 import { computePickleballStandings } from './pickleballStandings.js'
@@ -13,6 +13,69 @@ import {
   formatGames, entrantLabel, formatDate,
 } from './pickleballDisplay.js'
 import { validateDeleteConfirmation } from './pickleballValidation.js'
+import { uploadBrochureFile, removeBrochureFile } from '../services/upcomingEvents.js'
+
+const BROCHURE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf']
+
+// Superadmin-only brochure attach/replace/remove for a Pickleball
+// tournament — mirrors EventDetail.jsx's Chess-side control exactly, same
+// shared storage helpers, same "reuse the existing updateTournament()
+// write path" approach (its whitelist was already extended for the new
+// brochure_* columns in pickleballDb.js).
+function PickleballBrochureControl({ tournament, onUpdate }) {
+  const fileRef = useRef()
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleFile = async (file) => {
+    if (!file) return
+    if (!BROCHURE_TYPES.includes(file.type)) { setError('Use JPG, PNG, WEBP, or PDF.'); return }
+    setUploading(true)
+    setError(null)
+    try {
+      const brochure = await uploadBrochureFile(tournament.id, file)
+      await onUpdate(tournament.id, brochure)
+    } catch (err) {
+      setError(err?.message ?? 'Upload failed.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRemove = async () => {
+    if (!confirm('Remove this brochure?')) return
+    await removeBrochureFile(tournament.brochurePath)
+    await onUpdate(tournament.id, { brochurePath: null, brochureUrl: null, brochureUploadedAt: null })
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+      <input
+        ref={fileRef}
+        type="file"
+        accept={BROCHURE_TYPES.join(',')}
+        style={{ display: 'none' }}
+        onChange={e => handleFile(e.target.files?.[0])}
+      />
+      {tournament.brochureUrl ? (
+        <>
+          <a href={tournament.brochureUrl} target="_blank" rel="noopener noreferrer" className="pb-btn-small pb-btn-small--ghost">
+            📄 Brochure
+          </a>
+          <button className="pb-btn-small pb-btn-small--ghost" onClick={() => fileRef.current?.click()} disabled={uploading}>
+            {uploading ? '…' : 'Replace'}
+          </button>
+          <button className="pb-btn-small pb-btn-small--ghost" onClick={handleRemove}>Remove</button>
+        </>
+      ) : (
+        <button className="pb-btn-small pb-btn-small--ghost" onClick={() => fileRef.current?.click()} disabled={uploading}>
+          {uploading ? 'Uploading…' : '📄 Add Brochure'}
+        </button>
+      )}
+      {error && <span style={{ fontSize: 11, color: '#f87171' }}>{error}</span>}
+    </div>
+  )
+}
 
 const READ_ONLY_TABS = [
   { id: 'pools',     label: 'Pools' },
@@ -113,6 +176,12 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
             )}
           </div>
         </div>
+
+        {isSuperAdmin && !editing && !deleting && (
+          <div style={{ marginTop: 10 }}>
+            <PickleballBrochureControl tournament={t} onUpdate={updateTournament} />
+          </div>
+        )}
 
         {!editing && !deleting && (
           <div className="pb-tabs" role="tablist" aria-label="Tournament sections">

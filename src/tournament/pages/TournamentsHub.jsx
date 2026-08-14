@@ -1,10 +1,16 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import GlobalNav from '../../shared/components/GlobalNav.jsx'
 import GlobalFooter from '../../shared/components/GlobalFooter.jsx'
 import Breadcrumb from '../../shared/components/Breadcrumb.jsx'
 import { usePageMeta } from '../../shared/utilities/usePageMeta.js'
+import { useAuth } from '../../auth/AuthContext.jsx'
+import { fetchCompletedTournaments } from '../services/completedTournaments.js'
+import { fetchUpcomingEvents } from '../services/upcomingEvents.js'
+import CompletedTournamentCard, { SPORT_META, fmtEventDate } from '../components/CompletedTournamentCard.jsx'
+import AddUpcomingEventModal from '../components/AddUpcomingEventModal.jsx'
+import './CompletedTournaments.css'
 import './TournamentsHub.css'
 
 // ── Game data ────────────────────────────────────────────────────────────────
@@ -261,6 +267,194 @@ function ScrollIndicator() {
   )
 }
 
+// ── Upcoming Event Card ──────────────────────────────────────────────────────
+// Deliberately reuses the .ct-card* class family from CompletedTournamentCard
+// (imported via CompletedTournaments.css above) for visual consistency
+// between the two tabs — only the cover treatment and status pill differ.
+// Root is a div with role="link" for the same nested-interactive-content
+// reason as CompletedTournamentCard: the brochure is the card's one
+// destination today, so the whole card opens it, but a future detail link
+// could sit alongside without fighting the outer click target.
+function UpcomingEventCard({ item, index = 0 }) {
+  const meta      = SPORT_META[item.sport] ?? { label: item.sport, glyph: '🏆', accent: '#8892b0' }
+  const dateLabel = fmtEventDate(item.date)
+  const isPdf     = /\.pdf(\?|$)/i.test(item.brochureUrl ?? '')
+
+  const openBrochure = () => { if (item.brochureUrl) window.open(item.brochureUrl, '_blank', 'noopener,noreferrer') }
+  const handleKeyDown = (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && item.brochureUrl) { e.preventDefault(); openBrochure() }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.6, delay: Math.min(index * 0.06, 0.42), ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div
+        className="ct-card"
+        style={{ '--ct-accent': meta.accent }}
+        role={item.brochureUrl ? 'link' : undefined}
+        tabIndex={item.brochureUrl ? 0 : undefined}
+        aria-label={item.brochureUrl ? `${item.name} — View Brochure` : item.name}
+        onClick={item.brochureUrl ? openBrochure : undefined}
+        onKeyDown={handleKeyDown}
+      >
+        <div className="ct-card-cover">
+          {item.brochureUrl && !isPdf ? (
+            <img src={item.brochureUrl} alt="" loading="lazy" />
+          ) : item.brochureUrl && isPdf ? (
+            <div className="ue-doc-cover">
+              <span className="ue-doc-icon">📄</span>
+              <span className="ue-doc-label">PDF Brochure</span>
+            </div>
+          ) : (
+            <div className="ct-card-cover-fallback"><span>{meta.glyph}</span></div>
+          )}
+          <div className="ct-card-cover-shade" />
+          <span className="ct-card-sport-badge">{meta.glyph} {meta.label}</span>
+          <span className="ct-card-status-pill ct-card-status-pill--upcoming">📅 Upcoming</span>
+        </div>
+
+        <div className="ct-card-body">
+          <h3 className="ct-card-title">{item.name}</h3>
+
+          {(dateLabel || item.location) && (
+            <div className="ct-card-meta">
+              {dateLabel && <span className="ct-card-date">📅 {dateLabel}</span>}
+              {item.location && <span className="ct-card-date">📍 {item.location}</span>}
+            </div>
+          )}
+
+          <div className="ct-card-footer">
+            <span className="ct-card-photos">
+              {item.brochureUrl ? 'Brochure available' : 'Details coming soon'}
+            </span>
+            {item.brochureUrl && (
+              <span className="ct-card-cta">
+                View Brochure
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// ── Events Section (homepage's "major secondary feature") ──────────────────
+// One cohesive Events experience — Upcoming and Completed as tabs of the
+// same section, rather than two separate lists. Completed reuses the exact
+// CompletedTournamentCard + fetchCompletedTournaments() the full
+// /tournaments/completed archive already uses (no second competing system);
+// Upcoming is new (fetchUpcomingEvents()). A capped 3-card preview per tab —
+// "View All" only exists for Completed today (Upcoming rarely has more than
+// a couple of entries; easy to add a dedicated page later if that changes).
+function EventsSection() {
+  const navigate = useNavigate()
+  const { isSuperAdmin } = useAuth()
+  const [tab,       setTab]       = useState('upcoming')
+  const [upcoming,   setUpcoming]   = useState([])
+  const [completed,  setCompleted]  = useState([])
+  const [loading,    setLoading]    = useState(true)
+  const [addOpen,    setAddOpen]    = useState(false)
+
+  const loadAll = useCallback(() => {
+    setLoading(true)
+    Promise.all([fetchUpcomingEvents(), fetchCompletedTournaments()])
+      .then(([u, c]) => { setUpcoming(u); setCompleted(c) })
+      .catch(err => console.error('[Krida] EventsSection load:', err))
+      .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => { loadAll() }, [loadAll])
+
+  const items   = tab === 'upcoming' ? upcoming : completed
+  const preview = items.slice(0, 3)
+
+  return (
+    <motion.section
+      className="events-section"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="events-head">
+        <span className="events-eyebrow">EVENTS</span>
+        <h2 className="events-title">Upcoming &amp; Completed Events</h2>
+        <p className="events-sub">
+          Discover what's coming next, and relive the tournaments we've already hosted.
+        </p>
+      </div>
+
+      <div className="events-tabbar">
+        <div className="events-tabs" role="tablist">
+          <button
+            role="tab"
+            aria-selected={tab === 'upcoming'}
+            className={`events-tab ${tab === 'upcoming' ? 'events-tab--active' : ''}`}
+            onClick={() => setTab('upcoming')}
+          >
+            📅 Upcoming <span className="events-tab-count">{upcoming.length}</span>
+          </button>
+          <button
+            role="tab"
+            aria-selected={tab === 'completed'}
+            className={`events-tab ${tab === 'completed' ? 'events-tab--active' : ''}`}
+            onClick={() => setTab('completed')}
+          >
+            🏆 Completed <span className="events-tab-count">{completed.length}</span>
+          </button>
+        </div>
+
+        {isSuperAdmin && tab === 'upcoming' && (
+          <button className="events-add-btn" onClick={() => setAddOpen(true)}>
+            + Add Upcoming Event
+          </button>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="events-loading">
+          <div className="ct-spinner" />
+        </div>
+      ) : preview.length === 0 ? (
+        <div className="events-empty">
+          {tab === 'upcoming'
+            ? 'No upcoming events announced yet.'
+            : 'No completed tournaments yet — check back after the next event wraps up.'}
+        </div>
+      ) : (
+        <div className="events-grid">
+          {preview.map((item, i) => (
+            tab === 'upcoming'
+              ? <UpcomingEventCard key={item.id} item={item} index={i} />
+              : <CompletedTournamentCard key={item.id} item={item} index={i} />
+          ))}
+        </div>
+      )}
+
+      {tab === 'completed' && completed.length > 0 && (
+        <button className="events-viewall" onClick={() => navigate('/tournaments/completed')}>
+          View All Completed Tournaments
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </button>
+      )}
+
+      {addOpen && (
+        <AddUpcomingEventModal onClose={() => setAddOpen(false)} onCreated={loadAll} />
+      )}
+    </motion.section>
+  )
+}
+
 // ── StatBadge ────────────────────────────────────────────────────────────────
 function StatBadge({ value, label, delay }) {
   return (
@@ -380,25 +574,8 @@ export default function TournamentsHub() {
         </div>
       </section>
 
-      {/* ── Completed Tournaments banner ── */}
-      <motion.section
-        className="archive-banner-section"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <button className="archive-banner" onClick={() => navigate('/tournaments/completed')}>
-          <div className="archive-banner-icon">🏆</div>
-          <div className="archive-banner-text">
-            <span className="archive-banner-title">Browse Completed Tournaments</span>
-            <span className="archive-banner-sub">Revisit finished tournaments and their photo galleries</span>
-          </div>
-          <svg className="archive-banner-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </button>
-      </motion.section>
+      {/* ── Events (Upcoming + Completed) ── */}
+      <EventsSection />
 
       {/* ── Footer ── */}
       <GlobalFooter />

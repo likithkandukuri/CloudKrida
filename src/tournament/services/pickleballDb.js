@@ -32,6 +32,9 @@ export function tournamentRowToObj(row) {
     courtCount:    row.court_count ?? null,
     createdAt:     new Date(row.created_at).getTime(),
     updatedAt:     new Date(row.updated_at).getTime(),
+    brochurePath:       row.brochure_path ?? null,
+    brochureUrl:        row.brochure_url  ?? null,
+    brochureUploadedAt: row.brochure_uploaded_at ? new Date(row.brochure_uploaded_at).getTime() : null,
   }
 }
 
@@ -203,6 +206,9 @@ export async function updatePickleballTournament(id, data) {
   if (data.bestOf         !== undefined) u.best_of        = data.bestOf
   if (data.poolSize       !== undefined) u.pool_size      = data.poolSize
   if (data.courtCount     !== undefined) u.court_count    = data.courtCount
+  if (data.brochurePath       !== undefined) u.brochure_path        = data.brochurePath
+  if (data.brochureUrl        !== undefined) u.brochure_url         = data.brochureUrl
+  if (data.brochureUploadedAt !== undefined) u.brochure_uploaded_at = data.brochureUploadedAt
 
   const { data: row, error } = await supabase
     .from('pickleball_tournaments').update(u).eq('id', id).select().single()

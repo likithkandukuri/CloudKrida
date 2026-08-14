@@ -51,12 +51,15 @@ function tournamentRowToMeta(row) {
 
 function eventRowToObj(row, sections = [], gallery = []) {
   return {
-    id:          row.id,
-    name:        row.name,
-    date:        row.date         ?? null,
-    location:    row.location     ?? '',
-    description: row.description  ?? '',
-    createdAt:   new Date(row.created_at).getTime(),
+    id:                  row.id,
+    name:                row.name,
+    date:                row.date         ?? null,
+    location:            row.location     ?? '',
+    description:         row.description  ?? '',
+    createdAt:           new Date(row.created_at).getTime(),
+    brochurePath:        row.brochure_path ?? null,
+    brochureUrl:         row.brochure_url  ?? null,
+    brochureUploadedAt:  row.brochure_uploaded_at ? new Date(row.brochure_uploaded_at).getTime() : null,
     sections, // lightweight tournament metadata (no players/matches)
     gallery,
   }
@@ -193,7 +196,7 @@ export async function deleteTournamentFromDB(id) {
 export async function fetchEventList() {
   const { data: evs, error } = await supabase
     .from('events')
-    .select('id, name, date, location, description, created_at')
+    .select('id, name, date, location, description, created_at, brochure_path, brochure_url, brochure_uploaded_at')
     .order('created_at', { ascending: false })
   if (error) { console.error('[Krida] fetchEventList:', error); return [] }
 
@@ -251,10 +254,13 @@ export async function createEventInDB({ name, date, location, description }) {
 
 export async function updateEventInDB(id, partial) {
   const u = {}
-  if (partial.name        !== undefined) u.name        = partial.name
-  if (partial.date        !== undefined) u.date        = partial.date || null
-  if (partial.location    !== undefined) u.location    = partial.location
-  if (partial.description !== undefined) u.description = partial.description
+  if (partial.name               !== undefined) u.name                  = partial.name
+  if (partial.date               !== undefined) u.date                  = partial.date || null
+  if (partial.location           !== undefined) u.location              = partial.location
+  if (partial.description        !== undefined) u.description           = partial.description
+  if (partial.brochurePath       !== undefined) u.brochure_path         = partial.brochurePath
+  if (partial.brochureUrl        !== undefined) u.brochure_url          = partial.brochureUrl
+  if (partial.brochureUploadedAt !== undefined) u.brochure_uploaded_at  = partial.brochureUploadedAt
   if (!Object.keys(u).length) return
   u.updated_at = new Date().toISOString()
   const { error } = await supabase.from('events').update(u).eq('id', id)

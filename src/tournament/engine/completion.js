@@ -34,6 +34,20 @@ export function isPointsTournamentComplete({ status, currentRound, totalRounds, 
   return isRoundComplete(matches ?? [], round)
 }
 
+// ── Chess: event-level (all sections) ───────────────────────────────────────
+// An event is complete only once every one of its sections is — mirrors
+// TournamentList.jsx's EventCard `allComplete` check (`sections.every(s =>
+// s.status === 'complete')`), generalized to accept any per-section
+// completeness lookup (e.g. computed via isBracketComplete/
+// isPointsTournamentComplete above) rather than only the raw status column,
+// so it stays correct even for sections whose status was never explicitly
+// set. An event with zero sections yet is never "complete" — nothing to be
+// done, so it stays in Upcoming.
+export function isEventComplete(sections, isTournamentComplete) {
+  if (!sections?.length) return false
+  return sections.every(s => isTournamentComplete(s))
+}
+
 // ── Pickleball ───────────────────────────────────────────────────────────────
 // status is already the real, explicit, UI-driven mechanism (set via the
 // "Mark Tournament Complete" action) — kept as a named predicate for

@@ -9,8 +9,11 @@ import Contact from './pages/Contact/Contact'
 import Privacy from './pages/Privacy/Privacy'
 import NotFound from './pages/NotFound/NotFound'
 import TournamentsHub from './tournament/pages/TournamentsHub'
+import CompletedTournaments from './tournament/pages/CompletedTournaments'
 import Chess from './tournament/chess/Chess'
+import ChessGalleryPage from './tournament/chess/ChessGalleryPage'
 import Pickleball from './tournament/pickleball/Pickleball'
+import PickleballGalleryPage from './tournament/pickleball/PickleballGalleryPage'
 import Tennis from './tournament/tennis/Tennis'
 import Darts from './tournament/darts/Darts'
 import SummerClassesHome from './summerClasses/pages/SummerClassesHome'
@@ -40,8 +43,11 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
 
             <Route path="/tournaments"            element={<TournamentsHub />} />
+            <Route path="/tournaments/completed"  element={<CompletedTournaments />} />
             <Route path="/tournaments/chess"      element={<Chess />}          />
+            <Route path="/tournaments/chess/gallery/:tournamentId"      element={<ChessGalleryPage />}      />
             <Route path="/tournaments/pickleball" element={<Pickleball />}     />
+            <Route path="/tournaments/pickleball/gallery/:tournamentId" element={<PickleballGalleryPage />} />
             <Route path="/tournaments/tennis"     element={<Tennis />}         />
             <Route path="/tournaments/darts"      element={<Darts />}          />
 

@@ -380,6 +380,26 @@ export default function TournamentsHub() {
         </div>
       </section>
 
+      {/* ── Completed Tournaments banner ── */}
+      <motion.section
+        className="archive-banner-section"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <button className="archive-banner" onClick={() => navigate('/tournaments/completed')}>
+          <div className="archive-banner-icon">🏆</div>
+          <div className="archive-banner-text">
+            <span className="archive-banner-title">Browse Completed Tournaments</span>
+            <span className="archive-banner-sub">Revisit finished tournaments and their photo galleries</span>
+          </div>
+          <svg className="archive-banner-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </button>
+      </motion.section>
+
       {/* ── Footer ── */}
       <GlobalFooter />
     </div>

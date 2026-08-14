@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '../../shared/utilities/supabase.js'
 
@@ -374,16 +375,24 @@ export default function GalleryView({
         </div>
       )}
 
-      <AnimatePresence>
-        {viewerIndex !== null && visibleGallery.length > 0 && (
+      {/* Rendered via a portal straight to <body> — this is a position:fixed
+          full-screen overlay, and framer-motion's transform styles on
+          ancestor motion.div wrappers create a new CSS stacking context that
+          traps fixed-position descendants inside it (a well-known CSS
+          gotcha), which let the site nav render on top of the lightbox and
+          silently block its close/nav buttons. Same fix already applied in
+          PickleballGalleryView.jsx — mirrored here unchanged. */}
+      {viewerIndex !== null && visibleGallery.length > 0 && createPortal(
+        <AnimatePresence>
           <Viewer
             items={visibleGallery}
             index={Math.min(viewerIndex, visibleGallery.length - 1)}
             onChange={setViewerIndex}
             onClose={() => setViewerIndex(null)}
           />
-        )}
-      </AnimatePresence>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }

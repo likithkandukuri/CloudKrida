@@ -767,6 +767,78 @@
   z-index: -1;
 }
 
+/* ── Completed Tournaments banner ──────────────────────── */
+.archive-banner-section {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+.archive-banner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.25s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.archive-banner:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212, 163, 54, 0.4);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(212, 163, 54, 0.12);
+}
+
+.archive-banner-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.archive-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.archive-banner-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.archive-banner-sub {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.archive-banner-arrow {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.archive-banner:hover .archive-banner-arrow {
+  transform: translateX(4px);
+  color: #d4a336;
+}
+
+@media (max-width: 600px) {
+  .archive-banner { padding: 18px 20px; gap: 14px; }
+  .archive-banner-icon { font-size: 26px; }
+  .archive-banner-title { font-size: 15px; }
+  .archive-banner-sub { font-size: 12.5px; }
+}
+
 /* ── Footer ───────────────────────────────────────────── */
 .footer {
   position: relative;

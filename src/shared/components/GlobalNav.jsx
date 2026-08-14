@@ -36,6 +36,7 @@ const SECTION_LINKS = {
     { label: 'Tournament Management', path: '/tournaments',          exact: true  },
     { label: 'Chess',                 path: '/tournaments/chess',     exact: false },
     { label: 'Pickleball',            path: '/tournaments/pickleball',exact: false },
+    { label: 'Completed Tournaments', path: '/tournaments/completed', exact: false },
     { label: 'About',                 path: '/about',                exact: false },
     { label: 'Contact',               path: '/contact',              exact: false },
   ],

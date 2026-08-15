@@ -148,9 +148,15 @@ describe('getPoolGenerationState', () => {
 describe('validatePoolMove', () => {
   const e = (id, poolId) => ({ id, poolId })
 
-  it('rejects an entrant with no current pool', () => {
+  it('allows assigning an entrant with no current pool yet (a new team added after pools were generated)', () => {
     const errors = validatePoolMove({ id: 'e1', poolId: null }, 'poolB', [])
-    expect(errors.some(x => x.includes('not currently assigned'))).toBe(true)
+    expect(errors).toEqual([])
+  })
+
+  it('still blocks assigning a never-pooled entrant into a pool that already has scored matches', () => {
+    const matches = [{ poolId: 'poolB', status: 'complete', games: [{ score_a: 11, score_b: 5 }], entrant1: { id: 'e3' }, entrant2: { id: 'e4' } }]
+    const errors = validatePoolMove({ id: 'e1', poolId: null }, 'poolB', matches)
+    expect(errors.some(x => x.includes('target pool'))).toBe(true)
   })
 
   it('rejects moving into the same pool', () => {

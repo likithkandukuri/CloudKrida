@@ -155,13 +155,14 @@ export function getBracketGenerationState(elimMatches) {
 // current pool, or the target pool has ANY scored match — moving into/out
 // of a pool with live results would corrupt standings history, same
 // "never silently overwrite scored data" principle as pool regeneration.
+//
+// entrant.poolId may be null — a new entrant added after pools were already
+// generated has no pool yet, and this is also how it gets its first
+// assignment (there is no separate "assign" vs "move" operation; assigning
+// is just a move with no old pool to check for scored matches).
 export function validatePoolMove(entrant, targetPoolId, poolMatches) {
   const errors = []
-  if (!entrant?.poolId) {
-    errors.push('This entrant is not currently assigned to a pool.')
-    return errors
-  }
-  if (entrant.poolId === targetPoolId) {
+  if (entrant?.poolId && entrant.poolId === targetPoolId) {
     errors.push('Entrant is already in that pool.')
     return errors
   }

@@ -132,16 +132,16 @@ export default function PickleballEntrantsTab({ tournament }) {
                 disabled={busyId === entrant.id}
                 aria-label={`Seed for ${entrant.displayName}`}
               />
-              {entrant.poolId && pools.length > 1 && (
+              {pools.length > 0 && (entrant.poolId ? pools.length > 1 : true) && (
                 <select
                   className="pb-select"
                   style={{ fontSize: 12, padding: '4px 6px' }}
                   value=""
                   onChange={e => handleMovePool(entrant, e.target.value)}
                   disabled={busyId === entrant.id}
-                  aria-label={`Move ${entrant.displayName} to a different pool`}
+                  aria-label={entrant.poolId ? `Move ${entrant.displayName} to a different pool` : `Assign ${entrant.displayName} to a pool`}
                 >
-                  <option value="">Move to Pool…</option>
+                  <option value="">{entrant.poolId ? 'Move to Pool…' : 'Assign to Pool…'}</option>
                   {pools.filter(p => p.id !== entrant.poolId).map(p => (
                     <option key={p.id} value={p.id}>{p.label}</option>
                   ))}

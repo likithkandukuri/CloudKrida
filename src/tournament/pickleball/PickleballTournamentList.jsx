@@ -2,11 +2,12 @@ import { motion } from 'framer-motion'
 import { usePickleball } from './PickleballContext.jsx'
 import { STATUS_LABELS, EVENT_TYPE_LABELS, FORMAT_LABELS } from './pickleballDisplay.js'
 
-export default function PickleballTournamentList({ onOpen, onCreate }) {
+export default function PickleballTournamentList({ onOpen, onCreate, onBack }) {
   const { tournaments, dataLoading, loadError } = usePickleball()
 
   return (
     <div className="pb-section pb-container" style={{ paddingTop: 150 }}>
+      {onBack && <button className="pb-back" onClick={onBack}>← Back to Pickleball</button>}
       <div className="pb-section-head">
         <div className="pb-section-title">All Tournaments</div>
         {onCreate && <button className="pb-btn-primary" onClick={onCreate}>+ Create Tournament</button>}

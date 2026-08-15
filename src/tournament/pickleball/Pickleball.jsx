@@ -41,17 +41,13 @@ function PickleballShell() {
 
   // Pickleball is a single route with internal view-state (same convention Chess
   // established) — a "Pickleball" crumb pointing at /tournaments/pickleball would
-  // be a dead link while already on that URL, so the middle crumb stays
-  // non-clickable; the "← Back" controls in each view handle in-page navigation.
-  const trail = view === 'dashboard'
-    ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }]
-    : view === 'tournaments'
-      ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Tournaments' }]
-      : view === 'create'
-        ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'New Tournament' }]
-        : view === 'import'
-          ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Import Tournament Plan' }]
-          : [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Tournament' }]
+  // be a dead link while already on that URL, so it stays non-clickable. The
+  // global breadcrumb only ever needs to express the hierarchy down to
+  // "Pickleball" itself (it still provides the route back up to Tournament
+  // Management); it does not grow a deeper segment per internal view — the
+  // "← Back to Pickleball" / "← Back to Tournaments" controls in each view
+  // handle that finer in-page navigation instead.
+  const trail = [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }]
 
   return (
     <div className="pb-page">
@@ -60,19 +56,23 @@ function PickleballShell() {
 
       {view === 'dashboard' && (
         <PickleballDashboard
-          onBrowse={() => setView('tournaments')}
+          onViewTournaments={() => setView('tournaments')}
           onCreate={isSuperAdmin ? () => setView('create') : null}
           onImport={isSuperAdmin ? () => setView('import') : null}
         />
       )}
       {view === 'tournaments' && (
-        <PickleballTournamentList onOpen={openTournament} onCreate={isSuperAdmin ? () => setView('create') : null} />
+        <PickleballTournamentList
+          onOpen={openTournament}
+          onCreate={isSuperAdmin ? () => setView('create') : null}
+          onBack={() => setView('dashboard')}
+        />
       )}
       {view === 'create' && (
         <div className="pb-section pb-container" style={{ paddingTop: 150 }}>
-          <button className="pb-back" onClick={() => setView('tournaments')}>← Back to Tournaments</button>
+          <button className="pb-back" onClick={() => setView('dashboard')}>← Back to Pickleball</button>
           {isSuperAdmin ? (
-            <PickleballTournamentForm onSubmit={handleCreate} onCancel={() => setView('tournaments')} />
+            <PickleballTournamentForm onSubmit={handleCreate} onCancel={() => setView('dashboard')} />
           ) : (
             <div className="pb-state">
               <div className="pb-state-icon">🔒</div>
@@ -84,6 +84,7 @@ function PickleballShell() {
       )}
       {view === 'import' && (
         <div className="pb-section pb-container" style={{ paddingTop: 150 }}>
+          <button className="pb-back" onClick={() => setView('dashboard')}>← Back to Pickleball</button>
           {isSuperAdmin ? (
             <PickleballImportWizard onCancel={() => setView('dashboard')} onCreated={openTournament} />
           ) : (

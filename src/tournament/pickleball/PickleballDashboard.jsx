@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { usePickleball } from './PickleballContext.jsx'
 
-export default function PickleballDashboard({ onBrowse, onCreate, onImport }) {
+export default function PickleballDashboard({ onViewTournaments, onCreate, onImport }) {
   const { tournaments, dataLoading, loadError } = usePickleball()
 
   const openCount     = tournaments.filter(t => t.status === 'registration_open').length
@@ -51,49 +51,35 @@ export default function PickleballDashboard({ onBrowse, onCreate, onImport }) {
               </div>
             </div>
           )}
-
-          <div style={{ marginTop: 28, display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button
-              onClick={onBrowse}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'inherit',
-                padding: '13px 28px', borderRadius: 12, border: 'none',
-                background: 'linear-gradient(135deg, #22e0c4, #0d9488)', color: '#031321',
-                fontSize: 14.5, fontWeight: 700,
-                boxShadow: '0 0 26px rgba(34, 224, 196,0.3)',
-              }}
-            >
-              Browse Tournaments
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
-            {onCreate && (
-              <button className="pb-btn-ghost" onClick={onCreate}>+ Create Tournament</button>
-            )}
-          </div>
         </motion.div>
       </div>
 
       <div className="pb-container">
-        {(onCreate || onImport) && (
-          <div className="pb-import-feature-grid">
-            {onCreate && (
-              <button className="pb-import-feature-card" onClick={onCreate}>
-                <div className="pb-import-feature-icon">🏓</div>
-                <div className="pb-import-feature-title">Create Tournament</div>
-                <div className="pb-import-feature-desc">Set up a new Pickleball tournament from scratch — event type, format, scoring, and pool/bracket configuration.</div>
-              </button>
-            )}
-            {onImport && (
-              <button className="pb-import-feature-card pb-import-feature-card--import" onClick={onImport}>
-                <div className="pb-import-feature-icon">📄</div>
-                <div className="pb-import-feature-title">Import Tournament Plan</div>
-                <div className="pb-import-feature-desc">Upload an official tournament plan PDF and let Cloud Krida analyze the rules, teams, groups, schedule, courts, and tournament structure before creating the tournament.</div>
-              </button>
-            )}
-          </div>
-        )}
+        <div className="pb-import-feature-grid">
+          <button className="pb-import-feature-card" onClick={onViewTournaments}>
+            <div className="pb-import-feature-icon">🏆</div>
+            <div className="pb-import-feature-title">View Tournaments</div>
+            <div className="pb-import-feature-desc">
+              {tournaments.length > 0
+                ? `${tournaments.length} tournament${tournaments.length !== 1 ? 's' : ''} — open a bracket, manage teams and pools, or check standings.`
+                : 'Browse all tournaments and open any bracket or schedule.'}
+            </div>
+          </button>
+          {onCreate && (
+            <button className="pb-import-feature-card" onClick={onCreate}>
+              <div className="pb-import-feature-icon">🏓</div>
+              <div className="pb-import-feature-title">Create Tournament</div>
+              <div className="pb-import-feature-desc">Set up a new Pickleball tournament from scratch — event type, format, scoring, and pool/bracket configuration.</div>
+            </button>
+          )}
+          {onImport && (
+            <button className="pb-import-feature-card pb-import-feature-card--import" onClick={onImport}>
+              <div className="pb-import-feature-icon">📄</div>
+              <div className="pb-import-feature-title">Import Tournament Plan</div>
+              <div className="pb-import-feature-desc">Upload an official tournament plan PDF and let Cloud Krida analyze the rules, teams, groups, schedule, courts, and tournament structure before creating the tournament.</div>
+            </button>
+          )}
+        </div>
 
         <div className="pb-notice">
           🔨 Live court scheduling with timers is coming in a later phase — tournaments, pools, brackets, scoring, and PDF import can all be managed now.

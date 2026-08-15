@@ -801,6 +801,262 @@
 .pb-gallery-viewer-nav--prev { left: 20px; }
 .pb-gallery-viewer-nav--next { right: 20px; }
 
+/* ── PDF Tournament Importer — homepage feature cards ─────────────────────
+   Visually distinct from the plain "+ Create Tournament" ghost button
+   already in the hero above (left completely untouched) — these are the
+   two first-class cards the spec asks for, Import styled as the more
+   "premium/new" of the pair via the teal-tinted variant. */
+.pb-import-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 8px 0 28px;
+}
+
+.pb-import-feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 8px;
+  padding: 22px 22px 20px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+
+.pb-import-feature-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glow);
+}
+
+.pb-import-feature-card--import {
+  border-color: rgba(34, 224, 196, 0.28);
+  background: rgba(34, 224, 196, 0.05);
+}
+
+.pb-import-feature-card--import:hover {
+  border-color: var(--sport-pickleball);
+  background: rgba(34, 224, 196, 0.09);
+}
+
+.pb-import-feature-icon { font-size: 28px; }
+.pb-import-feature-title { font-size: 16px; font-weight: 800; }
+.pb-import-feature-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+
+/* ── Import wizard shell ──────────────────────────────── */
+.pb-import-wizard { max-width: 980px; margin: 0 auto; }
+
+/* ── Progress indicator ───────────────────────────────── */
+.pb-import-progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: 36px;
+}
+
+.pb-import-progress-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.pb-import-progress-dot {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.pb-import-progress-step--active .pb-import-progress-dot {
+  border-color: var(--sport-pickleball);
+  color: var(--sport-pickleball);
+  box-shadow: 0 0 0 4px rgba(34, 224, 196, 0.14);
+}
+
+.pb-import-progress-step--done .pb-import-progress-dot {
+  background: var(--sport-pickleball);
+  border-color: var(--sport-pickleball);
+  color: #031321;
+}
+
+.pb-import-progress-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.pb-import-progress-step--active .pb-import-progress-label,
+.pb-import-progress-step--done .pb-import-progress-label { color: var(--text-primary); }
+
+.pb-import-progress-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border-subtle);
+  margin: 0 4px;
+}
+
+/* ── Upload step ──────────────────────────────────────── */
+.pb-import-upload-zone {
+  border: 2px dashed var(--border-subtle);
+  border-radius: 14px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 20px;
+}
+
+.pb-import-upload-zone:hover,
+.pb-import-upload-zone--drag {
+  border-color: var(--sport-pickleball);
+  background: var(--bg-surface);
+}
+
+.pb-import-upload-icon { font-size: 42px; margin-bottom: 12px; }
+
+.pb-import-file-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
+}
+
+.pb-import-file-icon { font-size: 26px; }
+.pb-import-file-info { flex: 1; min-width: 0; }
+.pb-import-file-name { font-weight: 700; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pb-import-file-meta { font-size: 12px; color: var(--text-secondary); }
+
+/* ── Review screen ────────────────────────────────────── */
+.pb-import-section { margin-bottom: 20px; }
+.pb-import-section-title { font-size: 15px; font-weight: 800; margin-bottom: 14px; }
+.pb-import-section-hint { font-size: 12.5px; color: var(--text-secondary); margin: -8px 0 14px; line-height: 1.5; }
+
+.pb-import-rule-value { font-size: 14px; font-weight: 600; padding: 8px 0 2px; }
+.pb-import-rule-source { font-size: 11.5px; color: var(--text-muted); line-height: 1.4; }
+.pb-import-rule-source--unspecified { font-style: italic; }
+
+.pb-import-raw-text {
+  margin-top: 16px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+.pb-import-raw-text summary { cursor: pointer; font-weight: 600; }
+.pb-import-raw-text pre {
+  white-space: pre-wrap;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  font-family: inherit;
+  line-height: 1.6;
+}
+
+/* ── Validation summary ───────────────────────────────── */
+.pb-import-validation-summary {
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  margin-bottom: 24px;
+}
+
+.pb-import-validation-summary--clean { border-color: rgba(74, 222, 128, 0.3); background: rgba(74, 222, 128, 0.06); }
+.pb-import-validation-summary--warning { border-color: rgba(251, 191, 36, 0.3); background: rgba(251, 191, 36, 0.05); }
+.pb-import-validation-summary--error { border-color: rgba(248, 113, 113, 0.35); background: rgba(248, 113, 113, 0.06); }
+
+.pb-import-validation-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.pb-import-validation-counts strong { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.pb-import-count--error strong { color: #f87171; }
+.pb-import-count--warning strong { color: #fbbf24; }
+
+.pb-import-validation-clean { margin-top: 10px; font-size: 13px; color: #4ade80; font-weight: 600; }
+
+.pb-import-issue-list { margin: 12px 0 0 4px; padding-left: 18px; font-size: 13px; line-height: 1.7; }
+.pb-import-issue-list--error { color: #f87171; }
+.pb-import-issue-list--warning { color: #fbbf24; }
+
+/* ── Groups / teams ───────────────────────────────────── */
+.pb-import-group { margin-bottom: 18px; }
+.pb-import-group-head { font-size: 13px; font-weight: 700; color: var(--sport-pickleball); margin-bottom: 8px; }
+
+.pb-import-team-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.pb-import-team-row .pb-input { flex: 1; }
+
+.pb-import-row--error { outline: 1px solid rgba(248, 113, 113, 0.5); border-radius: 8px; }
+.pb-import-row--warning { outline: 1px solid rgba(251, 191, 36, 0.5); border-radius: 8px; }
+
+/* ── Schedule table ───────────────────────────────────── */
+.pb-import-schedule-scroll { overflow-x: auto; }
+.pb-import-schedule-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.pb-import-schedule-table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+.pb-import-schedule-table td {
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+.pb-import-cell-input { padding: 5px 8px; font-size: 12.5px; min-width: 64px; }
+
+/* ── Knockout structure ───────────────────────────────── */
+.pb-import-knockout-diagram {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.pb-import-knockout-arrow { color: var(--text-muted); }
+
+.pb-import-qf-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pb-import-qf-ref { display: flex; align-items: center; gap: 6px; }
+
+/* ── Final actions ────────────────────────────────────── */
+.pb-import-final-actions { align-items: center; }
+.pb-import-blocked-hint { font-size: 12.5px; color: #f87171; }
+
 /* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 768px) {
   .pb-detail-header { padding-top: 128px; }
@@ -812,4 +1068,6 @@
   .pb-container, .pb-section, .pb-hero, .pb-detail-header { padding-left: 16px; padding-right: 16px; }
   .pb-stat-grid { grid-template-columns: repeat(2, 1fr); }
   .pb-history-row, .pb-schedule-row { flex-direction: column; align-items: flex-start; }
+  .pb-import-progress-label { display: none; }
+  .pb-import-feature-grid { grid-template-columns: 1fr; }
 }

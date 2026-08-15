@@ -12,10 +12,12 @@ import {
   movePickleballEntrantToPool,
   togglePickleballMatchLock, swapPickleballBracketEntrants,
   assignPickleballMatchBye, removePickleballMatchBye,
+  importPickleballTournament,
 } from '../services/pickleballDb.js'
 import { generatePoolAssignments, generatePoolMatches } from './pickleballPools.js'
 import { computeMatchOutcome } from './pickleballScoring.js'
-import { computeBracketSeeds, generateBracketRows } from './pickleballBracket.js'
+import { computeBracketSeeds, generateBracketRows, generateBracketRowsFromMapping } from './pickleballBracket.js'
+import { computePickleballStandings } from './pickleballStandings.js'
 
 // Mirrors ChessContext.jsx's data-flow pattern (lazy-hydrate on activation,
 // Realtime scoped to the active tournament). Write callbacks are thin
@@ -285,6 +287,40 @@ export function PickleballProvider({ children }) {
     await reloadActiveTournament()
   }, [reloadActiveTournament])
 
+  // ── PDF Tournament Importer (Superadmin only, enforced by RLS + the RPC's
+  // own explicit is_superadmin() check) ──────────────────────────────────────
+  // The one write the import wizard's final step performs — see
+  // pickleballImportMapping.js for how a reviewed draft becomes `payload`,
+  // and migration 017 for why this is one atomic RPC call rather than a
+  // sequence of the create/addEntrant/generatePools calls above (a failure
+  // partway through those would leave a half-created tournament; this can't).
+  const importTournament = useCallback(async (payload) => {
+    const id = await importPickleballTournament(payload)
+    const list = await fetchPickleballTournamentList()
+    setTournaments(list)
+    return id
+  }, [])
+
+  // Consumes an imported tournament's stored advancement_mapping once league
+  // play has actually finished — resolves each quarterfinal slot from the
+  // document's own pool-cross mapping (not a generic seeded bracket) via
+  // generateBracketRowsFromMapping, computing each pool's own standings
+  // in-place with the existing, unmodified computePickleballStandings, then
+  // persists through the same generatePickleballBracket RPC the manual
+  // seeded-bracket flow already uses.
+  const importBracketFromMapping = useCallback(async (tournamentId, mapping, pools, entrants, poolMatches) => {
+    const standingsByLabel = {}
+    for (const pool of pools ?? []) {
+      const poolEntrants = (entrants ?? []).filter(e => e.poolId === pool.id)
+      const matchesInPool = (poolMatches ?? []).filter(m => m.poolId === pool.id)
+      const label = pool.label.replace(/^Pool\s+/i, '') // "Pool A" -> "A", matching the mapping's group codes
+      standingsByLabel[label] = computePickleballStandings(poolEntrants, matchesInPool)
+    }
+    const rows = generateBracketRowsFromMapping(mapping, standingsByLabel)
+    await generatePickleballBracket(tournamentId, rows, false)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
   return (
     <PickleballCtx.Provider value={{
       tournaments, dataLoading, loadError, detailLoading,
@@ -297,6 +333,7 @@ export function PickleballProvider({ children }) {
       scoreMatch, generateBracket,
       uploadGalleryFile, deleteGalleryItem,
       toggleMatchLock, swapBracketEntrants, assignMatchBye, removeMatchBye,
+      importTournament, importBracketFromMapping,
     }}>
       {children}
     </PickleballCtx.Provider>

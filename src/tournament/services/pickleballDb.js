@@ -35,6 +35,9 @@ export function tournamentRowToObj(row) {
     brochurePath:       row.brochure_path ?? null,
     brochureUrl:        row.brochure_url  ?? null,
     brochureUploadedAt: row.brochure_uploaded_at ? new Date(row.brochure_uploaded_at).getTime() : null,
+    // PDF importer (migration 017) — null for every organically-created tournament.
+    advancementMapping: row.advancement_mapping ?? null,
+    importedRules:      row.imported_rules ?? null,
   }
 }
 
@@ -528,4 +531,29 @@ export async function generatePickleballBracket(tournamentId, rows, forceRegener
   })
   if (error) { console.error('[Krida/Pickleball] generateBracket:', error); throw error }
   return data
+}
+
+// ── PDF Tournament Importer ──────────────────────────────────────────────────
+// Thin wrapper around import_pickleball_tournament (migration 017) — the one
+// write the import wizard's final "Create Tournament" step performs. The
+// payload (already shaped as { p_tournament, p_players, p_entrants, p_courts,
+// p_pools, p_matches } with temp_id cross-references) comes from
+// pickleballImportMapping.js's toImportPayload(). The whole thing is one
+// Postgres function call, so it either creates the complete tournament or
+// creates nothing — see the migration's own header comment for why this is a
+// dedicated RPC rather than a client-side sequence of the existing
+// create/addEntrant/generatePools calls.
+export async function importPickleballTournament(payload) {
+  const { data, error } = await supabase.rpc('import_pickleball_tournament', payload)
+  if (error) { console.error('[Krida/Pickleball] importTournament:', error); throw error }
+  return data // new tournament id
+}
+
+// pickleball_matches.scheduled_at has existed since the original schema
+// (005) but had no setter anywhere until the importer needed to preserve a
+// document's printed match times — plain UPDATE, no RPC needed, exactly like
+// the existing togglePickleballMatchLock.
+export async function updatePickleballMatchSchedule(matchId, scheduledAt) {
+  const { error } = await supabase.from('pickleball_matches').update({ scheduled_at: scheduledAt }).eq('id', matchId)
+  if (error) { console.error('[Krida/Pickleball] updateMatchSchedule:', error); throw error }
 }

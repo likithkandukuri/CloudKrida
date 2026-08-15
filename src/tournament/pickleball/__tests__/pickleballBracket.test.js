@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeBracketSeeds, generateBracketRows } from '../pickleballBracket.js'
+import { computeBracketSeeds, generateBracketRows, generateBracketRowsFromMapping } from '../pickleballBracket.js'
 
 const seeds = (n) => Array.from({ length: n }, (_, i) => `seed${i + 1}`) // seed1 = strongest
 
@@ -77,5 +77,59 @@ describe('computeBracketSeeds — cross-pool overall ranking', () => {
     expect(seedOrder).toContain('e1')
     expect(seedOrder).toContain('e2')
     expect(seedOrder).toHaveLength(3)
+  })
+})
+
+describe('generateBracketRowsFromMapping — PDF-import advancement mapping (e.g. the real ATA QF pairing)', () => {
+  // Standings shaped exactly like the real ATA QF mapping: QFB1 vs QFC2,
+  // QFB2 vs QFC1, QFA1 vs QFD2, QFA2 vs QFD1 — a pool-cross mapping, not
+  // generateBracketRows' own "seed 1 vs seed 8" pattern.
+  const poolStandingsByLabel = {
+    A: [{ id: 'A1' }, { id: 'A2' }, { id: 'A3' }],
+    B: [{ id: 'B1' }, { id: 'B2' }, { id: 'B3' }],
+    C: [{ id: 'C1' }, { id: 'C2' }, { id: 'C3' }],
+    D: [{ id: 'D1' }, { id: 'D2' }, { id: 'D3' }],
+  }
+  const ataMapping = {
+    quarterfinals: [
+      { slot: 0, team1Ref: { group: 'B', rank: 1 }, team2Ref: { group: 'C', rank: 2 } },
+      { slot: 1, team1Ref: { group: 'B', rank: 2 }, team2Ref: { group: 'C', rank: 1 } },
+      { slot: 2, team1Ref: { group: 'A', rank: 1 }, team2Ref: { group: 'D', rank: 2 } },
+      { slot: 3, team1Ref: { group: 'A', rank: 2 }, team2Ref: { group: 'D', rank: 1 } },
+    ],
+  }
+
+  it('resolves each QF slot from the mapping, not a generic seed placement', () => {
+    const rows = generateBracketRowsFromMapping(ataMapping, poolStandingsByLabel)
+    const r0 = rows.filter(r => r.round === 0).sort((a, b) => a.slot - b.slot)
+    expect(r0.map(r => [r.entrant1Id, r.entrant2Id])).toEqual([
+      ['B1', 'C2'],
+      ['B2', 'C1'],
+      ['A1', 'D2'],
+      ['A2', 'D1'],
+    ])
+    expect(r0.every(r => r.status === 'pending')).toBe(true)
+  })
+
+  it('builds the correct downstream SF + Final shell (4 QF -> 2 SF -> 1 F = 7 rows total)', () => {
+    const rows = generateBracketRowsFromMapping(ataMapping, poolStandingsByLabel)
+    expect(rows).toHaveLength(7)
+    expect(rows.filter(r => r.round === 1)).toHaveLength(2)
+    expect(rows.filter(r => r.round === 2)).toHaveLength(1)
+    // Downstream rounds are genuinely empty until real QF results advance into them
+    expect(rows.filter(r => r.round > 0).every(r => r.entrant1Id === null && r.entrant2Id === null)).toBe(true)
+  })
+
+  it('throws if a referenced pool/rank has no matching standings entry', () => {
+    const badMapping = { quarterfinals: [
+      ...ataMapping.quarterfinals.slice(0, 3),
+      { slot: 3, team1Ref: { group: 'A', rank: 2 }, team2Ref: { group: 'D', rank: 9 } }, // rank 9 doesn't exist
+    ] }
+    expect(() => generateBracketRowsFromMapping(badMapping, poolStandingsByLabel)).toThrow(/rank 9/)
+  })
+
+  it('throws for a non-power-of-2 number of quarterfinal slots', () => {
+    const oddMapping = { quarterfinals: ataMapping.quarterfinals.slice(0, 3) } // 3 QF matches
+    expect(() => generateBracketRowsFromMapping(oddMapping, poolStandingsByLabel)).toThrow(/power-of-2/)
   })
 })

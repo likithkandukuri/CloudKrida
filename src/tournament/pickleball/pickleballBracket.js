@@ -43,6 +43,71 @@ function seedPositions(n) {
 // a real entrant (proof: that seed is always <= size/2, and size/2 < count
 // whenever byes exist) — so this can never produce the "phantom bye"
 // (both seats null) edge case buildBracket has to account for.
+// PDF-import counterpart to generateBracketRows(): instead of computing a
+// generic seeded placement from a single cross-pool ranking, this resolves
+// each round-0 (quarterfinal) slot directly from the document's own explicit
+// pool-cross advancement mapping (e.g. "QF slot 0 = Pool A rank 1 vs Pool D
+// rank 2" — a real ATA example, NOT the standard "seed 1 vs seed 8" pattern
+// generateBracketRows produces) — the plan's mapping is used as printed, not
+// replaced by Cloud Krida's own seeding. Rounds beyond round 0 are built the
+// same empty-shell way generateBracketRows already does, then propagateAll
+// (reused unmodified) resolves any byes — same downstream mechanics, only
+// round 0's origin differs.
+//
+// mapping: { quarterfinals: [{ slot, team1Ref: {group, rank}, team2Ref: {group, rank} }, ...] }
+// poolStandingsByLabel: { [poolLabel]: <computePickleballStandings(...) output for that pool alone> }
+// "group"/"rank" name a pool label and a 1-based finishing position within
+// it — resolved against standings the caller already computed per pool.
+export function generateBracketRowsFromMapping(mapping, poolStandingsByLabel) {
+  const qfs = mapping?.quarterfinals ?? []
+  if (qfs.length < 1) throw new Error('Advancement mapping has no quarterfinal slots')
+
+  const resolve = (ref) => {
+    if (!ref) return null
+    const standings = poolStandingsByLabel[ref.group] ?? []
+    const entrant = standings[ref.rank - 1]
+    if (!entrant) {
+      throw new Error(`Cannot resolve ${ref.group} rank ${ref.rank} — that pool's standings don't have enough entrants yet`)
+    }
+    return { id: entrant.id, name: entrant.id }
+  }
+
+  const count = qfs.length
+  const size = count * 2 // each QF match collapses 2 "slots" worth of the bracket tree
+  if (!Number.isInteger(Math.log2(size))) {
+    throw new Error(`Advancement mapping must have a power-of-2 number of quarterfinal matches (got ${count})`)
+  }
+  const rounds = Math.log2(size)
+
+  const round0 = [...qfs].sort((a, b) => a.slot - b.slot).map(qf => ({
+    round: 0,
+    slot: qf.slot,
+    p1: resolve(qf.team1Ref),
+    p2: resolve(qf.team2Ref),
+    winner: null,
+    status: 'pending',
+  }))
+
+  const laterRounds = []
+  for (let r = 1; r < rounds; r++) {
+    const c = size / Math.pow(2, r + 1)
+    for (let slot = 0; slot < c; slot++) {
+      laterRounds.push({ round: r, slot, p1: null, p2: null, winner: null, status: 'pending' })
+    }
+  }
+
+  const propagated = propagateAll([...round0, ...laterRounds])
+
+  return propagated.map(m => ({
+    round: m.round,
+    slot: m.slot,
+    entrant1Id: m.p1 && m.p1 !== 'BYE' ? m.p1.id : null,
+    entrant2Id: m.p2 && m.p2 !== 'BYE' ? m.p2.id : null,
+    status: m.status,
+    winnerEntrantId: m.winner ?? null,
+  }))
+}
+
 export function generateBracketRows(seedEntrantIds) {
   const count = seedEntrantIds.length
   if (count < 2) throw new Error(`Need at least 2 entrants (got ${count})`)

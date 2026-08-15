@@ -9,6 +9,7 @@ import PickleballDashboard from './PickleballDashboard.jsx'
 import PickleballTournamentList from './PickleballTournamentList.jsx'
 import PickleballTournamentDetail from './PickleballTournamentDetail.jsx'
 import PickleballTournamentForm from './PickleballTournamentForm.jsx'
+import PickleballImportWizard from './import/PickleballImportWizard.jsx'
 import './Pickleball.css'
 
 // One route (/tournaments/pickleball), internal view-state navigation — same
@@ -19,7 +20,7 @@ import './Pickleball.css'
 // limited to gallery uploads (not built for Pickleball yet), Guest is
 // read-only.
 function PickleballShell() {
-  const [view, setView] = useState('dashboard') // 'dashboard' | 'tournaments' | 'create' | 'detail'
+  const [view, setView] = useState('dashboard') // 'dashboard' | 'tournaments' | 'create' | 'import' | 'detail'
   const { setActiveTournamentId, createTournament } = usePickleball()
   const { isSuperAdmin } = useAuth()
 
@@ -48,7 +49,9 @@ function PickleballShell() {
       ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Tournaments' }]
       : view === 'create'
         ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'New Tournament' }]
-        : [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Tournament' }]
+        : view === 'import'
+          ? [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Import Tournament Plan' }]
+          : [{ label: 'Tournament Management', path: '/tournaments' }, { label: 'Pickleball' }, { label: 'Tournament' }]
 
   return (
     <div className="pb-page">
@@ -56,7 +59,11 @@ function PickleballShell() {
       <Breadcrumb trail={trail} />
 
       {view === 'dashboard' && (
-        <PickleballDashboard onBrowse={() => setView('tournaments')} onCreate={isSuperAdmin ? () => setView('create') : null} />
+        <PickleballDashboard
+          onBrowse={() => setView('tournaments')}
+          onCreate={isSuperAdmin ? () => setView('create') : null}
+          onImport={isSuperAdmin ? () => setView('import') : null}
+        />
       )}
       {view === 'tournaments' && (
         <PickleballTournamentList onOpen={openTournament} onCreate={isSuperAdmin ? () => setView('create') : null} />
@@ -75,6 +82,20 @@ function PickleballShell() {
           )}
         </div>
       )}
+      {view === 'import' && (
+        <div className="pb-section pb-container" style={{ paddingTop: 150 }}>
+          {isSuperAdmin ? (
+            <PickleballImportWizard onCancel={() => setView('dashboard')} onCreated={openTournament} />
+          ) : (
+            <div className="pb-state">
+              <div className="pb-state-icon">🔒</div>
+              <div className="pb-state-title">Superadmin Access Required</div>
+              <div className="pb-state-sub">Only a Superadmin can import a tournament plan.</div>
+            </div>
+          )}
+        </div>
+      )}
+
       {view === 'detail' && <PickleballTournamentDetail onBack={backToList} />}
 
       <GlobalFooter />

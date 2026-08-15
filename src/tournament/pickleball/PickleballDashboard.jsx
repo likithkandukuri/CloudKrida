@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { usePickleball } from './PickleballContext.jsx'
 
-export default function PickleballDashboard({ onBrowse, onCreate }) {
+export default function PickleballDashboard({ onBrowse, onCreate, onImport }) {
   const { tournaments, dataLoading, loadError } = usePickleball()
 
   const openCount     = tournaments.filter(t => t.status === 'registration_open').length
@@ -76,8 +76,27 @@ export default function PickleballDashboard({ onBrowse, onCreate }) {
       </div>
 
       <div className="pb-container">
+        {(onCreate || onImport) && (
+          <div className="pb-import-feature-grid">
+            {onCreate && (
+              <button className="pb-import-feature-card" onClick={onCreate}>
+                <div className="pb-import-feature-icon">🏓</div>
+                <div className="pb-import-feature-title">Create Tournament</div>
+                <div className="pb-import-feature-desc">Set up a new Pickleball tournament from scratch — event type, format, scoring, and pool/bracket configuration.</div>
+              </button>
+            )}
+            {onImport && (
+              <button className="pb-import-feature-card pb-import-feature-card--import" onClick={onImport}>
+                <div className="pb-import-feature-icon">📄</div>
+                <div className="pb-import-feature-title">Import Tournament Plan</div>
+                <div className="pb-import-feature-desc">Upload an official tournament plan PDF and let Cloud Krida analyze the rules, teams, groups, schedule, courts, and tournament structure before creating the tournament.</div>
+              </button>
+            )}
+          </div>
+        )}
+
         <div className="pb-notice">
-          🔨 Pool play, court scheduling, and live scoring are coming in a later phase — tournaments, players, and entrants can be managed now.
+          🔨 Live court scheduling with timers is coming in a later phase — tournaments, pools, brackets, scoring, and PDF import can all be managed now.
         </div>
       </div>
     </>

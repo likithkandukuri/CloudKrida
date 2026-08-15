@@ -246,27 +246,6 @@ function GameCard({ game, index }) {
   )
 }
 
-// ── ScrollIndicator ──────────────────────────────────────────────────────────
-function ScrollIndicator() {
-  return (
-    <motion.div
-      className="scroll-indicator"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 1.8, duration: 0.8 }}
-    >
-      <div className="scroll-mouse">
-        <motion.div
-          className="scroll-wheel"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
-      <span>Scroll to explore</span>
-    </motion.div>
-  )
-}
-
 // ── Upcoming Event Card ──────────────────────────────────────────────────────
 // Deliberately reuses the .ct-card* class family from CompletedTournamentCard
 // (imported via CompletedTournaments.css above) for visual consistency
@@ -346,6 +325,19 @@ function UpcomingEventCard({ item, index = 0 }) {
   )
 }
 
+// Small day/month split for the Upcoming Events header's calendar tile —
+// same source date as fmtEventDate, just broken into two parts for that
+// specific decorative treatment.
+function calendarParts(d) {
+  if (!d) return null
+  const date = new Date(`${d}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return null
+  return {
+    month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+    day:   date.toLocaleDateString('en-US', { day: 'numeric' }),
+  }
+}
+
 // ── Upcoming Events Section ──────────────────────────────────────────────────
 // Its own major homepage section (not a tab) — sits directly after the hero,
 // before Explore Games, per the requested visitor flow. Reuses
@@ -369,6 +361,7 @@ function UpcomingEventsSection() {
   useEffect(() => { load() }, [load])
 
   const preview = upcoming.slice(0, 3)
+  const nextDate = calendarParts(preview[0]?.date)
 
   return (
     <motion.section
@@ -378,16 +371,28 @@ function UpcomingEventsSection() {
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="events-head">
-        <span className="events-eyebrow">📅 UPCOMING EVENTS</span>
-        <h2 className="events-title">What's Coming Next</h2>
-        <p className="events-sub">
-          Save the date — here's what Cloud Krida has planned.
-        </p>
-        {isSuperAdmin && (
-          <button className="events-add-btn" onClick={() => setAddOpen(true)}>
-            + Add Upcoming Event
-          </button>
+      <div className="events-head events-head--upcoming">
+        <div className="events-head-text">
+          <span className="events-eyebrow">
+            <span className="events-eyebrow-dot" />
+            UPCOMING EVENTS
+          </span>
+          <h2 className="events-title">What's Coming Next</h2>
+          <p className="events-sub">
+            Save the date — here's what Cloud Krida has planned.
+          </p>
+          {isSuperAdmin && (
+            <button className="events-add-btn" onClick={() => setAddOpen(true)}>
+              + Add Upcoming Event
+            </button>
+          )}
+        </div>
+
+        {nextDate && (
+          <div className="events-calendar-tile" aria-hidden="true">
+            <span className="events-calendar-month">{nextDate.month}</span>
+            <span className="events-calendar-day">{nextDate.day}</span>
+          </div>
         )}
       </div>
 
@@ -440,11 +445,17 @@ function CompletedEventsSection() {
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="events-head">
-        <span className="events-eyebrow">🏆 COMPLETED EVENTS</span>
-        <h2 className="events-title">Tournament Memories</h2>
-        <p className="events-sub">
-          Relive the events Cloud Krida has already hosted — photos and results included.
-        </p>
+        <div className="events-plaque">
+          <span className="events-plaque-corner events-plaque-corner--tl" />
+          <span className="events-plaque-corner events-plaque-corner--tr" />
+          <span className="events-plaque-corner events-plaque-corner--bl" />
+          <span className="events-plaque-corner events-plaque-corner--br" />
+          <span className="events-eyebrow">🏆 COMPLETED EVENTS</span>
+          <h2 className="events-title">Tournament Memories</h2>
+          <p className="events-sub">
+            Relive the events Cloud Krida has already hosted — photos and results included.
+          </p>
+        </div>
       </div>
 
       {loading ? (
@@ -504,15 +515,16 @@ export default function TournamentsHub() {
           animate="visible"
         >
           <motion.h1 className="hero-title" variants={fadeUp} custom={0}>
-            Cloud Krida
+            <span className="hero-title-cloud">Cloud</span>{' '}
+            <span className="hero-title-krida">Krida</span>
           </motion.h1>
 
-          <motion.p className="hero-tagline-short" variants={fadeUp} custom={1}>
+          <motion.div className="hero-accent-rule" variants={fadeUp} custom={1} />
+
+          <motion.p className="hero-tagline-short" variants={fadeUp} custom={2}>
             Where community Chess and Pickleball tournaments come to life.
           </motion.p>
         </motion.div>
-
-        <ScrollIndicator />
       </section>
 
       {/* ── Upcoming Events — first major section after the hero ── */}

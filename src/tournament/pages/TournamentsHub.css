@@ -86,11 +86,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 150px 24px 90px;
+  padding: 150px 24px 80px;
   text-align: center;
 }
 
-.hero--compact { padding: 150px 24px 70px; }
+.hero--compact { padding: 150px 24px 64px; }
 
 .hero-glow {
   position: absolute;
@@ -110,19 +110,53 @@
 }
 
 .hero-content {
-  max-width: 640px;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
 }
 
+/* Wordmark — this is the one thing on the page visitors should remember, so
+   it gets real scale, a two-tone treatment ("Cloud" neutral, "Krida" carrying
+   the brand's green/lime accent), and its own accent rule below rather than
+   sharing a flex `gap` with the tagline — that rule is what makes the
+   title→subtitle relationship read as intentional instead of stacked. */
 .hero-title {
-  font-size: clamp(48px, 8vw, 80px);
+  font-size: clamp(56px, 9vw, 104px);
   font-weight: 900;
-  line-height: 1.0;
-  letter-spacing: -0.03em;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   color: var(--text-primary);
+  margin: 0;
+}
+
+.hero-title-cloud { color: var(--text-primary); }
+
+.hero-title-krida {
+  background: linear-gradient(115deg, #4ade80 0%, #22c55e 45%, #84cc16 100%);
+  background-size: 200% auto;
+  background-position: 0% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: krida-sheen 7s ease-in-out infinite;
+}
+
+@keyframes krida-sheen {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-krida { animation: none; }
+}
+
+.hero-accent-rule {
+  width: 56px;
+  height: 4px;
+  border-radius: 2px;
+  margin: 28px 0;
+  background: linear-gradient(90deg, #22c55e, #84cc16);
 }
 
 .hero-tagline-short {
@@ -131,50 +165,20 @@
   line-height: 1.5;
   color: var(--text-secondary);
   max-width: 480px;
+  margin: 0;
 }
 
-/* Scroll indicator */
-.scroll-indicator {
-  position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.scroll-indicator span {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.scroll-mouse {
-  width: 22px;
-  height: 34px;
-  border: 1.5px solid rgba(255, 255, 255, 0.2);
-  border-radius: 11px;
-  display: flex;
-  justify-content: center;
-  padding-top: 6px;
-}
-
-.scroll-wheel {
-  width: 3px;
-  height: 6px;
-  background: rgba(139, 92, 246, 0.8);
-  border-radius: 2px;
-}
-
-/* ── Games Section ────────────────────────────────────── */
+/* ── Games Section ────────────────────────────────────────
+   "Sport selection" role — the section-eyebrow is styled as a pill/chip
+   (echoing GameCard's own .card-tag language below it) rather than plain
+   letter-spaced text, so this header reads as a distinct visual personality
+   from the editorial Upcoming header and the archival Completed plaque. Top
+   padding trimmed from 80px so the Upcoming→Games transition feels like one
+   continuous page instead of two stacked full sections. */
 .games-section {
   position: relative;
   z-index: 1;
-  padding: 80px 24px 120px;
+  padding: 56px 24px 120px;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -185,12 +189,18 @@
 }
 
 .section-eyebrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(34, 197, 94, 0.32);
+  background: rgba(34, 197, 94, 0.1);
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   color: var(--brand-tournament);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .section-title {
@@ -198,7 +208,7 @@
   font-weight: 800;
   letter-spacing: -0.025em;
   color: var(--text-primary);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .section-sub {
@@ -657,13 +667,21 @@
   padding: 0 24px 130px;
 }
 
+/* Upcoming sits directly above Explore Games, so its own bottom padding is
+   trimmed hard — the games-section's trimmed top padding (above) supplies
+   the rest of the gap between them, keeping the transition tight instead of
+   the two full section paddings stacking into a dead-feeling void. */
+.events-section--upcoming { padding-bottom: 48px; }
+
 .events-head {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 44px;
 }
 
 .events-eyebrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.2em;
@@ -671,12 +689,20 @@
   margin-bottom: 14px;
 }
 
+.events-eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f0b429;
+  box-shadow: 0 0 0 4px rgba(240, 180, 41, 0.18);
+}
+
 .events-title {
   font-size: clamp(28px, 4.5vw, 44px);
   font-weight: 800;
   letter-spacing: -0.025em;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .events-sub {
@@ -685,6 +711,87 @@
   max-width: 520px;
   margin: 0 auto;
   line-height: 1.6;
+}
+
+/* ── Upcoming Events header — editorial/calendar treatment ──
+   Left-aligned masthead instead of the centered eyebrow→title→subtitle
+   pattern every other section uses, with a decorative date tile pulled from
+   the soonest real event — a distinct "this is a live calendar" personality
+   for the homepage's most important section. */
+.events-head--upcoming {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  text-align: left;
+  margin-bottom: 48px;
+}
+
+.events-head-text { max-width: 640px; }
+
+.events-calendar-tile {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 86px;
+  height: 94px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  transform: rotate(-4deg);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+
+.events-calendar-month {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #f0b429;
+}
+
+.events-calendar-day {
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+@media (max-width: 720px) {
+  .events-head--upcoming { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .events-calendar-tile { display: none; }
+}
+
+/* ── Completed Events header — archival plaque treatment ──
+   A bordered, corner-ticked frame (museum-placard feel) instead of bare
+   text, giving "tournament memories" its own archival personality distinct
+   from Upcoming's editorial-calendar look and Explore Games' pill-badge
+   look. */
+.events-plaque {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 56px;
+  border: 1px solid rgba(240, 180, 41, 0.22);
+  background: linear-gradient(180deg, rgba(240, 180, 41, 0.05), transparent 70%);
+}
+
+.events-plaque-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(240, 180, 41, 0.55);
+}
+
+.events-plaque-corner--tl { top: -1px;    left: -1px;  border-right: none;  border-bottom: none; }
+.events-plaque-corner--tr { top: -1px;    right: -1px; border-left: none;   border-bottom: none; }
+.events-plaque-corner--bl { bottom: -1px; left: -1px;  border-right: none;  border-top: none; }
+.events-plaque-corner--br { bottom: -1px; right: -1px; border-left: none;   border-top: none; }
+
+@media (max-width: 480px) {
+  .events-plaque { padding: 28px 24px; }
 }
 
 .events-add-btn {
@@ -805,11 +912,6 @@
 .ct-card-status-pill--upcoming {
   background: var(--sport-pickleball);
   color: #04121c;
-}
-
-@media (max-width: 640px) {
-  .events-tabbar { flex-direction: column; gap: 14px; }
-  .events-add-btn { position: static; }
 }
 
 @media (max-width: 430px) {
@@ -1019,7 +1121,7 @@
   /* Fixed GlobalNav + Breadcrumb still need ~140px clearance even with a
      short hero — there's no min-height:100vh centering trick to fall back
      on now that the content is this brief. */
-  .hero { padding: 140px 16px 60px; }
+  .hero { padding: 140px 16px 48px; }
 
   .hero-title { letter-spacing: -0.02em; }
 
@@ -1035,7 +1137,7 @@
 
 /* ── Very small phones (≤430px) ─────────────────────────── */
 @media (max-width: 430px) {
-  .hero { padding: 140px 16px 52px; }
+  .hero { padding: 140px 16px 40px; }
   .section-head { margin-bottom: 40px; }
   .games-section { padding: 48px 16px 56px; }
   .section-sub { font-size: 15px; }
@@ -1088,12 +1190,6 @@
 [data-theme="light"] .hero-glow {
   background: radial-gradient(circle, rgba(21, 128, 61, 0.08), transparent 65%);
 }
-[data-theme="light"] .scroll-mouse {
-  border-color: rgba(99, 102, 241, 0.3);
-}
-[data-theme="light"] .scroll-wheel {
-  background: rgba(124, 58, 237, 0.6);
-}
 
 /* Game cards */
 [data-theme="light"] .game-card {
@@ -1118,6 +1214,21 @@
 /* Section headings */
 [data-theme="light"] .section-eyebrow {
   color: var(--brand-tournament);
+  border-color: rgba(21, 128, 61, 0.28);
+  background: rgba(21, 128, 61, 0.08);
+}
+
+[data-theme="light"] .events-plaque {
+  border-color: rgba(180, 130, 20, 0.28);
+  background: linear-gradient(180deg, rgba(180, 130, 20, 0.06), transparent 70%);
+}
+
+[data-theme="light"] .events-plaque-corner {
+  border-color: rgba(180, 130, 20, 0.5);
+}
+
+[data-theme="light"] .events-calendar-tile {
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 /* Footer */

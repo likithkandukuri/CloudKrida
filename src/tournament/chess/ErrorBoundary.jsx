@@ -42,9 +42,9 @@ export default class ErrorBoundary extends Component {
               onClick={() => this.setState({ error: null, errorInfo: null })}
               style={{
                 padding: '10px 20px', borderRadius: 10, cursor: 'pointer',
-                background: 'var(--cc-sel, rgba(212,163,54,0.18))',
-                border: '1px solid var(--cc-border2, rgba(212,163,54,0.28))',
-                color: 'var(--cc-gold, #f0c060)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
+                background: 'var(--cc-sel, rgba(91,124,255,0.18))',
+                border: '1px solid var(--cc-border2, rgba(91,124,255,0.28))',
+                color: 'var(--cc-gold, #5b7cff)', fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
               }}
             >
               Try Again
@@ -53,8 +53,8 @@ export default class ErrorBoundary extends Component {
               onClick={() => window.location.reload()}
               style={{
                 padding: '10px 20px', borderRadius: 10, cursor: 'pointer',
-                background: 'var(--cc-surface, rgba(212,163,54,0.05))',
-                border: '1px solid var(--cc-border, rgba(212,163,54,0.16))',
+                background: 'var(--cc-surface, rgba(91,124,255,0.05))',
+                border: '1px solid var(--cc-border, rgba(91,124,255,0.16))',
                 color: 'var(--cc-sub, #a09880)', fontFamily: 'inherit', fontSize: 14,
               }}
             >

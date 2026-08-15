@@ -20,10 +20,14 @@
   --cyan:     #06b6d4;
   --green:    #10b981;
 
-  /* sport accent colors — theme-aware */
+  /* sport accent colors — theme-aware. Chess=deep royal blue (confident,
+     strategic), Pickleball=teal/aqua (energetic, active) — a deliberate,
+     restrained per-sport palette so each sport reads as its own brand
+     while staying part of the same Cloud Krida system. */
+  --sport-chess:      #5b7cff;   /* royal blue — 5.6:1 vs dark bg */
   --sport-tennis:     #4ade80;
   --sport-darts:      #f87171;
-  --sport-pickleball: #38bdf8;   /* pickleball court blue */
+  --sport-pickleball: #2dd4bf;   /* teal/aqua — 11:1 vs dark bg */
 
   /* summer classes accent — theme-aware */
   --summer-accent: #fbbf24;
@@ -57,16 +61,17 @@
   --text-muted:     #546282;
 
   /* sport accent colors — dark equivalents for light bg */
+  --sport-chess:      #2541b2;   /* 7.6-8.5:1 vs light bg */
   --sport-tennis:     #166534;
   --sport-darts:      #991b1b;
-  --sport-pickleball: #0369a1;
+  --sport-pickleball: #0f766e;   /* 4.9-5.5:1 vs light bg */
 
   /* summer classes accent — dark equivalent for light bg */
   --summer-accent: #b45309;
 
   /* section brand accents — dark equivalents for light bg */
   --brand-home:       #6366f1;
-  --brand-tournament: #15803d;
+  --brand-tournament: #166534;   /* was #15803d (4.49:1, borderline); bumped for a safe AA margin */
 
   /* keyboard focus ring — darker blue reads clearly against white/light surfaces */
   --focus-ring: #1d4ed8;

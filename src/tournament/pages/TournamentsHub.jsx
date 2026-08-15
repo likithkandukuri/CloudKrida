@@ -21,10 +21,10 @@ const GAMES = [
     tag: 'STRATEGY',
     description: 'Outwit opponents in high-stakes chess tournaments with real-time match tracking and ELO rankings.',
     path: '/tournaments/chess',
-    accent: '#d4a336',
-    accentSoft: 'rgba(212, 163, 54, 0.18)',
-    glow: 'rgba(212, 163, 54, 0.28)',
-    gradient: 'linear-gradient(160deg, #0d0800 0%, #201000 60%, #0d0800 100%)',
+    accent: '#5b7cff',
+    accentSoft: 'rgba(91, 124, 255, 0.18)',
+    glow: 'rgba(91, 124, 255, 0.28)',
+    gradient: 'linear-gradient(160deg, #05070f 0%, #10143a 60%, #05070f 100%)',
     stats: { tournaments: 8, players: 24 },
   },
   {
@@ -33,10 +33,10 @@ const GAMES = [
     tag: 'NEW',
     description: 'Singles, doubles, and mixed doubles tournaments with pool play, brackets, and live standings.',
     path: '/tournaments/pickleball',
-    accent: '#38bdf8',
-    accentSoft: 'rgba(56, 189, 248, 0.15)',
-    glow: 'rgba(56, 189, 248, 0.28)',
-    gradient: 'linear-gradient(160deg, #000a14 0%, #001c2e 60%, #000a14 100%)',
+    accent: '#2dd4bf',
+    accentSoft: 'rgba(45, 212, 191, 0.15)',
+    glow: 'rgba(45, 212, 191, 0.28)',
+    gradient: 'linear-gradient(160deg, #001411 0%, #002e28 60%, #001411 100%)',
     stats: { tournaments: 0, players: 0 },
   },
   {
@@ -522,7 +522,7 @@ export default function TournamentsHub() {
           <motion.div className="hero-accent-rule" variants={fadeUp} custom={1} />
 
           <motion.p className="hero-tagline-short" variants={fadeUp} custom={2}>
-            Where community Chess and Pickleball tournaments come to life.
+            Where every game becomes a community moment.
           </motion.p>
         </motion.div>
       </section>

@@ -254,7 +254,7 @@ export default function UserManagement() {
       {/* Superadmin note */}
       <div style={{
         marginTop: 24, padding: '12px 16px', borderRadius: 10, fontSize: 12,
-        background: 'rgba(212,163,54,0.05)', border: '1px solid rgba(212,163,54,0.14)',
+        background: 'rgba(91,124,255,0.05)', border: '1px solid rgba(91,124,255,0.14)',
         color: 'var(--cc-muted)',
       }}>
         👑 Super Admin account (<strong style={{ color: 'var(--cc-sub)' }}>superadmin</strong>) is permanent and cannot be modified here.

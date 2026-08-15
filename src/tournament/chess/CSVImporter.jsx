@@ -394,7 +394,7 @@ export default function CSVImporter({ onGenerateTournaments, onCancel }) {
             </div>
 
             <div style={{ marginTop: 20, padding: '10px 14px', borderRadius: 8,
-              background: 'rgba(212,163,54,0.06)', border: '1px solid var(--cc-border)',
+              background: 'rgba(91,124,255,0.06)', border: '1px solid var(--cc-border)',
               fontSize: 12, color: 'var(--cc-sub)' }}>
               📋 {rows.length} registrations · {groupBySections(rows) && Object.keys(groupBySections(rows)).length} sections detected
             </div>

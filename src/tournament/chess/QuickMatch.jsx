@@ -70,8 +70,8 @@ export default function QuickMatch() {
               transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 textAlign: 'center', padding: '56px 24px',
-                background: 'rgba(212,163,54,0.06)',
-                border: '1px solid rgba(212,163,54,0.2)',
+                background: 'rgba(91,124,255,0.06)',
+                border: '1px solid rgba(91,124,255,0.2)',
                 borderRadius: 16,
               }}
             >
@@ -144,8 +144,8 @@ export default function QuickMatch() {
                   >
                     <div style={{
                       padding: '12px 16px', borderRadius: 10,
-                      background: 'rgba(212,163,54,0.07)',
-                      border: '1px solid rgba(212,163,54,0.2)',
+                      background: 'rgba(91,124,255,0.07)',
+                      border: '1px solid rgba(91,124,255,0.2)',
                       fontSize: 13, color: 'var(--cc-text)',
                     }}>
                       {result === 'draw'
@@ -158,7 +158,7 @@ export default function QuickMatch() {
               </AnimatePresence>
 
               {/* Notes */}
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(212,163,54,0.5)', marginBottom: 7 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(91,124,255,0.5)', marginBottom: 7 }}>
                 NOTES (OPTIONAL)
               </label>
               <input

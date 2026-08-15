@@ -56,7 +56,7 @@ function SectionStandings({ sectionData }) {
           <div style={{ height: 3, background: 'var(--cc-border)', borderRadius: 2, overflow: 'hidden' }}>
             <div style={{
               height: '100%',
-              background: 'linear-gradient(90deg, var(--cc-gold), #a07820)',
+              background: 'linear-gradient(90deg, var(--cc-gold), #3b4fd6)',
               width: `${Math.round((done / totalM) * 100)}%`,
               borderRadius: 2,
               transition: 'width 0.5s ease',

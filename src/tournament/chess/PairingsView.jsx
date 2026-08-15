@@ -544,7 +544,7 @@ export default function PairingsView({
                     className={`pairings-row ${m.status === 'live' ? 'pairings-row--live' : ''} ${i % 2 === 0 ? 'pairings-row--even' : ''}`}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                     transition={{ delay: Math.min(i * 0.02, 0.25) }}
-                    style={m.locked ? { boxShadow: 'inset 3px 0 0 rgba(212,163,54,0.5)' } : undefined}
+                    style={m.locked ? { boxShadow: 'inset 3px 0 0 rgba(91,124,255,0.5)' } : undefined}
                   >
                     {/* Board number — click to edit when editable */}
                     <td className="pairings-board" style={{ fontSize: fs.board, position: 'relative', verticalAlign: 'middle' }}>

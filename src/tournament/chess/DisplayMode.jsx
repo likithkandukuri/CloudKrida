@@ -160,7 +160,7 @@ export default function DisplayMode({ matches, totalRounds, meta, onClose, stand
             <div style={{ width: 120 }}>
               <div style={{ height: 4, background: 'var(--cc-surface)', borderRadius: 2, overflow: 'hidden' }}>
                 <div style={{
-                  height: '100%', background: 'linear-gradient(90deg,var(--cc-gold),#a07820)',
+                  height: '100%', background: 'linear-gradient(90deg,var(--cc-gold),#3b4fd6)',
                   width: `${(completedCount / totalCount) * 100}%`, borderRadius: 2, transition: 'width 0.6s ease',
                 }} />
               </div>

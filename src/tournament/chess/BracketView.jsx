@@ -30,7 +30,7 @@ function ImageViewer({ url, onClose }) {
                    boxShadow: '0 32px 80px rgba(0,0,0,0.8)' }} />
         <button onClick={onClose} style={{
           position: 'absolute', top: -14, right: -14, width: 32, height: 32, borderRadius: '50%',
-          background: '#d4a336', border: 'none', color: '#050912', fontWeight: 700,
+          background: '#5b7cff', border: 'none', color: '#050912', fontWeight: 700,
           fontSize: 16, cursor: 'pointer',
         }}>✕</button>
       </motion.div>
@@ -136,9 +136,9 @@ function BracketConnectors({ matches, totalRounds }) {
       const mx  = (x1 + x2) / 2
       paths.push(
         <path key={`a-${r}-${i}`} d={`M ${x1},${y1a} C ${mx},${y1a} ${mx},${yp} ${x2},${yp}`}
-              fill="none" stroke="rgba(212,163,54,0.22)" strokeWidth="1" />,
+              fill="none" stroke="rgba(91,124,255,0.22)" strokeWidth="1" />,
         <path key={`b-${r}-${i}`} d={`M ${x1},${y1b} C ${mx},${y1b} ${mx},${yp} ${x2},${yp}`}
-              fill="none" stroke="rgba(212,163,54,0.22)" strokeWidth="1" />,
+              fill="none" stroke="rgba(91,124,255,0.22)" strokeWidth="1" />,
       )
     }
   }
@@ -214,9 +214,9 @@ export default function BracketView({ matches, players, totalRounds, meta, playe
             <span>{completed}/{totalReal} matches complete{liveCount > 0 ? ` · ${liveCount} live` : ''}</span>
             <span>{Math.round((completed / totalReal) * 100)}%</span>
           </div>
-          <div style={{ height: 4, background: 'rgba(212,163,54,0.1)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ height: 4, background: 'rgba(91,124,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
             <motion.div
-              style={{ height: '100%', background: 'linear-gradient(90deg, #d4a336, #a07820)', borderRadius: 2 }}
+              style={{ height: '100%', background: 'linear-gradient(90deg, #6d8cff, #5b7cff)', borderRadius: 2 }}
               initial={{ width: 0 }}
               animate={{ width: `${(completed / totalReal) * 100}%` }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -227,12 +227,12 @@ export default function BracketView({ matches, players, totalRounds, meta, playe
 
       {/* Tab + search bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(212,163,54,0.12)', borderRadius: 10, padding: 3, gap: 3 }}>
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(91,124,255,0.12)', borderRadius: 10, padding: 3, gap: 3 }}>
           {[{ id: 'bracket', label: '🏆 Bracket' }, { id: 'pairings', label: '📋 Pairings' }, { id: 'gallery', label: `📸 Gallery${gallery.length ? ` (${gallery.length})` : ''}` }].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               padding: '7px 16px', borderRadius: 7, border: 'none', fontFamily: 'inherit',
               fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
-              background: activeTab === tab.id ? 'rgba(212,163,54,0.15)' : 'transparent',
+              background: activeTab === tab.id ? 'rgba(91,124,255,0.15)' : 'transparent',
               color: activeTab === tab.id ? 'var(--cc-gold)' : 'var(--cc-muted)',
             }}>{tab.label}</button>
           ))}

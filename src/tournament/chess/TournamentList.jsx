@@ -36,7 +36,7 @@ function EventCard({ event, sections, onOpenEvent, onDelete, isSuperAdmin }) {
           {/* Name row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.1em',
-              color: '#f0c060', opacity: 0.8 }}>EVENT</span>
+              color: '#5b7cff', opacity: 0.8 }}>EVENT</span>
             <span style={{ fontSize: 18, fontWeight: 900, color: 'var(--cc-text)', letterSpacing: '-0.01em' }}>
               🏆 {event.name}
             </span>
@@ -49,9 +49,9 @@ function EventCard({ event, sections, onOpenEvent, onDelete, isSuperAdmin }) {
             <span style={{
               fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', padding: '2px 8px',
               borderRadius: 5, textTransform: 'uppercase',
-              background: allComplete ? 'rgba(212,163,54,0.12)' : 'rgba(59,130,246,0.1)',
-              border: `1px solid ${allComplete ? 'rgba(212,163,54,0.3)' : 'rgba(59,130,246,0.25)'}`,
-              color: allComplete ? 'var(--cc-gold)' : 'var(--cc-sub)',
+              background: allComplete ? 'rgba(74,222,128,0.12)' : 'rgba(59,130,246,0.1)',
+              border: `1px solid ${allComplete ? 'rgba(74,222,128,0.3)' : 'rgba(59,130,246,0.25)'}`,
+              color: allComplete ? '#4ade80' : 'var(--cc-sub)',
             }}>
               {allComplete ? 'Complete' : 'Active'}
             </span>
@@ -70,7 +70,7 @@ function EventCard({ event, sections, onOpenEvent, onDelete, isSuperAdmin }) {
             {sections.map(s => (
               <span key={s.id} style={{
                 fontSize: 11, padding: '3px 10px', borderRadius: 5, fontWeight: 600,
-                background: 'rgba(212,163,54,0.08)', border: '1px solid rgba(212,163,54,0.18)',
+                background: 'rgba(91,124,255,0.08)', border: '1px solid rgba(91,124,255,0.18)',
                 color: 'var(--cc-sub)',
               }}>
                 ♟ {s.name}
@@ -147,9 +147,9 @@ function TournamentCard({ t, onOpen, onDelete, isSuperAdmin }) {
             <span style={{
               fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', padding: '2px 8px',
               borderRadius: 5, textTransform: 'uppercase',
-              background: isComplete ? 'rgba(212,163,54,0.12)' : 'rgba(59,130,246,0.1)',
-              border: `1px solid ${isComplete ? 'rgba(212,163,54,0.3)' : 'rgba(59,130,246,0.25)'}`,
-              color: isComplete ? 'var(--cc-gold)' : 'var(--cc-sub)',
+              background: isComplete ? 'rgba(74,222,128,0.12)' : 'rgba(59,130,246,0.1)',
+              border: `1px solid ${isComplete ? 'rgba(74,222,128,0.3)' : 'rgba(59,130,246,0.25)'}`,
+              color: isComplete ? '#4ade80' : 'var(--cc-sub)',
             }}>
               {isComplete ? 'Complete' : 'Active'}
             </span>
@@ -165,9 +165,9 @@ function TournamentCard({ t, onOpen, onDelete, isSuperAdmin }) {
           </div>
 
           {!isComplete && totalMatches > 0 && (
-            <div style={{ height: 3, background: 'rgba(212,163,54,0.1)', borderRadius: 2, overflow: 'hidden', maxWidth: 300 }}>
+            <div style={{ height: 3, background: 'rgba(91,124,255,0.1)', borderRadius: 2, overflow: 'hidden', maxWidth: 300 }}>
               <div style={{
-                height: '100%', background: 'linear-gradient(90deg,#d4a336,#a07820)',
+                height: '100%', background: 'linear-gradient(90deg,#5b7cff,#3b4fd6)',
                 width: `${pct}%`, borderRadius: 2, transition: 'width 0.5s ease',
               }} />
             </div>

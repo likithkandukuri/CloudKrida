@@ -1,13 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
-// No shared --sport-chess token exists anywhere in the app (confirmed) —
-// #d4a336 is the same literal TournamentsHub.jsx's own GAMES array already
-// uses for Chess's accent, kept consistent here rather than inventing a
-// second value. Exported so the homepage Upcoming cards can share the same
-// sport badge language.
+// Exported so the homepage Upcoming cards can share the same sport badge
+// language.
 export const SPORT_META = {
-  chess:      { label: 'Chess',      glyph: '♛',  accent: '#d4a336' },
+  chess:      { label: 'Chess',      glyph: '♛',  accent: 'var(--sport-chess)' },
   pickleball: { label: 'Pickleball', glyph: '🏓', accent: 'var(--sport-pickleball)' },
   tennis:     { label: 'Tennis',     glyph: '🎾', accent: 'var(--sport-tennis)' },
   darts:      { label: 'Darts',      glyph: '🎯', accent: 'var(--sport-darts)' },

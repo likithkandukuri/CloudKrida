@@ -380,7 +380,7 @@
   opacity: 0.25;
 }
 
-.chess-cell.light { background: rgba(212, 163, 54, 0.3); }
+.chess-cell.light { background: rgba(91, 124, 255, 0.3); }
 .chess-cell.dark  { background: rgba(0, 0, 0, 0.4); }
 
 .chess-piece-wrap {
@@ -391,9 +391,9 @@
 .chess-piece {
   font-size: 110px;
   line-height: 1;
-  color: #d4a336;
-  filter: drop-shadow(0 0 30px rgba(212, 163, 54, 0.7))
-          drop-shadow(0 0 60px rgba(212, 163, 54, 0.3));
+  color: #5b7cff;
+  filter: drop-shadow(0 0 30px rgba(91, 124, 255, 0.7))
+          drop-shadow(0 0 60px rgba(91, 124, 255, 0.3));
   display: block;
   animation: float-piece 4s ease-in-out infinite;
 }
@@ -405,7 +405,7 @@
   transform: translate(-50%, -50%);
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(212, 163, 54, 0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(91, 124, 255, 0.25), transparent 70%);
   pointer-events: none;
 }
 
@@ -567,12 +567,12 @@
 
 .pb-hub-court-line {
   position: absolute;
-  background: rgba(56, 189, 248, 0.18);
+  background: rgba(45, 212, 191, 0.18);
 }
 
 .pb-hub-court-outer {
   inset: 0;
-  border: 2px solid rgba(56, 189, 248, 0.25);
+  border: 2px solid rgba(45, 212, 191, 0.25);
   border-radius: 2px;
   background: transparent;
 }
@@ -582,7 +582,7 @@
   bottom: 0;
   left: 50%;
   width: 3px;
-  background: rgba(56, 189, 248, 0.4);
+  background: rgba(45, 212, 191, 0.4);
   transform: translateX(-50%);
 }
 
@@ -617,8 +617,8 @@
   width: 58px;
   height: 68px;
   border-radius: 46% 46% 50% 50%;
-  background: radial-gradient(circle at 35% 30%, #7dd3fc, #0284c7);
-  box-shadow: 0 0 30px rgba(56, 189, 248, 0.6), 0 0 60px rgba(56, 189, 248, 0.2);
+  background: radial-gradient(circle at 35% 30%, #5eead4, #0d9488);
+  box-shadow: 0 0 30px rgba(45, 212, 191, 0.6), 0 0 60px rgba(45, 212, 191, 0.2);
 }
 
 .pb-hub-paddle-handle {
@@ -626,7 +626,7 @@
   height: 26px;
   margin-top: -2px;
   border-radius: 4px;
-  background: linear-gradient(to bottom, #0284c7, #075985);
+  background: linear-gradient(to bottom, #0d9488, #065f46);
 }
 
 .pb-hub-ball {
@@ -646,7 +646,7 @@
   transform: translate(-50%, -50%);
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.2), transparent 70%);
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.2), transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
@@ -907,11 +907,19 @@
   color: var(--text-secondary);
 }
 
-/* Upcoming variant of the shared .ct-card-status-pill — same position/shape,
-   blue instead of green. */
+/* Upcoming variant of the shared .ct-card-status-pill — same position/shape
+   as the green "Completed" pill. Deliberately uses the archival amber
+   (shared with the rest of the Upcoming/Completed section) rather than a
+   sport color: this pill can appear on ANY sport's upcoming card, so it must
+   not borrow Chess or Pickleball's own brand blue/teal. */
 .ct-card-status-pill--upcoming {
-  background: var(--sport-pickleball);
-  color: #04121c;
+  background: #f0b429;
+  color: #1a1305;
+}
+
+[data-theme="light"] .ct-card-status-pill--upcoming {
+  background: #92400e;
+  color: #fff;
 }
 
 @media (max-width: 430px) {
@@ -1229,6 +1237,40 @@
 
 [data-theme="light"] .events-calendar-tile {
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* The amber accent (#f0b429) used across Upcoming/Completed only had a
+   dark-theme value — on the light background it measures ~1.7:1, well under
+   the 3:1 floor even for large text. #92400e keeps the same "archival gold"
+   family at 6.3-7.1:1. */
+[data-theme="light"] .events-eyebrow,
+[data-theme="light"] .events-calendar-month {
+  color: #92400e;
+}
+
+[data-theme="light"] .events-eyebrow-dot {
+  background: #92400e;
+  box-shadow: 0 0 0 4px rgba(146, 64, 14, 0.18);
+}
+
+[data-theme="light"] .events-add-btn:hover {
+  border-color: #92400e;
+  color: #92400e;
+}
+
+[data-theme="light"] .events-viewall:hover {
+  border-color: #92400e;
+}
+
+/* Wordmark gradient — the dark-theme stops (#4ade80/#22c55e/#84cc16) measure
+   1.6-2.3:1 against the light background, far under the 3:1 large-text
+   floor. Same green→lime hue journey, shifted dark enough to clear AA large
+   text (6.3-9.1:1) on white/lavender-white. */
+[data-theme="light"] .hero-title-krida {
+  /* background-image (not the background shorthand) — the shorthand resets
+     background-clip to border-box, which broke the text-clip mask and made
+     this render as a solid rectangle instead of gradient-filled text. */
+  background-image: linear-gradient(115deg, #14532d 0%, #166534 45%, #3f6212 100%);
 }
 
 /* Footer */

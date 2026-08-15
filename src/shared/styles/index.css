@@ -20,14 +20,15 @@
   --cyan:     #06b6d4;
   --green:    #10b981;
 
-  /* sport accent colors — theme-aware. Chess=deep royal blue (confident,
-     strategic), Pickleball=teal/aqua (energetic, active) — a deliberate,
-     restrained per-sport palette so each sport reads as its own brand
-     while staying part of the same Cloud Krida system. */
-  --sport-chess:      #5b7cff;   /* royal blue — 5.6:1 vs dark bg */
-  --sport-tennis:     #4ade80;
+  /* sport accent colors — theme-aware. Chess=violet/purple (strategic,
+     premium), Pickleball=teal/aqua (fresh, energetic), Tennis=orange/coral
+     (athletic, fast) — three genuinely distinct hue families (not three
+     shades of blue) so each sport reads as its own brand while staying part
+     of the same Cloud Krida system. */
+  --sport-chess:      #a78bfa;   /* violet — 7.3-7.5:1 vs dark bg */
+  --sport-tennis:     #fb923c;   /* orange/coral — 8.8-9.0:1 vs dark bg */
   --sport-darts:      #f87171;
-  --sport-pickleball: #2dd4bf;   /* teal/aqua — 11:1 vs dark bg */
+  --sport-pickleball: #22e0c4;   /* teal/aqua — 11.9-12.2:1 vs dark bg */
 
   /* summer classes accent — theme-aware */
   --summer-accent: #fbbf24;
@@ -61,8 +62,8 @@
   --text-muted:     #546282;
 
   /* sport accent colors — dark equivalents for light bg */
-  --sport-chess:      #2541b2;   /* 7.6-8.5:1 vs light bg */
-  --sport-tennis:     #166534;
+  --sport-chess:      #6b21a8;   /* royal purple — 7.8-8.7:1 vs light bg */
+  --sport-tennis:     #9a3412;   /* burnt orange — 6.5-6.9:1 vs light bg */
   --sport-darts:      #991b1b;
   --sport-pickleball: #0f766e;   /* 4.9-5.5:1 vs light bg */
 

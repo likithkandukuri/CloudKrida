@@ -36,7 +36,7 @@ function EventCard({ event, sections, onOpenEvent, onDelete, isSuperAdmin }) {
           {/* Name row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.1em',
-              color: '#5b7cff', opacity: 0.8 }}>EVENT</span>
+              color: '#a78bfa', opacity: 0.8 }}>EVENT</span>
             <span style={{ fontSize: 18, fontWeight: 900, color: 'var(--cc-text)', letterSpacing: '-0.01em' }}>
               🏆 {event.name}
             </span>
@@ -70,7 +70,7 @@ function EventCard({ event, sections, onOpenEvent, onDelete, isSuperAdmin }) {
             {sections.map(s => (
               <span key={s.id} style={{
                 fontSize: 11, padding: '3px 10px', borderRadius: 5, fontWeight: 600,
-                background: 'rgba(91,124,255,0.08)', border: '1px solid rgba(91,124,255,0.18)',
+                background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.18)',
                 color: 'var(--cc-sub)',
               }}>
                 ♟ {s.name}
@@ -165,9 +165,9 @@ function TournamentCard({ t, onOpen, onDelete, isSuperAdmin }) {
           </div>
 
           {!isComplete && totalMatches > 0 && (
-            <div style={{ height: 3, background: 'rgba(91,124,255,0.1)', borderRadius: 2, overflow: 'hidden', maxWidth: 300 }}>
+            <div style={{ height: 3, background: 'rgba(167,139,250,0.1)', borderRadius: 2, overflow: 'hidden', maxWidth: 300 }}>
               <div style={{
-                height: '100%', background: 'linear-gradient(90deg,#5b7cff,#3b4fd6)',
+                height: '100%', background: 'linear-gradient(90deg,#a78bfa,#8b5cf6)',
                 width: `${pct}%`, borderRadius: 2, transition: 'width 0.5s ease',
               }} />
             </div>

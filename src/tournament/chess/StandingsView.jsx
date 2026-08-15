@@ -44,7 +44,7 @@ export default function StandingsView({ standings, playerFields, currentRound, t
               borderRadius: 14,
               minWidth: 120,
               order: i === 0 ? 0 : i === 1 ? -1 : 1,
-              boxShadow: i === 0 ? '0 0 32px rgba(91,124,255,0.15)' : 'none',
+              boxShadow: i === 0 ? '0 0 32px rgba(167,139,250,0.15)' : 'none',
             }}>
               <div style={{ fontSize: i === 0 ? 36 : 28, marginBottom: 6 }}>{MEDALS[i]}</div>
               <div style={{ fontSize: i === 0 ? 17 : 14, fontWeight: 800, color: 'var(--cc-text)', lineHeight: 1.2, marginBottom: 4 }}>

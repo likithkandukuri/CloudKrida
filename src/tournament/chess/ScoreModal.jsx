@@ -95,13 +95,13 @@ export default function ScoreModal({ match, playerFields, tournamentId, onConfir
 
         <div className="modal-players">
           <div className="modal-player">
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(91,124,255,0.6)', letterSpacing: '0.1em', marginBottom: 4 }}>♔ WHITE</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(167,139,250,0.6)', letterSpacing: '0.1em', marginBottom: 4 }}>♔ WHITE</div>
             <div className="modal-player-name">{p1name}</div>
             {playerSubInfo(match.p1, pf) && <div style={{ fontSize: 11, color: 'var(--cc-sub)', marginTop: 2 }}>{playerSubInfo(match.p1, pf)}</div>}
           </div>
           <div className="modal-vs">VS</div>
           <div className="modal-player">
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(91,124,255,0.4)', letterSpacing: '0.1em', marginBottom: 4 }}>♚ BLACK</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(167,139,250,0.4)', letterSpacing: '0.1em', marginBottom: 4 }}>♚ BLACK</div>
             <div className="modal-player-name">{p2name}</div>
             {playerSubInfo(match.p2, pf) && <div style={{ fontSize: 11, color: 'var(--cc-sub)', marginTop: 2 }}>{playerSubInfo(match.p2, pf)}</div>}
           </div>
@@ -155,13 +155,13 @@ export default function ScoreModal({ match, playerFields, tournamentId, onConfir
 
         {/* Score sheet image */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(91,124,255,0.55)', marginBottom: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(167,139,250,0.55)', marginBottom: 8 }}>
             📎 ATTACH SCORE SHEET (OPTIONAL)
           </div>
           {preview ? (
             <div style={{ position: 'relative', display: 'inline-block' }}>
               <img src={preview} alt="Preview"
-                style={{ height: 72, borderRadius: 8, objectFit: 'cover', border: '1px solid rgba(91,124,255,0.3)' }} />
+                style={{ height: 72, borderRadius: 8, objectFit: 'cover', border: '1px solid rgba(167,139,250,0.3)' }} />
               <button onClick={clearImage}
                 style={{ position: 'absolute', top: -8, right: -8, width: 22, height: 22, borderRadius: '50%',
                          background: '#b91c1c', border: 'none', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 700 }}>✕</button>

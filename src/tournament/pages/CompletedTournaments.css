@@ -26,7 +26,7 @@
 .ct-orb-a {
   width: 640px;
   height: 640px;
-  background: radial-gradient(circle, rgba(91, 124, 255, 0.16), transparent 70%);
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.16), transparent 70%);
   top: -200px;
   left: -160px;
 }
@@ -34,7 +34,7 @@
 .ct-orb-b {
   width: 560px;
   height: 560px;
-  background: radial-gradient(circle, rgba(45, 212, 191, 0.14), transparent 70%);
+  background: radial-gradient(circle, rgba(34, 224, 196, 0.14), transparent 70%);
   bottom: -180px;
   right: -140px;
 }

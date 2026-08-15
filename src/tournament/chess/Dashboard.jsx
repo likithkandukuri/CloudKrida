@@ -112,7 +112,7 @@ export default function Dashboard({ onAction, tournamentCount = 0, quickMatchCou
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '12px 18px', borderRadius: 12, marginBottom: 28, flexWrap: 'wrap', gap: 12,
-            background: 'rgba(91,124,255,0.06)', border: '1px solid rgba(91,124,255,0.18)',
+            background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)',
           }}
         >
           <div style={{ fontSize: 13, color: 'var(--cc-sub)' }}>
@@ -152,8 +152,8 @@ export default function Dashboard({ onAction, tournamentCount = 0, quickMatchCou
               {card.count !== null && (
                 <span style={{
                   fontSize: 11, fontWeight: 800, padding: '2px 8px', borderRadius: 6,
-                  background: 'rgba(91,124,255,0.12)', color: 'var(--cc-gold)',
-                  border: '1px solid rgba(91,124,255,0.25)',
+                  background: 'rgba(167,139,250,0.12)', color: 'var(--cc-gold)',
+                  border: '1px solid rgba(167,139,250,0.25)',
                 }}>{card.count}</span>
               )}
             </div>

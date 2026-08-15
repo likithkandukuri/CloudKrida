@@ -273,7 +273,7 @@ export default function PointsTournament({ tournament, playerFields, onUpdate, t
         </div>
         <div style={{ height: 4, background: 'var(--cc-surface)', borderRadius: 2, overflow: 'hidden' }}>
           <motion.div
-            style={{ height: '100%', background: 'linear-gradient(90deg, var(--cc-gold), #3b4fd6)', borderRadius: 2 }}
+            style={{ height: '100%', background: 'linear-gradient(90deg, var(--cc-gold), #8b5cf6)', borderRadius: 2 }}
             animate={{ width: `${totalInRound > 0 ? (doneInRound / totalInRound) * 100 : 0}%` }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
           />

@@ -27,7 +27,7 @@ function ImageViewer({ url, onClose }) {
           style={{ maxWidth: '90vw', maxHeight: '80vh', borderRadius: 12, display: 'block' }} />
         <button onClick={onClose} style={{
           position: 'absolute', top: -12, right: -12, width: 28, height: 28, borderRadius: '50%',
-          background: '#5b7cff', border: 'none', color: '#050912', fontWeight: 800, fontSize: 14, cursor: 'pointer',
+          background: '#a78bfa', border: 'none', color: '#050912', fontWeight: 800, fontSize: 14, cursor: 'pointer',
         }}>✕</button>
       </motion.div>
     </motion.div>
@@ -208,7 +208,7 @@ export default function MatchHistory({ activeTournamentId }) {
                       <button
                         onClick={() => setImgViewer(m.record.imageUrl)}
                         style={{
-                          background: 'rgba(91,124,255,0.08)', border: '1px solid rgba(91,124,255,0.2)',
+                          background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)',
                           borderRadius: 6, padding: '3px 8px', cursor: 'pointer', fontFamily: 'inherit',
                           fontSize: 11, color: 'var(--cc-gold)',
                         }}

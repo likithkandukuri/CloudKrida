@@ -58,9 +58,9 @@ export default function PickleballDashboard({ onBrowse, onCreate }) {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontFamily: 'inherit',
                 padding: '13px 28px', borderRadius: 12, border: 'none',
-                background: 'linear-gradient(135deg, #2dd4bf, #0d9488)', color: '#031321',
+                background: 'linear-gradient(135deg, #22e0c4, #0d9488)', color: '#031321',
                 fontSize: 14.5, fontWeight: 700,
-                boxShadow: '0 0 26px rgba(45,212,191,0.3)',
+                boxShadow: '0 0 26px rgba(34, 224, 196,0.3)',
               }}
             >
               Browse Tournaments

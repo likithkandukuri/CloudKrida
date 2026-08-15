@@ -24,12 +24,12 @@ export default function Tennis() {
       {/* Background orbs */}
       <div style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
         <div style={{ position: 'absolute', width: 700, height: 700, borderRadius: '50%', filter: 'blur(120px)',
-                      background: 'radial-gradient(circle, rgba(74,222,128,0.14), transparent)', top: -200, right: -150 }} />
+                      background: 'radial-gradient(circle, rgba(251, 146, 60,0.14), transparent)', top: -200, right: -150 }} />
         <div style={{ position: 'absolute', width: 500, height: 500, borderRadius: '50%', filter: 'blur(100px)',
-                      background: 'radial-gradient(circle, rgba(250,204,21,0.1), transparent)', bottom: -100, left: 100 }} />
+                      background: 'radial-gradient(circle, rgba(253, 224, 71, 0.1), transparent)', bottom: -100, left: 100 }} />
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: 'radial-gradient(rgba(74,222,128,0.05) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(rgba(251, 146, 60,0.05) 1px, transparent 1px)',
           backgroundSize: '40px 40px',
           maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)',
         }} />
@@ -64,7 +64,7 @@ export default function Tennis() {
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '9px 20px', borderRadius: 100,
-              background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.28)',
+              background: 'rgba(251, 146, 60,0.1)', border: '1px solid rgba(251, 146, 60,0.28)',
               fontSize: 13, fontWeight: 600, color: 'var(--sport-tennis)', letterSpacing: '0.06em',
             }}>
               🔨 In Development
@@ -110,7 +110,7 @@ export default function Tennis() {
               transition={{ delay: 0.2 + i * 0.08, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 padding: '22px 20px', borderRadius: 14,
-                background: 'rgba(74,222,128,0.04)', border: '1px solid rgba(74,222,128,0.12)',
+                background: 'rgba(251, 146, 60,0.04)', border: '1px solid rgba(251, 146, 60,0.12)',
                 backdropFilter: 'blur(8px)',
               }}
             >

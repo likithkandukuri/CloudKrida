@@ -4,8 +4,10 @@ import { usePickleball } from './PickleballContext.jsx'
 import { validateBracketGeneration, getBracketGenerationState } from './pickleballValidation.js'
 import { validateBracketSwap, validateBracketByeAssign, validateBracketByeRemove, validateBracketIntegrity } from './pickleballBracketEdit.js'
 import { getRoundLabel } from '../engine/bracket.js'
-import { entrantLabel } from './pickleballDisplay.js'
+import { entrantLabel, buildMatchNumberMap } from './pickleballDisplay.js'
 import PickleballScoreEntry from './PickleballScoreEntry.jsx'
+import PickleballMatchTimer from './PickleballMatchTimer.jsx'
+import { usePickleballClock } from './usePickleballClock.js'
 
 // Track B Phase 5 (bracket generation/advancement) + Phase 6 (champion
 // banner / mark-complete convenience). Seeding is cross-pool overall
@@ -24,11 +26,15 @@ export default function PickleballBracketTab({ tournament }) {
   const [swapSelection, setSwapSelection] = useState([]) // [{matchId, seat}, ...] up to 2
   const [showValidate, setShowValidate] = useState(false)
 
+  const nowMs = usePickleballClock(1000)
   const pools          = tournament.pools ?? []
   const matches         = tournament.matches ?? []
   const poolMatches     = matches.filter(m => m.phase === 'pool')
   const elimMatches     = matches.filter(m => m.phase === 'elimination')
   const activeEntrants  = (tournament.entrants ?? []).filter(e => e.status !== 'withdrawn')
+  const matchNumberById = buildMatchNumberMap(matches)
+  const timerByMatchId = Object.fromEntries((tournament.matchTimers ?? []).map(mt => [mt.matchId, mt]))
+  const courtLabelById = Object.fromEntries((tournament.courts ?? []).map(c => [c.id, c.label]))
 
   const genState     = getBracketGenerationState(elimMatches)
   const configErrors = validateBracketGeneration(pools, poolMatches, activeEntrants)
@@ -246,6 +252,20 @@ export default function PickleballBracketTab({ tournament }) {
                       </div>
                       {scoringMatchId === m.id && (
                         <PickleballScoreEntry match={m} tournament={tournament} onClose={() => setScoringMatchId(null)} />
+                      )}
+                      {m.status !== 'bye' && m.entrant1 && m.entrant2 && (
+                        <div className="pb-pool-match-timer-row">
+                          <span className="pb-match-timer-label">
+                            Match {matchNumberById.get(m.id)}{courtLabelById[m.courtId] ? ` — ${courtLabelById[m.courtId]}` : ''}
+                          </span>
+                          <PickleballMatchTimer
+                            matchId={m.id}
+                            tournamentId={tournament.id}
+                            timer={timerByMatchId[m.id]}
+                            nowMs={nowMs}
+                            size="compact"
+                          />
+                        </div>
                       )}
                     </div>
                   )

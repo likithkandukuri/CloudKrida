@@ -112,6 +112,22 @@ export function matchRowToObj(row, entrantMap = {}) {
   }
 }
 
+// Manual match timer (migration 020) — deliberately separate from
+// matchRowToObj/scheduledAt above; see pickleballMatchTimer.js for why.
+// startedAt is exposed as epoch ms (or null) to match every other
+// timestamp field in this file; status is always 'idle'|'running'|'paused'
+// as stored — 'expired' is derived client-side, never persisted.
+export function matchTimerRowToObj(row) {
+  return {
+    matchId:          row.match_id,
+    tournamentId:     row.tournament_id,
+    durationSeconds:  row.duration_seconds,
+    status:           row.status,
+    startedAt:        row.started_at ? new Date(row.started_at).getTime() : null,
+    remainingSeconds: row.remaining_seconds,
+  }
+}
+
 export function galleryRowToObj(row) {
   return {
     id:           row.id,
@@ -147,6 +163,7 @@ export async function fetchPickleballTournament(id) {
     { data: cs },
     { data: ms },
     { data: gs },
+    { data: mts },
   ] = await Promise.all([
     supabase.from('pickleball_tournaments').select('*').eq('id', id).single(),
     supabase.from('pickleball_entrants')
@@ -157,6 +174,7 @@ export async function fetchPickleballTournament(id) {
     supabase.from('pickleball_courts').select('*').eq('tournament_id', id).order('label'),
     supabase.from('pickleball_matches').select('*').eq('tournament_id', id).order('round').order('slot'),
     supabase.from('pickleball_gallery_photos').select('*').eq('tournament_id', id).order('uploaded_at'),
+    supabase.from('pickleball_match_timers').select('*').eq('tournament_id', id),
   ])
 
   if (tErr || !t) return null
@@ -169,6 +187,7 @@ export async function fetchPickleballTournament(id) {
     entrants,
     pools:   (ps ?? []).map(poolRowToObj),
     courts:  (cs ?? []).map(courtRowToObj),
+    matchTimers: (mts ?? []).map(matchTimerRowToObj),
     matches: (ms ?? []).map(m => matchRowToObj(m, entrantMap)),
     gallery: (gs ?? []).map(galleryRowToObj),
   }
@@ -426,6 +445,26 @@ export async function deletePickleballCourt(id) {
 export async function assignPickleballMatchCourt(matchId, courtId) {
   const { error } = await supabase.from('pickleball_matches').update({ court_id: courtId }).eq('id', matchId)
   if (error) { console.error('[Krida/Pickleball] assignMatchCourt:', error); throw error }
+}
+
+// ── Manual match timer (migration 020) ─────────────────────────────────────
+// One upsert per Start/Resume/Pause/Reset click — the countdown itself is
+// never written per second (see pickleballMatchTimer.js). `state` is the
+// full next row a transition function (startOrResumeTimer/pauseTimer/
+// resetTimer) already computed; this is a plain upsert, not an RPC, since
+// it's a single-row write with no cross-table atomicity to guarantee (same
+// reasoning as togglePickleballMatchLock/assignPickleballMatchCourt above).
+export async function upsertPickleballMatchTimer(matchId, tournamentId, state) {
+  const { error } = await supabase.from('pickleball_match_timers').upsert({
+    match_id: matchId,
+    tournament_id: tournamentId,
+    duration_seconds: state.durationSeconds,
+    status: state.status,
+    started_at: state.startedAt ? new Date(state.startedAt).toISOString() : null,
+    remaining_seconds: Math.round(state.remainingSeconds),
+    updated_at: new Date().toISOString(),
+  })
+  if (error) { console.error('[Krida/Pickleball] upsertMatchTimer:', error); throw error }
 }
 
 // ── Match scoring (Track B Phase 4 + Phase 5 advancement) ──────────────────

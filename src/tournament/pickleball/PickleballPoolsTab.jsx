@@ -3,8 +3,10 @@ import { useAuth } from '../../auth/AuthContext.jsx'
 import { usePickleball } from './PickleballContext.jsx'
 import { computePickleballStandings } from './pickleballStandings.js'
 import { validatePoolGeneration, getPoolGenerationState } from './pickleballValidation.js'
-import { STATUS_LABELS, formatGames, entrantLabel } from './pickleballDisplay.js'
+import { STATUS_LABELS, formatGames, entrantLabel, buildMatchNumberMap } from './pickleballDisplay.js'
 import PickleballScoreEntry from './PickleballScoreEntry.jsx'
+import PickleballMatchTimer from './PickleballMatchTimer.jsx'
+import { usePickleballClock } from './usePickleballClock.js'
 
 // Track B Phase 2 — Pools tab. tournament.poolSize is the single source of
 // truth for pool size (Phase 2 plan §7): this component never collects its
@@ -19,10 +21,14 @@ export default function PickleballPoolsTab({ tournament }) {
   const [confirmReset, setConfirmReset] = useState(false)
   const [scoringMatchId, setScoringMatchId] = useState(null)
 
+  const nowMs = usePickleballClock(1000)
   const pools         = tournament.pools ?? []
   const allEntrants    = tournament.entrants ?? []
   const activeEntrants = allEntrants.filter(e => e.status !== 'withdrawn')
   const poolMatches    = (tournament.matches ?? []).filter(m => m.phase === 'pool')
+  const matchNumberById = buildMatchNumberMap(tournament.matches)
+  const timerByMatchId = Object.fromEntries((tournament.matchTimers ?? []).map(mt => [mt.matchId, mt]))
+  const courtLabelById = Object.fromEntries((tournament.courts ?? []).map(c => [c.id, c.label]))
 
   const genState      = getPoolGenerationState(pools, poolMatches)
   const configErrors  = validatePoolGeneration(tournament, activeEntrants)
@@ -152,6 +158,20 @@ export default function PickleballPoolsTab({ tournament }) {
                     </div>
                     {scoringMatchId === m.id && (
                       <PickleballScoreEntry match={m} tournament={tournament} onClose={() => setScoringMatchId(null)} />
+                    )}
+                    {m.status !== 'bye' && m.entrant1 && m.entrant2 && (
+                      <div className="pb-pool-match-timer-row">
+                        <span className="pb-match-timer-label">
+                          Match {matchNumberById.get(m.id)}{courtLabelById[m.courtId] ? ` — ${courtLabelById[m.courtId]}` : ''}
+                        </span>
+                        <PickleballMatchTimer
+                          matchId={m.id}
+                          tournamentId={tournament.id}
+                          timer={timerByMatchId[m.id]}
+                          nowMs={nowMs}
+                          size="compact"
+                        />
+                      </div>
                     )}
                   </div>
                 ))}

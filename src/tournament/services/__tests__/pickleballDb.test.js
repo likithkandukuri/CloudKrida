@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   tournamentRowToObj, memberRowToObj, entrantRowToObj,
   matchRowToObj, galleryRowToObj, poolRowToObj, courtRowToObj, playerRowToObj,
+  matchTimerRowToObj,
 } from '../pickleballDb.js'
 
 describe('tournamentRowToObj', () => {
@@ -176,5 +177,26 @@ describe('playerRowToObj', () => {
     expect(obj.skillRating).toBeNull()
     expect(obj.duprId).toBeNull()
     expect(obj.ageGroup).toBeNull()
+  })
+})
+
+describe('matchTimerRowToObj', () => {
+  it('maps a running timer row', () => {
+    const row = {
+      match_id: 'm1', tournament_id: 't1', duration_seconds: 900,
+      status: 'running', started_at: '2026-08-14T15:00:00Z', remaining_seconds: 542,
+    }
+    expect(matchTimerRowToObj(row)).toEqual({
+      matchId: 'm1', tournamentId: 't1', durationSeconds: 900,
+      status: 'running', startedAt: new Date(row.started_at).getTime(), remainingSeconds: 542,
+    })
+  })
+
+  it('exposes startedAt as null when idle/paused (never started, or not currently running)', () => {
+    const row = {
+      match_id: 'm2', tournament_id: 't1', duration_seconds: 900,
+      status: 'idle', started_at: null, remaining_seconds: 900,
+    }
+    expect(matchTimerRowToObj(row).startedAt).toBeNull()
   })
 })

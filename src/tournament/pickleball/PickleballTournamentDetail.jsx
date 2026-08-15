@@ -10,6 +10,7 @@ import PickleballGalleryView from './PickleballGalleryView.jsx'
 import PickleballTournamentForm from './PickleballTournamentForm.jsx'
 import PickleballTimingStatusBadge from './PickleballTimingStatusBadge.jsx'
 import PickleballCountdown from './PickleballCountdown.jsx'
+import PickleballMatchTimerPanel from './PickleballMatchTimerPanel.jsx'
 import { usePickleballClock } from './usePickleballClock.js'
 import { computeCurrentAndNextRound, formatInZone } from './pickleballTime.js'
 import {
@@ -85,6 +86,7 @@ const READ_ONLY_TABS = [
   { id: 'pools',     label: 'Pools' },
   { id: 'bracket',   label: 'Bracket' },
   { id: 'schedule',  label: 'Schedule' },
+  { id: 'timer',     label: 'Match Timer' },
   { id: 'standings', label: 'Standings' },
   { id: 'history',   label: 'History' },
   { id: 'gallery',   label: 'Gallery' },
@@ -309,6 +311,8 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
               {tab === 'bracket' && <PickleballBracketTab tournament={t} />}
 
               {tab === 'schedule' && <PickleballScheduleTab tournament={t} />}
+
+              {tab === 'timer' && <PickleballMatchTimerPanel tournament={t} nowMs={nowMs} />}
 
               {tab === 'standings' && (
                 standings.length === 0 ? (

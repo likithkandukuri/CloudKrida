@@ -13,6 +13,7 @@ import {
   togglePickleballMatchLock, swapPickleballBracketEntrants,
   assignPickleballMatchBye, removePickleballMatchBye,
   importPickleballTournament,
+  upsertPickleballMatchTimer,
 } from '../services/pickleballDb.js'
 import { generatePoolAssignments, generatePoolMatches } from './pickleballPools.js'
 import { computeMatchOutcome } from './pickleballScoring.js'
@@ -110,6 +111,13 @@ export function PickleballProvider({ children }) {
       .channel(`krida-pb-t-${activeTournamentId}`)
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'pickleball_matches',
+          filter: `tournament_id=eq.${activeTournamentId}` }, reload)
+      // Manual match timers (migration 020) — a Superadmin's Start/Pause/
+      // Reset click on one device shows up live for every guest watching
+      // the same tournament, the same reload-on-change mechanism as
+      // matches/entrants/pools above.
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'pickleball_match_timers',
           filter: `tournament_id=eq.${activeTournamentId}` }, reload)
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'pickleball_entrants',
@@ -227,6 +235,16 @@ export function PickleballProvider({ children }) {
     await reloadActiveTournament()
   }, [reloadActiveTournament])
 
+  // ── Manual match timer (Superadmin only, enforced by RLS) ─────────────────
+  // `nextState` is the full row a pure transition function
+  // (startOrResumeTimer/pauseTimer/resetTimer, pickleballMatchTimer.js)
+  // already computed from the current timer + a timestamp — this is just
+  // the one-shot write, on a click, never on a tick.
+  const setMatchTimer = useCallback(async (matchId, tournamentId, nextState) => {
+    await upsertPickleballMatchTimer(matchId, tournamentId, nextState)
+    await reloadActiveTournament()
+  }, [reloadActiveTournament])
+
   const activeTournament = tournaments.find(t => t.id === activeTournamentId) ?? null
 
   // ── Scoring (Superadmin only, enforced by RLS + the RPC's own re-check) ───
@@ -329,7 +347,7 @@ export function PickleballProvider({ children }) {
       createTournament, updateTournament, deleteTournament,
       addEntrant, editEntrant, withdrawEntrant, reinstateEntrant, removeEntrant, setEntrantMembers,
       generatePools, resetPools, moveEntrantToPool,
-      addCourt, removeCourt, assignMatchCourt,
+      addCourt, removeCourt, assignMatchCourt, setMatchTimer,
       scoreMatch, generateBracket,
       uploadGalleryFile, deleteGalleryItem,
       toggleMatchLock, swapBracketEntrants, assignMatchBye, removeMatchBye,

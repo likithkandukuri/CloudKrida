@@ -1737,33 +1737,6 @@
 .gallery-delete-btn:hover  { background: #b91c1c; transform: scale(1.12); }
 .gallery-delete-btn:active { background: #991b1b; transform: scale(0.96); }
 
-.gallery-thumb-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 8px 8px 6px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.75));
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.gallery-thumb:hover .gallery-thumb-caption { opacity: 1; }
-
-.gallery-thumb-caption-name {
-  font-size: 11px;
-  color: rgba(255,255,255,0.9);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.gallery-thumb-caption-meta {
-  font-size: 10px;
-  color: rgba(255,255,255,0.5);
-  margin-top: 2px;
-}
-
 /* ── Standings table ──────────────────────────────────── */
 .standings-view { width: 100%; }
 

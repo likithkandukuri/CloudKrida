@@ -346,73 +346,45 @@ function UpcomingEventCard({ item, index = 0 }) {
   )
 }
 
-// ── Events Section (homepage's "major secondary feature") ──────────────────
-// One cohesive Events experience — Upcoming and Completed as tabs of the
-// same section, rather than two separate lists. Completed reuses the exact
-// CompletedTournamentCard + fetchCompletedTournaments() the full
-// /tournaments/completed archive already uses (no second competing system);
-// Upcoming is new (fetchUpcomingEvents()). A capped 3-card preview per tab —
-// "View All" only exists for Completed today (Upcoming rarely has more than
-// a couple of entries; easy to add a dedicated page later if that changes).
-function EventsSection() {
-  const navigate = useNavigate()
+// ── Upcoming Events Section ──────────────────────────────────────────────────
+// Its own major homepage section (not a tab) — sits directly after the hero,
+// before Explore Games, per the requested visitor flow. Reuses
+// UpcomingEventCard/fetchUpcomingEvents() unmodified; only larger, fewer-
+// column card sizing (via the .events-section--upcoming modifier in CSS) to
+// make the brochure feel like the section's main visual, not a small tile.
+function UpcomingEventsSection() {
   const { isSuperAdmin } = useAuth()
-  const [tab,       setTab]       = useState('upcoming')
-  const [upcoming,   setUpcoming]   = useState([])
-  const [completed,  setCompleted]  = useState([])
-  const [loading,    setLoading]    = useState(true)
-  const [addOpen,    setAddOpen]    = useState(false)
+  const [upcoming, setUpcoming] = useState([])
+  const [loading,  setLoading]  = useState(true)
+  const [addOpen,  setAddOpen]  = useState(false)
 
-  const loadAll = useCallback(() => {
+  const load = useCallback(() => {
     setLoading(true)
-    Promise.all([fetchUpcomingEvents(), fetchCompletedTournaments()])
-      .then(([u, c]) => { setUpcoming(u); setCompleted(c) })
-      .catch(err => console.error('[Krida] EventsSection load:', err))
+    fetchUpcomingEvents()
+      .then(setUpcoming)
+      .catch(err => console.error('[Krida] UpcomingEventsSection load:', err))
       .finally(() => setLoading(false))
   }, [])
 
-  useEffect(() => { loadAll() }, [loadAll])
+  useEffect(() => { load() }, [load])
 
-  const items   = tab === 'upcoming' ? upcoming : completed
-  const preview = items.slice(0, 3)
+  const preview = upcoming.slice(0, 3)
 
   return (
     <motion.section
-      className="events-section"
+      className="events-section events-section--upcoming"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="events-head">
-        <span className="events-eyebrow">EVENTS</span>
-        <h2 className="events-title">Upcoming &amp; Completed Events</h2>
+        <span className="events-eyebrow">📅 UPCOMING EVENTS</span>
+        <h2 className="events-title">What's Coming Next</h2>
         <p className="events-sub">
-          Discover what's coming next, and relive the tournaments we've already hosted.
+          Save the date — here's what Cloud Krida has planned.
         </p>
-      </div>
-
-      <div className="events-tabbar">
-        <div className="events-tabs" role="tablist">
-          <button
-            role="tab"
-            aria-selected={tab === 'upcoming'}
-            className={`events-tab ${tab === 'upcoming' ? 'events-tab--active' : ''}`}
-            onClick={() => setTab('upcoming')}
-          >
-            📅 Upcoming <span className="events-tab-count">{upcoming.length}</span>
-          </button>
-          <button
-            role="tab"
-            aria-selected={tab === 'completed'}
-            className={`events-tab ${tab === 'completed' ? 'events-tab--active' : ''}`}
-            onClick={() => setTab('completed')}
-          >
-            🏆 Completed <span className="events-tab-count">{completed.length}</span>
-          </button>
-        </div>
-
-        {isSuperAdmin && tab === 'upcoming' && (
+        {isSuperAdmin && (
           <button className="events-add-btn" onClick={() => setAddOpen(true)}>
             + Add Upcoming Event
           </button>
@@ -420,26 +392,74 @@ function EventsSection() {
       </div>
 
       {loading ? (
-        <div className="events-loading">
-          <div className="ct-spinner" />
-        </div>
+        <div className="events-loading"><div className="ct-spinner" /></div>
       ) : preview.length === 0 ? (
         <div className="events-empty">
-          {tab === 'upcoming'
-            ? 'No upcoming events announced yet.'
-            : 'No completed tournaments yet — check back after the next event wraps up.'}
+          No upcoming events announced yet — check back soon.
         </div>
       ) : (
         <div className="events-grid">
-          {preview.map((item, i) => (
-            tab === 'upcoming'
-              ? <UpcomingEventCard key={item.id} item={item} index={i} />
-              : <CompletedTournamentCard key={item.id} item={item} index={i} />
-          ))}
+          {preview.map((item, i) => <UpcomingEventCard key={item.id} item={item} index={i} />)}
         </div>
       )}
 
-      {tab === 'completed' && completed.length > 0 && (
+      {addOpen && (
+        <AddUpcomingEventModal onClose={() => setAddOpen(false)} onCreated={load} />
+      )}
+    </motion.section>
+  )
+}
+
+// ── Completed Events Section ─────────────────────────────────────────────────
+// Its own major homepage section, after Explore Games. Reuses the exact
+// CompletedTournamentCard + fetchCompletedTournaments() that
+// /tournaments/completed already uses — same component, same data, so
+// there is no second completed-event system, just a second place it's shown.
+function CompletedEventsSection() {
+  const navigate = useNavigate()
+  const [completed, setCompleted] = useState([])
+  const [loading,    setLoading]  = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    fetchCompletedTournaments()
+      .then(list => { if (!cancelled) setCompleted(list) })
+      .catch(err => console.error('[Krida] CompletedEventsSection load:', err))
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  const preview = completed.slice(0, 3)
+
+  return (
+    <motion.section
+      className="events-section events-section--completed"
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className="events-head">
+        <span className="events-eyebrow">🏆 COMPLETED EVENTS</span>
+        <h2 className="events-title">Tournament Memories</h2>
+        <p className="events-sub">
+          Relive the events Cloud Krida has already hosted — photos and results included.
+        </p>
+      </div>
+
+      {loading ? (
+        <div className="events-loading"><div className="ct-spinner" /></div>
+      ) : preview.length === 0 ? (
+        <div className="events-empty">
+          No completed tournaments yet — check back after the next event wraps up.
+        </div>
+      ) : (
+        <div className="events-grid">
+          {preview.map((item, i) => <CompletedTournamentCard key={item.id} item={item} index={i} />)}
+        </div>
+      )}
+
+      {completed.length > 0 && (
         <button className="events-viewall" onClick={() => navigate('/tournaments/completed')}>
           View All Completed Tournaments
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -447,42 +467,16 @@ function EventsSection() {
           </svg>
         </button>
       )}
-
-      {addOpen && (
-        <AddUpcomingEventModal onClose={() => setAddOpen(false)} onCreated={loadAll} />
-      )}
     </motion.section>
-  )
-}
-
-// ── StatBadge ────────────────────────────────────────────────────────────────
-function StatBadge({ value, label, delay }) {
-  return (
-    <motion.div
-      className="stat-badge"
-      custom={delay}
-      variants={fadeUp}
-      initial="hidden"
-      animate="visible"
-    >
-      <span className="stat-value">{value}</span>
-      <span className="stat-label">{label}</span>
-    </motion.div>
   )
 }
 
 // ── TournamentsHub ───────────────────────────────────────────────────────────
 export default function TournamentsHub() {
-  const navigate = useNavigate()
-
   usePageMeta({
     title:       'Tournaments — Cloud Krida',
     description: 'Create and manage Chess, Pickleball, and Tennis tournaments with real-time scoring, live brackets, and pool play. Free to explore — no account required.',
   })
-
-  const scrollToGames = () => {
-    document.getElementById('games')?.scrollIntoView({ behavior: 'smooth' })
-  }
 
   return (
     <div className="home">
@@ -499,8 +493,8 @@ export default function TournamentsHub() {
       <GlobalNav />
       <Breadcrumb trail={[{ label: 'Tournament Management' }]} />
 
-      {/* ── Hero ── */}
-      <section className="hero">
+      {/* ── Hero — short and sports/event-led, not a software pitch ── */}
+      <section className="hero hero--compact">
         <div className="hero-glow" />
 
         <motion.div
@@ -509,49 +503,22 @@ export default function TournamentsHub() {
           initial="hidden"
           animate="visible"
         >
-          <motion.div className="hero-badge" variants={fadeUp} custom={0}>
-            <span className="badge-dot" />
-            Tournament Platform
-          </motion.div>
-
-          <motion.h1 className="hero-title" variants={fadeUp} custom={1}>
+          <motion.h1 className="hero-title" variants={fadeUp} custom={0}>
             Cloud Krida
           </motion.h1>
 
-          <motion.p className="hero-tagline" variants={fadeUp} custom={1.5}>
-            <span className="gradient-text">Tournament Management</span>
+          <motion.p className="hero-tagline-short" variants={fadeUp} custom={1}>
+            Where community Chess and Pickleball tournaments come to life.
           </motion.p>
-
-          <motion.p className="hero-subtitle" variants={fadeUp} custom={2}>
-            Create tournaments, track scores in real-time, and compete<br className="desktop-br" />
-            across Chess, Pickleball, and Tennis on one platform.
-          </motion.p>
-
-          <motion.div className="hero-actions" variants={fadeUp} custom={3}>
-            <button className="btn-primary" onClick={scrollToGames}>
-              Explore Games
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 5v14M5 12l7 7 7-7"/>
-              </svg>
-            </button>
-            <button className="btn-ghost" onClick={() => navigate('/login')}>
-              Sign In
-            </button>
-          </motion.div>
-
-          <motion.div className="hero-stats" variants={fadeUp} custom={4}>
-            <StatBadge value="3" label="Games" delay={0} />
-            <div className="stat-divider" />
-            <StatBadge value="11" label="Tournaments" delay={1} />
-            <div className="stat-divider" />
-            <StatBadge value="40" label="Players" delay={2} />
-          </motion.div>
         </motion.div>
 
         <ScrollIndicator />
       </section>
 
-      {/* ── Games Section ── */}
+      {/* ── Upcoming Events — first major section after the hero ── */}
+      <UpcomingEventsSection />
+
+      {/* ── Explore Games ── */}
       <section className="games-section" id="games">
         <motion.div
           className="section-head"
@@ -560,8 +527,8 @@ export default function TournamentsHub() {
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <span className="section-eyebrow">CHOOSE YOUR SPORT</span>
-          <h2 className="section-title">Choose Your Game</h2>
+          <span className="section-eyebrow">🎮 CHOOSE YOUR SPORT</span>
+          <h2 className="section-title">Explore Games</h2>
           <p className="section-sub">
             Three disciplines. One unified platform. Infinite competition.
           </p>
@@ -574,8 +541,8 @@ export default function TournamentsHub() {
         </div>
       </section>
 
-      {/* ── Events (Upcoming + Completed) ── */}
-      <EventsSection />
+      {/* ── Completed Events — after Explore Games ── */}
+      <CompletedEventsSection />
 
       {/* ── Footer ── */}
       <GlobalFooter />

@@ -9,15 +9,6 @@ import {
 
 const ACCEPTED_TYPES = [...PB_GALLERY_ACCEPTED_IMAGE_TYPES, ...PB_GALLERY_ACCEPTED_VIDEO_TYPES]
 
-function timeAgo(ts) {
-  const m = Math.floor((Date.now() - ts) / 60000)
-  if (m < 1) return 'just now'
-  if (m < 60) return `${m}m ago`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
-
 // Full-screen lightbox — same UX shape as Chess's GalleryView.Viewer, written
 // fresh for Pickleball's own CSS classes (.pb-gallery-*), not shared code.
 function Viewer({ items, index, onChange, onClose }) {
@@ -59,11 +50,6 @@ function Viewer({ items, index, onChange, onClose }) {
             : <img src={item.imageUrl} alt={item.name} />}
         </motion.div>
       </AnimatePresence>
-
-      <div className="pb-gallery-viewer-caption">
-        <div>{isVideo ? '🎬' : '📷'} {item.name}</div>
-        <div className="pb-gallery-viewer-caption-time">{timeAgo(item.uploadedAt)}</div>
-      </div>
 
       {items.length > 1 && (
         <>
@@ -213,11 +199,6 @@ export default function PickleballGalleryView({ tournament, canUpload, canDelete
                       title={`Delete ${isVideo ? 'video' : 'photo'}`}
                     >✕</button>
                   )}
-
-                  <div className="pb-gallery-thumb-caption">
-                    <div className="pb-gallery-thumb-caption-name">{item.name}</div>
-                    <div className="pb-gallery-thumb-caption-meta">{timeAgo(item.uploadedAt)}</div>
-                  </div>
                 </motion.div>
               )
             })}

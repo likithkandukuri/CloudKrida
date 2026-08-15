@@ -73,18 +73,24 @@
   background: radial-gradient(ellipse 100% 100% at 50% 0%, transparent 40%, var(--bg-base) 100%);
 }
 
-/* ── Hero ─────────────────────────────────────────────── */
+/* ── Hero ─────────────────────────────────────────────────
+   Deliberately short: a sports/event brand moment (title + one tagline
+   line), not a software pitch. No min-height:100vh — the section sizes to
+   its own (now much shorter) content so Upcoming Events, the new first
+   major section below it, is reached quickly rather than sitting a full
+   extra viewport down. */
 .hero {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 126px 24px 100px;
+  padding: 150px 24px 90px;
   text-align: center;
 }
+
+.hero--compact { padding: 150px 24px 70px; }
 
 .hero-glow {
   position: absolute;
@@ -104,159 +110,27 @@
 }
 
 .hero-content {
-  max-width: 760px;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #86efac;
-  letter-spacing: 0.04em;
-}
-
-.badge-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--brand-tournament);
-  border-radius: 50%;
-  animation: blink 2s ease-in-out infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+  gap: 18px;
 }
 
 .hero-title {
-  font-size: clamp(56px, 9vw, 96px);
+  font-size: clamp(48px, 8vw, 80px);
   font-weight: 900;
   line-height: 1.0;
   letter-spacing: -0.03em;
   color: var(--text-primary);
 }
 
-.hero-title .gradient-text {
-  display: block;
-  line-height: 1.05;
-}
-
-.hero-tagline {
-  font-size: clamp(22px, 3.4vw, 32px);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  margin-top: -8px;
-}
-
-.hero-subtitle {
-  font-size: clamp(16px, 2vw, 18px);
-  font-weight: 400;
-  line-height: 1.65;
-  color: var(--text-secondary);
-  max-width: 560px;
-}
-
-.desktop-br { display: block; }
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.btn-primary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, #7c3aed, #4f46e5);
-  border-radius: 12px;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  box-shadow: 0 0 30px rgba(124, 58, 237, 0.4), 0 4px 16px rgba(0, 0, 0, 0.4);
-  transition: transform 0.2s var(--ease-out-expo), box-shadow 0.2s, filter 0.2s;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 50px rgba(124, 58, 237, 0.6), 0 8px 24px rgba(0, 0, 0, 0.5);
-  filter: brightness(1.1);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-ghost {
-  padding: 14px 28px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  color: var(--text-secondary);
-  font-size: 15px;
+.hero-tagline-short {
+  font-size: clamp(16px, 2.2vw, 19px);
   font-weight: 500;
-  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
-}
-
-.btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--border-glow);
-  color: var(--text-primary);
-  transform: translateY(-2px);
-}
-
-/* Hero stats */
-.hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 18px 32px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  backdrop-filter: blur(12px);
-}
-
-.stat-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
-}
-
-.stat-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 36px;
-  background: var(--border-subtle);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  max-width: 480px;
 }
 
 /* Scroll indicator */
@@ -813,63 +687,10 @@
   line-height: 1.6;
 }
 
-.events-tabbar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 32px;
-  position: relative;
-}
-
-.events-tabs {
-  display: inline-flex;
-  padding: 5px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 100px;
-  gap: 4px;
-}
-
-.events-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  border-radius: 100px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.events-tab:hover:not(.events-tab--active) {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.events-tab--active {
-  background: linear-gradient(135deg, rgba(240, 180, 41, 0.22), rgba(184, 134, 11, 0.22));
-  color: #f0b429;
-}
-
-.events-tab-count {
-  font-size: 11px;
-  font-weight: 800;
-  padding: 1px 7px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.08);
-  color: inherit;
-}
-
 .events-add-btn {
-  position: absolute;
-  right: 0;
-  padding: 9px 16px;
+  display: inline-flex;
+  margin-top: 18px;
+  padding: 9px 18px;
   border-radius: 100px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-card);
@@ -912,6 +733,23 @@
 .events-grid > div {
   flex: 1 1 340px;
   max-width: 380px;
+}
+
+/* Upcoming Events gets noticeably larger cards than Completed — it's the
+   first major section after the hero and the brochure is meant to read as
+   the page's main visual, not a small tile in a dense grid. Same
+   UpcomingEventCard markup, just given more room via these overrides. */
+.events-section--upcoming .events-grid > div {
+  flex: 1 1 420px;
+  max-width: 460px;
+}
+
+.events-section--upcoming .ct-card-cover {
+  height: 300px;
+}
+
+.events-section--upcoming .ct-card-title {
+  font-size: 19px;
 }
 
 .events-viewall {
@@ -1175,36 +1013,15 @@
   .card-visual { height: 220px; }
 
   .navbar-links { display: none; }
-  .desktop-br   { display: none; }
-
-  .hero-stats {
-    gap: 16px;
-    padding: 14px 20px;
-  }
 }
 
 @media (max-width: 600px) {
-  .hero { padding: 84px 16px 80px; }
+  /* Fixed GlobalNav + Breadcrumb still need ~140px clearance even with a
+     short hero — there's no min-height:100vh centering trick to fall back
+     on now that the content is this brief. */
+  .hero { padding: 140px 16px 60px; }
 
   .hero-title { letter-spacing: -0.02em; }
-
-  .hero-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .btn-primary,
-  .btn-ghost {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .hero-stats {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .stat-divider { width: 40px; height: 1px; }
 
   .games-section { padding: 60px 16px 80px; }
 }
@@ -1218,7 +1035,7 @@
 
 /* ── Very small phones (≤430px) ─────────────────────────── */
 @media (max-width: 430px) {
-  .hero { padding: 94px 16px 72px; }
+  .hero { padding: 140px 16px 52px; }
   .section-head { margin-bottom: 40px; }
   .games-section { padding: 48px 16px 56px; }
   .section-sub { font-size: 15px; }
@@ -1270,32 +1087,6 @@
 /* Hero */
 [data-theme="light"] .hero-glow {
   background: radial-gradient(circle, rgba(21, 128, 61, 0.08), transparent 65%);
-}
-[data-theme="light"] .hero-badge {
-  background: rgba(21, 128, 61, 0.08);
-  border-color: rgba(21, 128, 61, 0.22);
-  color: #15803d;
-}
-[data-theme="light"] .badge-dot {
-  background: var(--brand-tournament);
-}
-[data-theme="light"] .hero-stats {
-  background: rgba(255, 255, 255, 0.75);
-  border-color: var(--border-subtle);
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.06);
-}
-[data-theme="light"] .stat-divider {
-  background: var(--border-subtle);
-}
-[data-theme="light"] .btn-ghost {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: var(--border-subtle);
-  color: var(--text-secondary);
-}
-[data-theme="light"] .btn-ghost:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: var(--border-glow);
-  color: var(--text-primary);
 }
 [data-theme="light"] .scroll-mouse {
   border-color: rgba(99, 102, 241, 0.3);

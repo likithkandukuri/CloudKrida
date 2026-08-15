@@ -775,18 +775,6 @@
 .pb-gallery-delete-btn:hover  { background: #b91c1c; transform: scale(1.12); }
 .pb-gallery-delete-btn:active { background: #991b1b; transform: scale(0.96); }
 
-.pb-gallery-thumb-caption {
-  position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 8px 6px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.75));
-  opacity: 0; transition: opacity 0.2s;
-}
-.pb-gallery-thumb:hover .pb-gallery-thumb-caption { opacity: 1; }
-.pb-gallery-thumb-caption-name {
-  font-size: 11px; color: rgba(255,255,255,0.9);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.pb-gallery-thumb-caption-meta { font-size: 10px; color: rgba(255,255,255,0.5); margin-top: 2px; }
-
 .pb-gallery-viewer {
   position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 600;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -805,9 +793,6 @@
   max-width: 90vw; max-height: 80vh; border-radius: 10px; box-shadow: 0 32px 80px rgba(0,0,0,0.8);
 }
 .pb-gallery-viewer-media img { object-fit: contain; }
-.pb-gallery-viewer-caption { position: absolute; bottom: 48px; text-align: center; }
-.pb-gallery-viewer-caption div:first-child { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
-.pb-gallery-viewer-caption-time { font-size: 11px; color: rgba(255,255,255,0.35); }
 .pb-gallery-viewer-nav {
   position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%;
   background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 22px; cursor: pointer;

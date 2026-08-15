@@ -9,15 +9,6 @@ const ACCEPTED_TYPES       = [...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_VIDEO_TYPES]
 const MAX_IMAGE_BYTES = 12  * 1024 * 1024   // 12 MB
 const MAX_VIDEO_BYTES = 100 * 1024 * 1024   // 100 MB
 
-function timeAgo(ts) {
-  const m = Math.floor((Date.now() - ts) / 60000)
-  if (m < 1)  return 'just now'
-  if (m < 60) return `${m}m ago`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ago`
-  return `${Math.floor(h / 24)}d ago`
-}
-
 // ── Full-screen viewer ────────────────────────────────────────────────────────
 function Viewer({ items, index, onChange, onClose }) {
   const item    = items[index]
@@ -83,13 +74,6 @@ function Viewer({ items, index, onChange, onClose }) {
           )}
         </motion.div>
       </AnimatePresence>
-
-      <div style={{ position: 'absolute', bottom: 48, textAlign: 'center' }}>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 4 }}>
-          {isVideo ? '🎬' : '📷'} {item.name}
-        </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{timeAgo(item.uploadedAt)}</div>
-      </div>
 
       {items.length > 1 && (
         <>
@@ -362,12 +346,6 @@ export default function GalleryView({
                       title={`Delete ${isVideo ? 'video' : 'photo'}`}
                     >✕</button>
                   )}
-
-                  {/* Caption */}
-                  <div className="gallery-thumb-caption">
-                    <div className="gallery-thumb-caption-name">{item.name}</div>
-                    <div className="gallery-thumb-caption-meta">{timeAgo(item.uploadedAt)}</div>
-                  </div>
                 </motion.div>
               )
             })}

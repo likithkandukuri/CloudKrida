@@ -1,9 +1,15 @@
 import { motion } from 'framer-motion'
 import { usePickleball } from './PickleballContext.jsx'
 import { STATUS_LABELS, EVENT_TYPE_LABELS, FORMAT_LABELS } from './pickleballDisplay.js'
+import PickleballTimingStatusBadge from './PickleballTimingStatusBadge.jsx'
+import PickleballCountdown from './PickleballCountdown.jsx'
+import { computeTimingStatus } from './pickleballTime.js'
+import { usePickleballClock } from './usePickleballClock.js'
 
 export default function PickleballTournamentList({ onOpen, onCreate, onBack }) {
   const { tournaments, dataLoading, loadError } = usePickleball()
+  // One shared ticking clock for the whole grid of cards, not one per card.
+  const nowMs = usePickleballClock(30000)
 
   return (
     <div className="pb-section pb-container" style={{ paddingTop: 150 }}>
@@ -32,29 +38,38 @@ export default function PickleballTournamentList({ onOpen, onCreate, onBack }) {
         </div>
       ) : (
         <div className="pb-tournament-grid">
-          {tournaments.map((t, i) => (
-            <motion.button
-              key={t.id}
-              className="pb-tournament-card"
-              onClick={() => onOpen(t.id)}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(i * 0.05, 0.3), duration: 0.4 }}
-            >
-              <div className="pb-card-top">
-                <div className="pb-card-name">{t.name}</div>
-                <span className={`pb-status pb-status--${t.status}`}>{STATUS_LABELS[t.status] ?? t.status}</span>
-              </div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                {EVENT_TYPE_LABELS[t.eventType] ?? t.eventType} · {FORMAT_LABELS[t.format] ?? t.format}
-              </div>
-              <div className="pb-card-meta">
-                {t.skillDivision && <span className="pb-tag">{t.skillDivision}</span>}
-                {t.ageBand && <span className="pb-tag">{t.ageBand}</span>}
-                {t.courtCount && <span className="pb-tag">{t.courtCount} courts</span>}
-              </div>
-            </motion.button>
-          ))}
+          {tournaments.map((t, i) => {
+            const timingStatus = computeTimingStatus(t, nowMs)
+            const countdownTarget = timingStatus === 'starting_soon' ? t.startAt : timingStatus === 'live' ? t.endAt : null
+            const countdownLabel = timingStatus === 'starting_soon' ? 'Starts in' : timingStatus === 'live' ? 'Ends in' : ''
+            return (
+              <motion.button
+                key={t.id}
+                className="pb-tournament-card"
+                onClick={() => onOpen(t.id)}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.05, 0.3), duration: 0.4 }}
+              >
+                <div className="pb-card-top">
+                  <div className="pb-card-name">{t.name}</div>
+                  <span className={`pb-status pb-status--${t.status}`}>{STATUS_LABELS[t.status] ?? t.status}</span>
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                  {EVENT_TYPE_LABELS[t.eventType] ?? t.eventType} · {FORMAT_LABELS[t.format] ?? t.format}
+                </div>
+                <div className="pb-card-meta">
+                  <PickleballTimingStatusBadge tournament={t} nowMs={nowMs} />
+                  {t.skillDivision && <span className="pb-tag">{t.skillDivision}</span>}
+                  {t.ageBand && <span className="pb-tag">{t.ageBand}</span>}
+                  {t.courtCount && <span className="pb-tag">{t.courtCount} courts</span>}
+                </div>
+                {countdownTarget != null && (
+                  <PickleballCountdown label={countdownLabel} targetMs={countdownTarget} nowMs={nowMs} />
+                )}
+              </motion.button>
+            )
+          })}
         </div>
       )}
     </div>

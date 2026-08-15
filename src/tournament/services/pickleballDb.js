@@ -38,6 +38,14 @@ export function tournamentRowToObj(row) {
     // PDF importer (migration 017) — null for every organically-created tournament.
     advancementMapping: row.advancement_mapping ?? null,
     importedRules:      row.imported_rules ?? null,
+    // Tournament timing (migration 019) — null unless the source PDF stated
+    // it (or, for start/end, unless derived from the printed schedule).
+    // Exposed as epoch ms, matching createdAt/updatedAt/brochureUploadedAt.
+    startAt:                 row.start_at ? new Date(row.start_at).getTime() : null,
+    endAt:                   row.end_at ? new Date(row.end_at).getTime() : null,
+    checkInAt:               row.check_in_at ? new Date(row.check_in_at).getTime() : null,
+    registrationDeadlineAt:  row.registration_deadline_at ? new Date(row.registration_deadline_at).getTime() : null,
+    timeZone:                row.time_zone ?? null,
   }
 }
 
@@ -212,6 +220,17 @@ export async function updatePickleballTournament(id, data) {
   if (data.brochurePath       !== undefined) u.brochure_path        = data.brochurePath
   if (data.brochureUrl        !== undefined) u.brochure_url         = data.brochureUrl
   if (data.brochureUploadedAt !== undefined) u.brochure_uploaded_at = data.brochureUploadedAt
+  // Timing (migration 019) — pass-through only, same "!== undefined" partial-
+  // patch convention as every other optional field above. There is no UI
+  // input for these on the manual create/edit form yet (out of scope for
+  // this change); this exists so editing an imported tournament's name,
+  // status, etc. through that same form round-trips its timing data
+  // unchanged rather than silently nulling it out.
+  if (data.startAt                !== undefined) u.start_at                 = data.startAt ? new Date(data.startAt).toISOString() : null
+  if (data.endAt                  !== undefined) u.end_at                   = data.endAt ? new Date(data.endAt).toISOString() : null
+  if (data.checkInAt              !== undefined) u.check_in_at              = data.checkInAt ? new Date(data.checkInAt).toISOString() : null
+  if (data.registrationDeadlineAt !== undefined) u.registration_deadline_at = data.registrationDeadlineAt ? new Date(data.registrationDeadlineAt).toISOString() : null
+  if (data.timeZone               !== undefined) u.time_zone               = data.timeZone || null
 
   const { data: row, error } = await supabase
     .from('pickleball_tournaments').update(u).eq('id', id).select().single()

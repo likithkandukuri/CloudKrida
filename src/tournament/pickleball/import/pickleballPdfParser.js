@@ -15,6 +15,8 @@
 // pickleballImportValidation.js is what actually checks this output for
 // internal consistency — this module only reads, it never judges.
 
+import { TIMEZONE_ABBREVIATIONS, parseLooseTime } from '../pickleballTime.js'
+
 function field(value, sourceText = null) {
   return { value, sourceText }
 }
@@ -32,6 +34,8 @@ function emptyDraft() {
     tournamentInfo: {
       name: field(null), organizer: field(null), date: field(null),
       location: field(null), courtCount: field(null), durationText: field(null),
+      startTime: field(null), endTime: field(null), checkInTime: field(null),
+      registrationDeadline: field(null), timeZone: field(null),
     },
     rules: { structured, rawText: '' },
     declaredTotals: { totalTeams: field(null), totalMatches: field(null), totalCourts: field(null) },
@@ -319,6 +323,112 @@ function deriveKnockoutMapping(draft) {
   draft.knockout = { quarterfinals }
 }
 
+const TIME_TOKEN = /\d{1,2}(?::\d{2})?\s*(?:am|pm)/i
+
+function parseDateToISO(str) {
+  const d = new Date(str)
+  if (Number.isNaN(d.getTime())) return null
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+// ── Venue ────────────────────────────────────────────────────────────────
+function parseVenue(lines, draft) {
+  for (const { text } of lines) {
+    const m = text.match(/^(?:Venue|Location|Address)\s*:?\s*(.+)$/i)
+    if (m && m[1].trim()) { draft.tournamentInfo.location = field(m[1].trim(), text); return }
+  }
+}
+
+// ── Tournament-level timing ─────────────────────────────────────────────────
+// Every sub-field here follows the same "never invent" rule as the rest of
+// this parser: only an explicit label (or, for the date only, a
+// recognizable calendar-date pattern in the document's own header) counts.
+// Start/end time additionally fall back to the earliest/latest printed
+// schedule time-slot when no explicit label exists — confirmed as intended
+// behavior, and disclosed via sourceText as a derivation (the times are
+// literally printed in the schedule, just aggregated), the same convention
+// already used for courtCount's schedule-derived fallback below.
+//
+// Check-in time and registration deadline are modeled as a time-of-day on
+// the tournament's own date (combined with `date` at mapping time in
+// pickleballImportMapping.js) rather than an independent date+time, since
+// that's how they're printed on a same-day tournament plan; the review
+// screen lets a Superadmin correct this for the rare document where a
+// registration deadline falls on a different day.
+function parseTimingInfo(pages, lines, draft) {
+  const headerLines = (pages[0] ?? []).slice(0, 20)
+  for (const { text } of headerLines) {
+    if (draft.tournamentInfo.date.value) break
+    const labeled = text.match(/^Date\s*:?\s*(.+)$/i)
+    const candidate = labeled ? labeled[1] : text
+    const monthName = candidate.match(/\b((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4})\b/i)
+    const slash = candidate.match(/\b(\d{1,2}\/\d{1,2}\/\d{2,4})\b/)
+    const raw = monthName?.[1] ?? slash?.[1]
+    if (raw) {
+      const iso = parseDateToISO(raw)
+      if (iso) draft.tournamentInfo.date = field(iso, text)
+    }
+  }
+
+  for (const { text } of lines) {
+    if (draft.tournamentInfo.startTime.value) break
+    const m = text.match(/\b(?:Start\s*Time|Starts?|Begins)\s*:?\s*(?:at\s*)?(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i)
+    if (m) draft.tournamentInfo.startTime = field(m[1].trim(), text)
+  }
+  for (const { text } of lines) {
+    if (draft.tournamentInfo.endTime.value) break
+    const m = text.match(/\b(?:End\s*Time|Ends|Concludes|Finishes)\s*:?\s*(?:at\s*)?(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i)
+    if (m) draft.tournamentInfo.endTime = field(m[1].trim(), text)
+  }
+  for (const { text } of lines) {
+    if (draft.tournamentInfo.checkInTime.value) break
+    const m = text.match(/\bCheck[- ]?in\s*:?\s*(?:time\s*:?\s*|opens?\s*(?:at)?\s*)?(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i)
+    if (m) draft.tournamentInfo.checkInTime = field(m[1].trim(), text)
+  }
+  for (const { text } of lines) {
+    if (draft.tournamentInfo.registrationDeadline.value) break
+    const m = text.match(/\bRegistration\s*Deadline\s*:?\s*(?:at\s*)?(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i)
+    if (m) draft.tournamentInfo.registrationDeadline = field(m[1].trim(), text)
+  }
+  for (const { text } of lines) {
+    if (draft.tournamentInfo.timeZone.value) break
+    const labeled = text.match(/\bTime\s*Zone\s*:?\s*([A-Za-z/_]{2,})/i)
+    if (labeled) {
+      const raw = labeled[1]
+      const iana = TIMEZONE_ABBREVIATIONS[raw.toUpperCase()] ?? (raw.includes('/') ? raw : null)
+      if (iana) { draft.tournamentInfo.timeZone = field(iana, text); continue }
+    }
+    const abbr = text.match(/\b(ET|EST|EDT|CT|CST|CDT|MT|MST|MDT|PT|PST|PDT)\b/)
+    if (abbr) draft.tournamentInfo.timeZone = field(TIMEZONE_ABBREVIATIONS[abbr[1]], text)
+  }
+
+  // Derived start/end fallback — only fills whichever of the two wasn't
+  // already found via an explicit label above.
+  if (!draft.tournamentInfo.startTime.value || !draft.tournamentInfo.endTime.value) {
+    const fragments = draft.schedule
+      .map(row => row.timeSlot?.value)
+      .filter(Boolean)
+      .flatMap(slot => slot.split('-').map(s => s.trim()))
+      .filter(s => TIME_TOKEN.test(s))
+      .map(s => ({ s, mins: (() => { const t = parseLooseTime(s); return t ? t.hour * 60 + t.minute : null })() }))
+      .filter(x => x.mins != null)
+
+    if (fragments.length) {
+      const earliest = fragments.reduce((a, b) => (b.mins < a.mins ? b : a))
+      const latest = fragments.reduce((a, b) => (b.mins > a.mins ? b : a))
+      if (!draft.tournamentInfo.startTime.value) {
+        draft.tournamentInfo.startTime = field(earliest.s, `derived from schedule: earliest printed time slot "${earliest.s}"`)
+      }
+      if (!draft.tournamentInfo.endTime.value) {
+        draft.tournamentInfo.endTime = field(latest.s, `derived from schedule: latest printed time slot "${latest.s}"`)
+      }
+    }
+  }
+}
+
 // The one function the wizard calls: pages -> the shared draft shape that
 // pickleballImportValidation.js and pickleballImportMapping.js consume.
 export function parseTournamentPlan(pages) {
@@ -330,6 +440,8 @@ export function parseTournamentPlan(pages) {
   parseGroupsTable(lines, draft)
   parseScheduleTable(lines, draft)
   deriveKnockoutMapping(draft)
+  parseVenue(lines, draft)
+  parseTimingInfo(pages, lines, draft)
 
   if (!draft.tournamentInfo.courtCount.value && draft.courts.length) {
     draft.tournamentInfo.courtCount = field(draft.courts.length, `${draft.courts.length} courts detected in the schedule table`)

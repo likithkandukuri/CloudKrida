@@ -8,6 +8,10 @@ import PickleballBracketTab from './PickleballBracketTab.jsx'
 import PickleballScheduleTab from './PickleballScheduleTab.jsx'
 import PickleballGalleryView from './PickleballGalleryView.jsx'
 import PickleballTournamentForm from './PickleballTournamentForm.jsx'
+import PickleballTimingStatusBadge from './PickleballTimingStatusBadge.jsx'
+import PickleballCountdown from './PickleballCountdown.jsx'
+import { usePickleballClock } from './usePickleballClock.js'
+import { computeCurrentAndNextRound, formatInZone } from './pickleballTime.js'
 import {
   STATUS_LABELS, EVENT_TYPE_LABELS, FORMAT_LABELS,
   formatGames, entrantLabel, formatDate,
@@ -107,6 +111,7 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
   const [deleteError, setDeleteError] = useState(null)
 
   const cancelDelete = () => { setDeleting(false); setDeleteConfirmText(''); setDeleteError(null) }
+  const nowMs = usePickleballClock(1000)
 
   const TABS = isSuperAdmin ? [{ id: 'entrants', label: 'Entrants' }, ...READ_ONLY_TABS] : READ_ONLY_TABS
 
@@ -116,6 +121,16 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
     if (!isHydrated) return []
     return computePickleballStandings(activeTournament.entrants, activeTournament.matches)
   }, [isHydrated, activeTournament])
+
+  // Current/next round — derived from real match scheduling (matches
+  // sharing the same scheduledAt), no new schema. Only meaningful once
+  // matches actually carry a scheduledAt, i.e. tournaments imported with a
+  // resolvable date; a manually-created tournament simply shows nothing
+  // here, unchanged from before this feature existed.
+  const { currentRound, nextRound } = useMemo(() => {
+    if (!isHydrated) return { currentRound: null, nextRound: null }
+    return computeCurrentAndNextRound(activeTournament.matches, nowMs)
+  }, [isHydrated, activeTournament, nowMs])
 
   if (!activeTournament) {
     return (
@@ -168,6 +183,7 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span className={`pb-status pb-status--${t.status}`}>{STATUS_LABELS[t.status] ?? t.status}</span>
+            <PickleballTimingStatusBadge tournament={t} nowMs={nowMs} />
             {isSuperAdmin && !editing && !deleting && (
               <button className="pb-btn-small pb-btn-small--ghost" onClick={() => setEditing(true)}>Edit</button>
             )}
@@ -180,6 +196,36 @@ export default function PickleballTournamentDetail({ tournamentId, onBack }) {
         {isSuperAdmin && !editing && !deleting && (
           <div style={{ marginTop: 10 }}>
             <PickleballBrochureControl tournament={t} onUpdate={updateTournament} />
+          </div>
+        )}
+
+        {/* Public timing summary — visible to guests and superadmins alike,
+            same as the rest of this page. Only renders lines for data that
+            actually exists; a manually-created tournament with no timing
+            fields shows nothing here at all. */}
+        {!editing && !deleting && (t.startAt || t.endAt || t.location) && (
+          <div className="pb-timing-header">
+            <div className="pb-timing-header-row">
+              {t.date && <span>📅 {formatDate(new Date(t.date).getTime())}</span>}
+              {t.startAt && <span>🕐 {formatInZone(t.startAt, t.timeZone, 'time')}{t.endAt ? ` – ${formatInZone(t.endAt, t.timeZone, 'time')}` : ''}</span>}
+              {t.location && <span>📍 {t.location}</span>}
+              {t.checkInAt && <span>✅ Check-in {formatInZone(t.checkInAt, t.timeZone, 'time')}</span>}
+              <PickleballCountdown label="Starts in" targetMs={t.startAt} nowMs={nowMs} />
+              <PickleballCountdown label="Check-in starts in" targetMs={t.checkInAt} nowMs={nowMs} />
+              <PickleballCountdown label="Ends in" targetMs={t.endAt} nowMs={nowMs} />
+            </div>
+            {(currentRound || nextRound) && (
+              <div className="pb-timing-round-line">
+                {currentRound && <>Current round: <strong>{formatInZone(currentRound.scheduledAt, t.timeZone, 'time')}</strong> ({currentRound.matches.length} match{currentRound.matches.length !== 1 ? 'es' : ''})</>}
+                {currentRound && nextRound && ' · '}
+                {nextRound && (
+                  <>
+                    Next round: <strong>{formatInZone(nextRound.scheduledAt, t.timeZone, 'time')}</strong>{' '}
+                    <PickleballCountdown label="in" targetMs={nextRound.scheduledAt} nowMs={nowMs} />
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
 

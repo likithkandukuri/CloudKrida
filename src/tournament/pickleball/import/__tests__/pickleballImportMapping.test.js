@@ -48,4 +48,67 @@ describe('toImportPayload — ATA fixture', () => {
     expect(payload.p_tournament.imported_rules.structured.leagueMatchesPerTeam.value).toBe(4)
     expect(payload.p_tournament.imported_rules.structured.minimumParticipantAge.value).toBeNull()
   })
+
+  it('leaves every timing field null — the ATA fixture states no date, so nothing can be resolved to an absolute instant', () => {
+    expect(payload.p_tournament.start_at).toBeNull()
+    expect(payload.p_tournament.end_at).toBeNull()
+    expect(payload.p_tournament.check_in_at).toBeNull()
+    expect(payload.p_tournament.registration_deadline_at).toBeNull()
+    expect(payload.p_tournament.time_zone).toBeNull()
+    expect(payload.p_matches.every(m => m.scheduled_at === null)).toBe(true)
+  })
+})
+
+describe('toImportPayload — tournament timing', () => {
+  const f = (value, sourceText = null) => ({ value, sourceText })
+
+  function timingDraft({ date, timeZone, startTime, endTime, checkInTime, registrationDeadline, timeSlot = '8:00 AM - 9:00 AM' } = {}) {
+    return {
+      tournamentInfo: {
+        name: f('Timing Test'), organizer: f(null), date: f(date ?? null),
+        location: f(null), courtCount: f(null), durationText: f(null),
+        startTime: f(startTime ?? null), endTime: f(endTime ?? null),
+        checkInTime: f(checkInTime ?? null), registrationDeadline: f(registrationDeadline ?? null),
+        timeZone: f(timeZone ?? null),
+      },
+      rules: { structured: {}, rawText: '' },
+      declaredTotals: { totalTeams: f(2), totalMatches: f(1), totalCourts: f(1) },
+      groups: [{ label: 'A', teams: [{ code: 'A1', players: ['P1'] }, { code: 'A2', players: ['P2'] }] }],
+      courts: [{ label: 'Court 1' }],
+      schedule: [{
+        stage: 'league', court: f('Court 1'), timeSlot: f(timeSlot), roundIndex: 0,
+        team1: f('A1'), team2: f('A2'),
+      }],
+      knockout: { quarterfinals: [] },
+    }
+  }
+
+  it('resolves start_at/end_at/check_in_at/registration_deadline_at using the stated date + time zone', () => {
+    const payload = toImportPayload(timingDraft({
+      date: '2026-08-14', timeZone: 'America/Los_Angeles',
+      startTime: '8:00 AM', endTime: '5:00 PM', checkInTime: '7:30 AM', registrationDeadline: '7:00 AM',
+    }))
+    expect(payload.p_tournament.start_at).toBe('2026-08-14T15:00:00.000Z') // 8am PDT -> 15:00 UTC
+    expect(payload.p_tournament.end_at).toBe('2026-08-15T00:00:00.000Z')  // 5pm PDT -> 00:00 UTC the *next* calendar day
+    expect(payload.p_tournament.check_in_at).toBe('2026-08-14T14:30:00.000Z')
+    expect(payload.p_tournament.registration_deadline_at).toBe('2026-08-14T14:00:00.000Z')
+    expect(payload.p_tournament.time_zone).toBe('America/Los_Angeles')
+  })
+
+  it('resolves the per-match scheduled_at using the same date + time zone as the tournament-level fields', () => {
+    const payload = toImportPayload(timingDraft({ date: '2026-08-14', timeZone: 'America/Los_Angeles' }))
+    expect(payload.p_matches[0].scheduled_at).toBe('2026-08-14T15:00:00.000Z')
+  })
+
+  it('falls back to naive local construction when no time zone is stated (parity with pre-timezone behavior)', () => {
+    const payload = toImportPayload(timingDraft({ date: '2026-08-14', startTime: '8:00 AM' }))
+    const expected = new Date(2026, 7, 14, 8, 0, 0, 0).toISOString()
+    expect(payload.p_tournament.start_at).toBe(expected)
+  })
+
+  it('stays null when the date is unknown, even if a time-of-day was stated', () => {
+    const payload = toImportPayload(timingDraft({ startTime: '8:00 AM', timeZone: 'America/Los_Angeles' }))
+    expect(payload.p_tournament.start_at).toBeNull()
+    expect(payload.p_matches[0].scheduled_at).toBeNull()
+  })
 })

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   validateTeamCounts, validateLeagueMatchCounts, validateAllTeamsScheduled,
   validateNoSimultaneousMatches, validateNoCourtConflicts,
-  validateTeamReferences, validateAdvancementMapping, runAllValidations,
+  validateTeamReferences, validateAdvancementMapping, validateTimingConsistency, runAllValidations,
 } from '../pickleballImportValidation.js'
 import { ataDraft } from '../__fixtures__/ataDraft.js'
 
@@ -158,5 +158,45 @@ describe('validateAdvancementMapping', () => {
 
   it('does not flag valid rank references', () => {
     expect(validateAdvancementMapping(ataDraft)).toEqual([])
+  })
+})
+
+describe('validateTimingConsistency', () => {
+  const f = (value) => ({ value })
+  const draftWith = (info) => ({ tournamentInfo: { startTime: f(null), endTime: f(null), checkInTime: f(null), registrationDeadline: f(null), ...info } })
+
+  it('stays quiet when no timing fields are stated at all', () => {
+    expect(validateTimingConsistency(draftWith({}))).toEqual([])
+  })
+
+  it('stays quiet when everything is in a sensible order', () => {
+    const draft = draftWith({
+      startTime: f('8:00 AM'), endTime: f('5:00 PM'), checkInTime: f('7:30 AM'), registrationDeadline: f('7:00 AM'),
+    })
+    expect(validateTimingConsistency(draft)).toEqual([])
+  })
+
+  it('warns (not errors) when end time is not after start time', () => {
+    const draft = draftWith({ startTime: f('5:00 PM'), endTime: f('8:00 AM') })
+    const issues = validateTimingConsistency(draft)
+    expect(issues).toHaveLength(1)
+    expect(issues[0].level).toBe('warning')
+    expect(issues[0].code).toBe('end_before_start')
+  })
+
+  it('warns when check-in is after the tournament start time', () => {
+    const draft = draftWith({ startTime: f('8:00 AM'), checkInTime: f('8:30 AM') })
+    const issues = validateTimingConsistency(draft)
+    expect(issues.some(i => i.code === 'checkin_after_start')).toBe(true)
+  })
+
+  it('warns when the registration deadline is after the tournament start time', () => {
+    const draft = draftWith({ startTime: f('8:00 AM'), registrationDeadline: f('8:15 AM') })
+    const issues = validateTimingConsistency(draft)
+    expect(issues.some(i => i.code === 'deadline_after_start')).toBe(true)
+  })
+
+  it('never flags anything on the real ATA fixture (which states no explicit timing labels)', () => {
+    expect(validateTimingConsistency(ataDraft)).toEqual([])
   })
 })

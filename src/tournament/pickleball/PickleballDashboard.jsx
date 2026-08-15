@@ -1,8 +1,28 @@
 import { motion } from 'framer-motion'
 import { usePickleball } from './PickleballContext.jsx'
+import PickleballCountdown from './PickleballCountdown.jsx'
+import { computeTimingStatus } from './pickleballTime.js'
+import { usePickleballClock } from './usePickleballClock.js'
+
+// Picks the single most relevant tournament to headline, if any: a live one
+// first, else the soonest starting-soon one. Merely "upcoming" tournaments
+// (more than an hour out) are deliberately not surfaced here — the banner
+// exists to answer "is something happening right now / very soon", not to
+// duplicate the tournament library.
+function pickHeadline(tournaments, nowMs) {
+  const live = tournaments.filter(t => computeTimingStatus(t, nowMs) === 'live')
+  if (live.length) return { tournament: live[0], status: 'live' }
+  const soon = tournaments
+    .filter(t => computeTimingStatus(t, nowMs) === 'starting_soon')
+    .sort((a, b) => (a.startAt ?? Infinity) - (b.startAt ?? Infinity))
+  if (soon.length) return { tournament: soon[0], status: 'starting_soon' }
+  return null
+}
 
 export default function PickleballDashboard({ onViewTournaments, onCreate, onImport }) {
   const { tournaments, dataLoading, loadError } = usePickleball()
+  const nowMs = usePickleballClock(30000)
+  const headline = pickHeadline(tournaments, nowMs)
 
   const openCount     = tournaments.filter(t => t.status === 'registration_open').length
   const liveCount     = tournaments.filter(t => t.status === 'in_progress').length
@@ -55,6 +75,19 @@ export default function PickleballDashboard({ onViewTournaments, onCreate, onImp
       </div>
 
       <div className="pb-container">
+        {headline && (
+          <button
+            className={`pb-live-banner ${headline.status === 'starting_soon' ? 'pb-live-banner--upcoming' : ''}`}
+            onClick={onViewTournaments}
+          >
+            {headline.status === 'live' ? '🔴 LIVE NOW:' : '🟡 Starting Soon:'}
+            <span className="pb-live-banner-name">{headline.tournament.name}</span>
+            {headline.status === 'starting_soon' && (
+              <PickleballCountdown label="in" targetMs={headline.tournament.startAt} nowMs={nowMs} />
+            )}
+          </button>
+        )}
+
         <div className="pb-import-feature-grid">
           <button className="pb-import-feature-card" onClick={onViewTournaments}>
             <div className="pb-import-feature-icon">🏆</div>
@@ -82,7 +115,7 @@ export default function PickleballDashboard({ onViewTournaments, onCreate, onImp
         </div>
 
         <div className="pb-notice">
-          🔨 Live court scheduling with timers is coming in a later phase — tournaments, pools, brackets, scoring, and PDF import can all be managed now.
+          🏓 Tournaments, pools, brackets, scoring, live status/countdowns, and PDF import can all be managed now.
         </div>
       </div>
     </>

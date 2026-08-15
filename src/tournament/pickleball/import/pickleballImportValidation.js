@@ -235,6 +235,61 @@ export function validateAdvancementMapping(draft) {
   return issues
 }
 
+// Tournament-level timing sanity — advisory only (`warning`, never
+// `error`): these are printed times a human stated, and the review screen
+// lets the Superadmin fix any of them directly, so an inconsistency here
+// shouldn't block creation the way a structural mismatch (team count,
+// double-booked court) does. Only compares fields that are actually
+// present — a field the document never stated is never treated as "0:00"
+// or any other invented value.
+export function validateTimingConsistency(draft) {
+  const info = draft?.tournamentInfo ?? {}
+  const startTime = val(info.startTime)
+  const endTime = val(info.endTime)
+  const checkInTime = val(info.checkInTime)
+  const registrationDeadline = val(info.registrationDeadline)
+
+  const toMinutes = (t) => {
+    if (!t) return null
+    const m = String(t).match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)?$/i)
+    if (!m) return null
+    let hour = Number(m[1])
+    const minute = Number(m[2] ?? 0)
+    const ampm = m[3]?.toLowerCase()
+    if (ampm) { hour = hour % 12; if (ampm === 'pm') hour += 12 }
+    return hour * 60 + minute
+  }
+
+  const issues = []
+  const startMins = toMinutes(startTime)
+  const endMins = toMinutes(endTime)
+  const checkInMins = toMinutes(checkInTime)
+  const deadlineMins = toMinutes(registrationDeadline)
+
+  if (startMins != null && endMins != null && endMins <= startMins) {
+    issues.push({
+      level: 'warning', code: 'end_before_start',
+      message: `End time (${endTime}) is not after start time (${startTime}).`,
+      path: 'tournamentInfo.endTime',
+    })
+  }
+  if (checkInMins != null && startMins != null && checkInMins > startMins) {
+    issues.push({
+      level: 'warning', code: 'checkin_after_start',
+      message: `Check-in time (${checkInTime}) is after the tournament start time (${startTime}).`,
+      path: 'tournamentInfo.checkInTime',
+    })
+  }
+  if (deadlineMins != null && startMins != null && deadlineMins > startMins) {
+    issues.push({
+      level: 'warning', code: 'deadline_after_start',
+      message: `Registration deadline (${registrationDeadline}) is after the tournament start time (${startTime}).`,
+      path: 'tournamentInfo.registrationDeadline',
+    })
+  }
+  return issues
+}
+
 // Full sweep — re-run on every edit in the review screen, no re-upload
 // needed. The league-match-count and schedule-conflict checks here are also
 // reused (imported, not copy-pasted) from the post-creation editing flows
@@ -249,5 +304,6 @@ export function runAllValidations(draft) {
     ...validateNoCourtConflicts(draft),
     ...validateTeamReferences(draft),
     ...validateAdvancementMapping(draft),
+    ...validateTimingConsistency(draft),
   ]
 }

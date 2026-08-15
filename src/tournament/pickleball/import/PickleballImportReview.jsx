@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react'
 import { runAllValidations } from './pickleballImportValidation.js'
+import { supportedTimeZones, toHHMM } from '../pickleballTime.js'
+
+const TIME_ZONE_OPTIONS = supportedTimeZones()
 
 function val(field) { return field && typeof field === 'object' && 'value' in field ? field.value : field }
 function setVal(field, newValue) {
@@ -22,13 +25,39 @@ function RuleField({ label, field, onChange, type = 'text' }) {
         <input
           className="pb-input"
           type={type}
-          value={value ?? ''}
+          // A native time input needs zero-padded 24-hour "HH:MM" to render
+          // at all — without this, a parser-extracted "8am" would show as
+          // blank even though the value underneath is real (the sourceText
+          // line below still discloses the original document text either way).
+          value={type === 'time' ? toHHMM(value) : value ?? ''}
           placeholder="Not specified in document"
           onChange={e => onChange(type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value)}
         />
       ) : (
         <div className="pb-import-rule-value">{unspecified ? 'Not specified in document' : String(value)}</div>
       )}
+      <div className={`pb-import-rule-source ${unspecified ? 'pb-import-rule-source--unspecified' : ''}`}>
+        {unspecified ? '— not stated anywhere in the document' : `Extracted from: "${source}"`}
+      </div>
+    </div>
+  )
+}
+
+// Time zone gets its own field type — a <select> of real IANA names rather
+// than freeform text, since a typo'd zone would silently produce wrong
+// countdowns/times for every visitor. "Not specified" is a real, valid
+// choice (clears the field), not an error state.
+function TimeZoneField({ label, field, onChange }) {
+  const value = val(field)
+  const source = field?.sourceText
+  const unspecified = value == null
+  return (
+    <div className="pb-field">
+      <span className="pb-field-label">{label}</span>
+      <select className="pb-select" value={value ?? ''} onChange={e => onChange(e.target.value || null)}>
+        <option value="">Not specified</option>
+        {TIME_ZONE_OPTIONS.map(tz => <option key={tz} value={tz}>{tz}</option>)}
+      </select>
       <div className={`pb-import-rule-source ${unspecified ? 'pb-import-rule-source--unspecified' : ''}`}>
         {unspecified ? '— not stated anywhere in the document' : `Extracted from: "${source}"`}
       </div>
@@ -98,6 +127,26 @@ export default function PickleballImportReview({ draft, onDraftChange, onBack, o
             onChange={v => update((d, val) => { d.tournamentInfo.location = setVal(d.tournamentInfo.location, val) }, v)} />
           <RuleField label="Courts" field={draft.tournamentInfo.courtCount} />
           <RuleField label="Duration" field={draft.tournamentInfo.durationText} />
+        </div>
+      </section>
+
+      {/* ── Schedule & timing — never invented; start/end may be shown as
+          derived from the printed schedule (disclosed below each field) when
+          the document has no explicit label. Feeds the tournament's live
+          status/countdowns and current/next-round display after creation. ── */}
+      <section className="pb-card pb-import-section">
+        <h3 className="pb-import-section-title">Schedule &amp; Timing</h3>
+        <div className="pb-form-grid">
+          <RuleField label="Start Time" field={draft.tournamentInfo.startTime} type="time"
+            onChange={v => update((d, val) => { d.tournamentInfo.startTime = setVal(d.tournamentInfo.startTime, val) }, v)} />
+          <RuleField label="End Time" field={draft.tournamentInfo.endTime} type="time"
+            onChange={v => update((d, val) => { d.tournamentInfo.endTime = setVal(d.tournamentInfo.endTime, val) }, v)} />
+          <RuleField label="Check-in Time" field={draft.tournamentInfo.checkInTime} type="time"
+            onChange={v => update((d, val) => { d.tournamentInfo.checkInTime = setVal(d.tournamentInfo.checkInTime, val) }, v)} />
+          <RuleField label="Registration Deadline" field={draft.tournamentInfo.registrationDeadline} type="time"
+            onChange={v => update((d, val) => { d.tournamentInfo.registrationDeadline = setVal(d.tournamentInfo.registrationDeadline, val) }, v)} />
+          <TimeZoneField label="Time Zone" field={draft.tournamentInfo.timeZone}
+            onChange={v => update((d, val) => { d.tournamentInfo.timeZone = setVal(d.tournamentInfo.timeZone, val) }, v)} />
         </div>
       </section>
 
@@ -184,7 +233,10 @@ export default function PickleballImportReview({ draft, onDraftChange, onBack, o
                 const rowHasError = errors.some(e => e.path === `schedule[${i}].team1` || e.path === `schedule[${i}].team2`)
                 return (
                   <tr key={i} className={rowHasError ? 'pb-import-row--error' : ''}>
-                    <td>{val(row.timeSlot)}</td>
+                    <td>
+                      <input className="pb-input pb-import-cell-input" value={val(row.timeSlot) ?? ''}
+                        onChange={e => update((d) => { d.schedule[i].timeSlot = setVal(d.schedule[i].timeSlot, e.target.value) })} />
+                    </td>
                     <td>
                       <input className="pb-input pb-import-cell-input" value={val(row.court)}
                         onChange={e => update((d) => { d.schedule[i].court = setVal(d.schedule[i].court, e.target.value) })} />

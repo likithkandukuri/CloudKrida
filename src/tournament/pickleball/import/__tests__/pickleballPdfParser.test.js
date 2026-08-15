@@ -186,4 +186,92 @@ describe('parseTournamentPlan — no PDF/table data at all', () => {
     expect(draft.schedule).toEqual([])
     expect(draft.declaredTotals.totalTeams.value).toBeNull()
   })
+
+  it('every new timing field is null (never invented) when nothing is stated', () => {
+    const draft = parseTournamentPlan([[]])
+    expect(draft.tournamentInfo.startTime.value).toBeNull()
+    expect(draft.tournamentInfo.endTime.value).toBeNull()
+    expect(draft.tournamentInfo.checkInTime.value).toBeNull()
+    expect(draft.tournamentInfo.registrationDeadline.value).toBeNull()
+    expect(draft.tournamentInfo.timeZone.value).toBeNull()
+    expect(draft.tournamentInfo.location.value).toBeNull()
+  })
+})
+
+describe('parseTournamentPlan — real ATA document: timing fields it never states stay null', () => {
+  const draft = parseTournamentPlan([buildPage1(), buildPage2()])
+
+  it('derives startTime/endTime from the printed schedule\'s earliest/latest time slot, since the document never labels them explicitly', () => {
+    expect(draft.tournamentInfo.startTime.value).not.toBeNull()
+    expect(draft.tournamentInfo.endTime.value).not.toBeNull()
+    expect(draft.tournamentInfo.startTime.sourceText).toMatch(/derived from schedule/i)
+    expect(draft.tournamentInfo.endTime.sourceText).toMatch(/derived from schedule/i)
+  })
+
+  it('leaves check-in, registration deadline, time zone, and venue null — this document never states any of them', () => {
+    expect(draft.tournamentInfo.checkInTime.value).toBeNull()
+    expect(draft.tournamentInfo.registrationDeadline.value).toBeNull()
+    expect(draft.tournamentInfo.timeZone.value).toBeNull()
+    expect(draft.tournamentInfo.location.value).toBeNull()
+  })
+})
+
+describe('parseTournamentPlan — explicit timing labels take priority over any derived fallback', () => {
+  function buildTimingPage() {
+    return [
+      line('ATA PICKLEBALL TOURNAMENT PLAN', [tok(50, 'ATA PICKLEBALL TOURNAMENT PLAN')]),
+      line('Date: August 14, 2026', [tok(10, 'Date: August 14, 2026')]),
+      line('Venue: Riverside Community Center', [tok(10, 'Venue: Riverside Community Center')]),
+      line('Start Time: 7:30 AM', [tok(10, 'Start Time: 7:30 AM')]),
+      line('End Time: 5:00 PM', [tok(10, 'End Time: 5:00 PM')]),
+      line('Check-in: 7:00 AM', [tok(10, 'Check-in: 7:00 AM')]),
+      line('Registration Deadline: 6:45 AM', [tok(10, 'Registration Deadline: 6:45 AM')]),
+      line('Time Zone: PST', [tok(10, 'Time Zone: PST')]),
+    ]
+  }
+
+  const draft = parseTournamentPlan([buildTimingPage()])
+
+  it('extracts an explicit calendar date near the title into ISO form', () => {
+    expect(draft.tournamentInfo.date.value).toBe('2026-08-14')
+  })
+
+  it('extracts venue from an explicit "Venue:" label', () => {
+    expect(draft.tournamentInfo.location.value).toBe('Riverside Community Center')
+  })
+
+  it('extracts explicit Start Time / End Time labels verbatim, not derived', () => {
+    expect(draft.tournamentInfo.startTime.value).toBe('7:30 AM')
+    expect(draft.tournamentInfo.startTime.sourceText).toBe('Start Time: 7:30 AM')
+    expect(draft.tournamentInfo.endTime.value).toBe('5:00 PM')
+  })
+
+  it('extracts Check-in time and Registration Deadline from explicit labels', () => {
+    expect(draft.tournamentInfo.checkInTime.value).toBe('7:00 AM')
+    expect(draft.tournamentInfo.registrationDeadline.value).toBe('6:45 AM')
+  })
+
+  it('maps a printed time zone abbreviation to its real IANA name', () => {
+    expect(draft.tournamentInfo.timeZone.value).toBe('America/Los_Angeles')
+  })
+})
+
+describe('parseTournamentPlan — date recognized from an unlabeled calendar-date pattern in the header', () => {
+  it('finds "Month D, YYYY" near the title even without a "Date:" label', () => {
+    const page = [
+      line('SPRING OPEN PICKLEBALL TOURNAMENT PLAN', [tok(50, 'SPRING OPEN PICKLEBALL TOURNAMENT PLAN')]),
+      line('Saturday, March 7, 2026', [tok(10, 'Saturday, March 7, 2026')]),
+    ]
+    const draft = parseTournamentPlan([page])
+    expect(draft.tournamentInfo.date.value).toBe('2026-03-07')
+  })
+
+  it('finds a slash-formatted date too', () => {
+    const page = [
+      line('SPRING OPEN PICKLEBALL TOURNAMENT PLAN', [tok(50, 'SPRING OPEN PICKLEBALL TOURNAMENT PLAN')]),
+      line('3/7/2026', [tok(10, '3/7/2026')]),
+    ]
+    const draft = parseTournamentPlan([page])
+    expect(draft.tournamentInfo.date.value).toBe('2026-03-07')
+  })
 })

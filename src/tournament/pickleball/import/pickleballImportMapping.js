@@ -1,8 +1,10 @@
 // Pure functions turning a (validated, possibly reviewer-corrected) import
 // draft into the exact temp_id-keyed payload import_pickleball_tournament
-// expects (migration 017). No DB calls here — building the payload is fully
-// deterministic and unit-testable on its own, separate from actually
+// expects (migrations 017/019). No DB calls here — building the payload is
+// fully deterministic and unit-testable on its own, separate from actually
 // calling the RPC (see pickleballDb.js's importPickleballTournament).
+
+import { zonedTimeToUtcIso } from '../pickleballTime.js'
 
 function val(field) {
   return field && typeof field === 'object' && 'value' in field ? field.value : field
@@ -55,16 +57,21 @@ function buildPools(groups) {
 // A relative time-of-day ("8:00 AM - 9:00 AM") only becomes an absolute
 // timestamp if the tournament's date is actually known; otherwise
 // scheduled_at is left null — the court + printed order are still preserved
-// either way, just not as an absolute instant.
-function resolveScheduledAt(dateValue, timeSlot) {
+// either way, just not as an absolute instant. When the document also
+// states a time zone, that zone is used to construct the correct instant
+// (zonedTimeToUtcIso); without one, this falls back to constructing the
+// instant in whatever zone this code happens to run in — the same behavior
+// this function always had, before time zones existed anywhere in the
+// importer.
+function resolveScheduledAt(dateValue, timeSlot, timeZone) {
   if (!dateValue || !timeSlot) return null
   const start = String(timeSlot).split('-')[0].trim() // "8:00 AM - 9:00 AM" -> "8:00 AM"
-  const parsed = new Date(`${dateValue} ${start}`)
-  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
+  return zonedTimeToUtcIso(dateValue, start, timeZone)
 }
 
 function buildLeagueMatches(draft) {
   const dateValue = val(draft.tournamentInfo?.date)
+  const timeZone = val(draft.tournamentInfo?.timeZone)
   const codeToGroupLabel = new Map()
   for (const g of draft.groups ?? []) for (const t of g.teams ?? []) codeToGroupLabel.set(t.code, g.label)
 
@@ -78,7 +85,7 @@ function buildLeagueMatches(draft) {
         entrant1_temp_id: `entrant:${team1}`,
         entrant2_temp_id: `entrant:${team2}`,
         court_temp_id: `court:${val(row.court)}`,
-        scheduled_at: resolveScheduledAt(dateValue, val(row.timeSlot)),
+        scheduled_at: resolveScheduledAt(dateValue, val(row.timeSlot), timeZone),
       }
     })
 }
@@ -99,13 +106,17 @@ function inferEventType(groups) {
 function buildTournamentInfo(draft) {
   const structured = draft.rules?.structured ?? {}
   const groups = draft.groups ?? []
+  const info = draft.tournamentInfo ?? {}
+  const dateValue = val(info.date)
+  const timeZone = val(info.timeZone)
+
   return {
-    name: val(draft.tournamentInfo?.name) || 'Imported Tournament',
+    name: val(info.name) || 'Imported Tournament',
     event_type: inferEventType(groups),
     format: 'pool_to_single_elim',
-    date: val(draft.tournamentInfo?.date) || null,
-    location: val(draft.tournamentInfo?.location) || null,
-    description: val(draft.tournamentInfo?.organizer) ? `Organized by ${val(draft.tournamentInfo.organizer)}` : '',
+    date: dateValue || null,
+    location: val(info.location) || null,
+    description: val(info.organizer) ? `Organized by ${val(info.organizer)}` : '',
     games_to: val(structured.winningPoints) ?? 11,
     win_by_2: val(structured.winBy2) ?? true,
     best_of: val(structured.bestOf) ?? 1,
@@ -115,6 +126,16 @@ function buildTournamentInfo(draft) {
     age_band: null,
     advancement_mapping: draft.knockout ?? null,
     imported_rules: draft.rules ?? null,
+    // Tournament timing (migration 019) — each is only non-null when the
+    // document actually stated it (directly or via the disclosed
+    // schedule-derived fallback for start/end); zonedTimeToUtcIso returns
+    // null on any missing/unparseable input, so an absent field here just
+    // stays null rather than ever guessing a time.
+    start_at:                 zonedTimeToUtcIso(dateValue, val(info.startTime), timeZone),
+    end_at:                   zonedTimeToUtcIso(dateValue, val(info.endTime), timeZone),
+    check_in_at:              zonedTimeToUtcIso(dateValue, val(info.checkInTime), timeZone),
+    registration_deadline_at: zonedTimeToUtcIso(dateValue, val(info.registrationDeadline), timeZone),
+    time_zone: timeZone || null,
   }
 }
 

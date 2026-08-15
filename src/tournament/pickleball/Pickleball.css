@@ -202,6 +202,90 @@
 [data-theme="light"] .pb-status--in_progress        { color: #0f766e; }
 [data-theme="light"] .pb-status--complete           { color: #475569; }
 
+/* ── Live-computed timing status badge — additive alongside .pb-status,
+   never replacing it (see PickleballTimingStatusBadge.jsx). ───────────── */
+.pb-timing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pb-timing-badge--upcoming      { background: rgba(74, 222, 128, 0.12); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.28); }
+.pb-timing-badge--starting_soon { background: rgba(251, 191, 36, 0.14); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.32); }
+.pb-timing-badge--live          { background: rgba(248, 113, 113, 0.14); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.32); animation: pb-live-pulse 2s ease-in-out infinite; }
+.pb-timing-badge--completed     { background: rgba(148, 163, 184, 0.12); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.28); }
+
+[data-theme="light"] .pb-timing-badge--upcoming      { color: #166534; }
+[data-theme="light"] .pb-timing-badge--starting_soon { color: #92400e; }
+[data-theme="light"] .pb-timing-badge--live          { color: #b91c1c; }
+[data-theme="light"] .pb-timing-badge--completed     { color: #475569; }
+
+@keyframes pb-live-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-timing-badge--live { animation: none; }
+}
+
+/* ── Countdown line ──────────────────────────────────────────────────── */
+.pb-countdown {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.pb-countdown strong { color: var(--sport-pickleball); font-weight: 700; }
+
+/* ── Dashboard "live now / starting soon" banner ─────────────────────── */
+.pb-live-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 20px;
+  border-radius: 14px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.24);
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-primary);
+  width: 100%;
+}
+.pb-live-banner--upcoming { background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.24); }
+.pb-live-banner-name { font-weight: 700; }
+
+/* ── Round/match banner in tournament detail header ──────────────────── */
+.pb-timing-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+}
+.pb-timing-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.pb-timing-round-line { font-size: 13px; color: var(--text-secondary); }
+.pb-timing-round-line strong { color: var(--text-primary); }
+
 /* ── Detail header ────────────────────────────────────── */
 .pb-detail-header {
   padding: 140px 24px 0;

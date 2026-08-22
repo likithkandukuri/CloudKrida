@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowMonitor — Case Study | Likith Kumar Kandukuri</title>
+    <meta
+      name="description"
+      content="FlowMonitor — a multi-node RS-485 monitoring and safety-control system I designed and built for active Ion Beam Lab equipment at the University at Albany."
+    />
+    <meta property="og:title" content="FlowMonitor — Case Study | Likith Kumar Kandukuri" />
+    <meta property="og:description" content="A multi-node RS-485 monitoring and safety-control system for active Ion Beam Lab equipment." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://cloudkrida.com/portfolio/projects/flowmonitor.html" />
+    <meta
+      property="og:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FlowMonitor — Case Study | Likith Kumar Kandukuri" />
+    <meta name="twitter:description" content="A multi-node RS-485 monitoring and safety-control system for active Ion Beam Lab equipment." />
+    <meta
+      name="twitter:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <link rel="canonical" href="https://cloudkrida.com/portfolio/projects/flowmonitor.html" />
+
+    <link rel="icon" href="../assets/fevicons/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/fevicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/fevicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/fevicons/favicon-16x16.png" />
+    <link rel="manifest" href="../assets/fevicons/site.webmanifest" />
+
+    <link rel="stylesheet" href="../app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+
+  <body>
+    <nav class="nav">
+      <div class="nav__wrapper">
+        <div class="nav__wrapper__logo">
+          <a href="../index.html#home" class="nav__wrapper__logo__brand">Likith</a>
+        </div>
+        <ul class="nav__wrapper__ul" id="primary-navigation">
+          <li class="nav__wrapper__ul__li"><a href="../index.html#home" class="nav__wrapper__ul__li__a">Home</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#projects" class="nav__wrapper__ul__li__a active">Projects</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#experience" class="nav__wrapper__ul__li__a">Experience</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../about.html" class="nav__wrapper__ul__li__a">About</a></li>
+          <li class="nav__wrapper__ul__li">
+            <a href="../assets/files/Likith-Kumar-Kandukuri-Resume.pdf" target="_blank" rel="noopener noreferrer" class="nav__wrapper__ul__li__a" aria-label="View résumé (opens PDF in a new tab)">Resume</a>
+          </li>
+        </ul>
+        <button type="button" class="nav__wrapper__toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+          <i class="bi bi-justify-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="case-study-hero">
+      <div class="case-study-hero__inner">
+        <span class="case-study-hero__eyebrow">
+          <i class="bi bi-cpu" aria-hidden="true"></i> Embedded Systems &amp; Instrumentation
+        </span>
+        <h1 class="case-study-hero__title">FlowMonitor</h1>
+        <p class="case-study-hero__lede">
+          A multi-node RS-485 monitoring and safety-control system I designed
+          and built for active Ion Beam Lab equipment — logging live sensor
+          data and firing automated alerts the moment a fault is detected, so
+          nobody has to watch a screen to know the lab is running safely.
+        </p>
+        <span class="case-study-hero__status">
+          <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+          Working system — deployed in an active research lab
+        </span>
+
+        <div class="case-study-hero__meta">
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Role</span>
+            <span class="case-study-hero__meta-value">Undergraduate Research Assistant</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Lab</span>
+            <span class="case-study-hero__meta-value">Ion Beam Lab — Prof. Andrew Knutson</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Timeline</span>
+            <span class="case-study-hero__meta-value">May 2025 – Present</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Stack</span>
+            <span class="case-study-hero__meta-value">Arduino · RS-485 · Python · Flask</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Quick jump nav -->
+    <nav class="case-study-jumpnav" aria-label="Case study sections">
+      <div class="case-study-jumpnav__inner">
+        <a href="#problem">Problem</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#hardware">Hardware</a>
+        <a href="#software">Software</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#testing">Testing</a>
+        <a href="#results">Results</a>
+        <a href="#lessons">Lessons</a>
+      </div>
+    </nav>
+
+    <main class="case-study-body">
+
+      <!-- PROBLEM / CONTEXT -->
+      <section class="case-study-section" id="problem">
+        <span class="case-study-section__label">01 · Problem &amp; Context</span>
+        <h2>Why this needed to exist</h2>
+        <p>
+          Ion Beam Lab equipment depends on steady liquid flow and stable
+          temperature to run safely. Losing either without someone noticing
+          quickly is a real risk. I needed a way to watch multiple pieces of
+          equipment continuously, catch a developing fault immediately, and
+          get that information to lab staff — without anyone having to stand
+          in the room reading gauges or babysit a terminal.
+        </p>
+        <p>
+          That's the requirement FlowMonitor answers: it reads every piece of
+          monitored equipment continuously, decides on its own whether
+          something is wrong, and tells a person — by email, and on a
+          dashboard reachable from any browser on the lab network — without
+          anyone needing to be watching in real time.
+        </p>
+
+        <h3>Requirements</h3>
+        <ul>
+          <li><strong>Independent per-equipment monitoring</strong> — each piece of equipment gets its own node, not one shared sensor.</li>
+          <li><strong>Automatic fault detection</strong> — the system decides when something's wrong; nobody has to notice manually.</li>
+          <li><strong>Remote alerting</strong> — lab staff find out by email, wherever they are.</li>
+          <li><strong>Live visibility without special access</strong> — a browser on the lab network is enough; no terminal, no touching the hardware.</li>
+          <li><strong>Local safety independent of software</strong> — a hardware relay and a manual bypass switch at every node, so the physical safety layer doesn't depend on the Python process staying alive.</li>
+          <li><strong>Historical record</strong> — every reading logged, not just the current value.</li>
+        </ul>
+        <span class="pending-note">
+          <i class="bi bi-dot" aria-hidden="true"></i>
+          Formal accuracy/response-time targets aren't documented yet — pending.
+        </span>
+      </section>
+
+      <!-- ARCHITECTURE -->
+      <section class="case-study-section" id="architecture">
+        <span class="case-study-section__label">02 · System Architecture</span>
+        <h2>How the system fits together</h2>
+        <p>
+          Every piece of monitored equipment gets its own Arduino Nano node.
+          All nodes share a single RS-485 bus back to a mini PC, which runs
+          two Python programs: one that watches the bus and handles logging
+          and alerts, and one that serves a live dashboard.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 680 500" role="img" aria-labelledby="archTitle archDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="archTitle">FlowMonitor system architecture</title>
+              <desc id="archDesc">Three or more Arduino Nano nodes connect over a single RS-485 bus to a mini PC, which runs FlowMonitorCode.py and dashboard.py. FlowMonitorCode.py produces a CSV log and email alerts; dashboard.py serves the browser dashboard.</desc>
+              <defs>
+                <marker id="arrow1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#059669"/></marker>
+              </defs>
+              <!-- Row A: nodes -->
+              <g font-family="Poppins, sans-serif">
+                <rect x="30" y="20" width="140" height="70" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="100" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Equipment 1</text>
+                <text x="100" y="70" text-anchor="middle" font-size="11" fill="#475569">Arduino Nano</text>
+
+                <rect x="190" y="20" width="140" height="70" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="260" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Equipment 2</text>
+                <text x="260" y="70" text-anchor="middle" font-size="11" fill="#475569">Arduino Nano</text>
+
+                <rect x="350" y="20" width="140" height="70" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="420" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Equipment 3</text>
+                <text x="420" y="70" text-anchor="middle" font-size="11" fill="#475569">Arduino Nano</text>
+
+                <rect x="510" y="20" width="140" height="70" rx="8" fill="#fff" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="5,4"/>
+                <text x="580" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#475569">+ additional</text>
+                <text x="580" y="70" text-anchor="middle" font-size="11" fill="#94A3B8">nodes</text>
+
+                <!-- connectors down to bus -->
+                <line x1="100" y1="90" x2="100" y2="130" stroke="#059669" stroke-width="2"/>
+                <line x1="260" y1="90" x2="260" y2="130" stroke="#059669" stroke-width="2"/>
+                <line x1="420" y1="90" x2="420" y2="130" stroke="#059669" stroke-width="2"/>
+                <line x1="580" y1="90" x2="580" y2="130" stroke="#059669" stroke-width="2"/>
+
+                <!-- bus -->
+                <line x1="100" y1="130" x2="580" y2="130" stroke="#046241" stroke-width="4"/>
+                <text x="340" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="#046241">RS-485 bus — single 2-wire line, each node individually addressed</text>
+
+                <line x1="340" y1="130" x2="340" y2="168" stroke="#046241" stroke-width="2" marker-end="url(#arrow1)"/>
+
+                <!-- Mini PC -->
+                <rect x="240" y="170" width="200" height="70" rx="8" fill="#046241" stroke="#046241" stroke-width="2"/>
+                <text x="340" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Mini PC</text>
+
+                <line x1="340" y1="240" x2="210" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrow1)"/>
+                <line x1="340" y1="240" x2="470" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrow1)"/>
+
+                <!-- Row D: software -->
+                <rect x="100" y="290" width="220" height="70" rx="8" fill="#fff" stroke="#046241" stroke-width="2"/>
+                <text x="210" y="320" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">FlowMonitorCode.py</text>
+                <text x="210" y="340" text-anchor="middle" font-size="11" fill="#475569">reads, logs, alerts, watchdog</text>
+
+                <rect x="360" y="290" width="220" height="70" rx="8" fill="#fff" stroke="#046241" stroke-width="2"/>
+                <text x="470" y="320" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">dashboard.py</text>
+                <text x="470" y="340" text-anchor="middle" font-size="11" fill="#475569">Flask web server</text>
+
+                <line x1="150" y1="360" x2="115" y2="410" stroke="#059669" stroke-width="2" marker-end="url(#arrow1)"/>
+                <line x1="270" y1="360" x2="285" y2="410" stroke="#059669" stroke-width="2" marker-end="url(#arrow1)"/>
+                <line x1="470" y1="360" x2="525" y2="410" stroke="#059669" stroke-width="2" marker-end="url(#arrow1)"/>
+
+                <!-- Row E: outputs -->
+                <rect x="40" y="410" width="150" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="115" y="445" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">CSV Log</text>
+
+                <rect x="210" y="410" width="150" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="285" y="440" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Email Alerts</text>
+                <text x="285" y="456" text-anchor="middle" font-size="10" fill="#475569">SMTP</text>
+
+                <rect x="430" y="410" width="190" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="525" y="440" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Browser Dashboard</text>
+                <text x="525" y="456" text-anchor="middle" font-size="10" fill="#475569">Any device, lab network</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 1 — System architecture: nodes → RS-485 bus → mini PC → logging, alerts, and dashboard</span>
+        </div>
+      </section>
+
+      <!-- HARDWARE -->
+      <section class="case-study-section" id="hardware">
+        <span class="case-study-section__label">03 · Hardware</span>
+        <h2>What's inside each node</h2>
+        <p>
+          Every node is built around an Arduino Nano and carries the same
+          seven components, so any node can be swapped or added without
+          redesigning anything.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 640 460" role="img" aria-labelledby="hwTitle hwDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="hwTitle">FlowMonitor node hardware diagram</title>
+              <desc id="hwDesc">A single Arduino Nano node with a flow sensor, MAX31855 thermocouple amplifier, relay, buzzer, bypass switch, OLED display, and MAX485 transceiver connecting to the RS-485 bus.</desc>
+              <g font-family="Poppins, sans-serif" stroke="#059669" stroke-width="2">
+                <line x1="150" y1="80" x2="280" y2="200"/>
+                <line x1="490" y1="80" x2="360" y2="200"/>
+                <line x1="120" y1="240" x2="240" y2="230"/>
+                <line x1="520" y1="240" x2="400" y2="230"/>
+                <line x1="150" y1="410" x2="280" y2="270"/>
+                <line x1="490" y1="410" x2="360" y2="270"/>
+                <line x1="320" y1="410" x2="320" y2="270"/>
+              </g>
+              <g font-family="Poppins, sans-serif">
+                <!-- center Nano -->
+                <rect x="240" y="195" width="160" height="80" rx="8" fill="#046241"/>
+                <text x="320" y="232" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Arduino Nano</text>
+                <text x="320" y="250" text-anchor="middle" font-size="10" fill="#D1FAE5">per equipment node</text>
+
+                <!-- Flow Sensor -->
+                <rect x="40" y="20" width="180" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="130" y="47" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">Flow Sensor</text>
+                <text x="130" y="64" text-anchor="middle" font-size="10" fill="#475569">liquid flow rate</text>
+
+                <!-- MAX31855 -->
+                <rect x="420" y="20" width="200" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="520" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">MAX31855</text>
+                <text x="520" y="58" text-anchor="middle" font-size="10" fill="#475569">+ thermocouple, temperature</text>
+
+                <!-- OLED -->
+                <rect x="0" y="210" width="150" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="75" y="235" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">OLED</text>
+                <text x="75" y="252" text-anchor="middle" font-size="10" fill="#475569">local status</text>
+
+                <!-- Relay -->
+                <rect x="490" y="210" width="150" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="565" y="235" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">Relay</text>
+                <text x="565" y="252" text-anchor="middle" font-size="10" fill="#475569">safety cutoff</text>
+
+                <!-- Bypass switch -->
+                <rect x="40" y="380" width="180" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="130" y="404" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">Bypass Switch</text>
+                <text x="130" y="421" text-anchor="middle" font-size="10" fill="#475569">manual override</text>
+
+                <!-- Buzzer -->
+                <rect x="410" y="380" width="180" height="60" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="500" y="404" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">Buzzer</text>
+                <text x="500" y="421" text-anchor="middle" font-size="10" fill="#475569">local alarm</text>
+
+                <!-- MAX485 -->
+                <rect x="230" y="380" width="180" height="60" rx="8" fill="#046241" stroke="#046241" stroke-width="2"/>
+                <text x="320" y="404" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">MAX485</text>
+                <text x="320" y="421" text-anchor="middle" font-size="10" fill="#D1FAE5">→ RS-485 bus</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 2 — Per-node hardware: same seven components on every node</span>
+        </div>
+
+        <div class="spec-grid">
+          <div class="spec-item">
+            <i class="bi bi-droplet-half" aria-hidden="true"></i>
+            <div><span class="spec-item__name">Flow Sensor</span><span class="spec-item__role">Measures liquid flow rate — the primary signal the whole system exists to watch.</span></div>
+          </div>
+          <div class="spec-item">
+            <i class="bi bi-thermometer-half" aria-hidden="true"></i>
+            <div><span class="spec-item__name">MAX31855 + Thermocouple</span><span class="spec-item__role">Temperature measurement alongside flow, on the same node.</span></div>
+          </div>
+          <div class="spec-item">
+            <i class="bi bi-shield-fill-check" aria-hidden="true"></i>
+            <div><span class="spec-item__name">Relay</span><span class="spec-item__role">A hardware safety cutoff that doesn't depend on the Python layer staying alive to act.</span></div>
+          </div>
+          <div class="spec-item">
+            <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+            <div><span class="spec-item__name">Buzzer</span><span class="spec-item__role">Local audible alarm for anyone physically near the equipment.</span></div>
+          </div>
+          <div class="spec-item">
+            <i class="bi bi-toggle-on" aria-hidden="true"></i>
+            <div><span class="spec-item__name">Bypass Switch</span><span class="spec-item__role">Manual override so lab staff can act without waiting on software.</span></div>
+          </div>
+          <div class="spec-item">
+            <i class="bi bi-display" aria-hidden="true"></i>
+            <div><span class="spec-item__name">OLED Display</span><span class="spec-item__role">Local status readable at the equipment — no computer needed.</span></div>
+          </div>
+          <div class="spec-item">
+            <i class="bi bi-diagram-2" aria-hidden="true"></i>
+            <div><span class="spec-item__name">MAX485</span><span class="spec-item__role">RS-485 transceiver — puts this node on the shared bus.</span></div>
+          </div>
+        </div>
+
+        <div class="decision-callout" id="why-rs485">
+          <span class="decision-callout__label"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i> Design Decision — Why RS-485</span>
+          <p>
+            I used RS-485's multi-drop topology so every node — three
+            confirmed so far, with more added as the lab's equipment grows —
+            shares a single two-wire line back to the mini PC, each
+            addressed by its own node ID, instead of running a dedicated
+            cable from every node individually.
+          </p>
+          <p>
+            RS-485's differential signaling also holds up better over longer
+            cable runs and in electrically noisier environments than a
+            single-ended option, which matters in a lab full of running
+            equipment.
+          </p>
+        </div>
+      </section>
+
+      <!-- SOFTWARE / DATA PIPELINE -->
+      <section class="case-study-section" id="software">
+        <span class="case-study-section__label">04 · Software &amp; Data Pipeline</span>
+        <h2>What runs on the mini PC</h2>
+        <p>
+          Two Python programs run continuously on the mini PC:
+          <strong>FlowMonitorCode.py</strong>, which owns the bus, the log,
+          and the alerts, and <strong>dashboard.py</strong>, a Flask server
+          that turns the latest state into a live web page.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 640 520" role="img" aria-labelledby="flowTitle flowDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="flowTitle">FlowMonitor data flow</title>
+              <desc id="flowDesc">A sensor reading is packaged with a node ID, sent over RS-485, and received by FlowMonitorCode.py, which logs it to CSV and checks it against fault rules, sending an email alert on a fault. Separately, dashboard.py reads the latest state and serves it to the browser, refreshing every five seconds.</desc>
+              <defs>
+                <marker id="arrow2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#059669"/></marker>
+              </defs>
+              <g font-family="Poppins, sans-serif">
+                <rect x="70" y="20" width="500" height="50" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="320" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Sensor reads flow + temperature</text>
+                <line x1="320" y1="70" x2="320" y2="98" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+
+                <rect x="70" y="100" width="500" height="50" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="320" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Node packages reading + Node ID, sends over RS-485</text>
+                <line x1="320" y1="150" x2="320" y2="178" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+
+                <rect x="70" y="180" width="500" height="50" rx="8" fill="#046241" stroke="#046241" stroke-width="2"/>
+                <text x="320" y="210" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">FlowMonitorCode.py polls the bus and receives it</text>
+
+                <line x1="240" y1="230" x2="140" y2="258" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+                <line x1="400" y1="230" x2="500" y2="258" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+
+                <!-- left track: log + fault -->
+                <rect x="40" y="260" width="220" height="50" rx="8" fill="#fff" stroke="#046241" stroke-width="2"/>
+                <text x="150" y="290" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">Logged to CSV</text>
+                <line x1="150" y1="310" x2="150" y2="338" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+
+                <rect x="40" y="340" width="220" height="70" rx="8" fill="#fff" stroke="#046241" stroke-width="2"/>
+                <text x="150" y="368" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">Checked against fault rules</text>
+                <text x="150" y="384" text-anchor="middle" font-size="10" fill="#475569">low flow &gt;10min · node offline</text>
+                <line x1="150" y1="410" x2="150" y2="438" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+
+                <rect x="40" y="440" width="220" height="70" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="150" y="465" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Fault → Email alert</text>
+                <text x="150" y="481" text-anchor="middle" font-size="10" fill="#475569">CSV attached · 30-min cooldown</text>
+                <text x="150" y="497" text-anchor="middle" font-size="10" fill="#475569">offline/startup also alert</text>
+
+                <!-- right track: dashboard -->
+                <rect x="380" y="260" width="220" height="50" rx="8" fill="#fff" stroke="#046241" stroke-width="2"/>
+                <text x="490" y="290" text-anchor="middle" font-size="12" font-weight="700" fill="#0F172A">dashboard.py reads latest state</text>
+                <line x1="490" y1="310" x2="490" y2="338" stroke="#059669" stroke-width="2" marker-end="url(#arrow2)"/>
+
+                <rect x="380" y="340" width="220" height="70" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="490" y="368" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Browser Dashboard</text>
+                <text x="490" y="384" text-anchor="middle" font-size="10" fill="#475569">auto-refresh every 5 seconds</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 3 — Data flow: one reading, from sensor to alert or dashboard</span>
+        </div>
+
+        <h3>FlowMonitorCode.py</h3>
+        <p>
+          I wrote this as the system's continuously-running core. It polls
+          every node on the bus, logs each reading to a daily CSV file,
+          checks the reading against the fault rules, sends alerts when a
+          rule is tripped, and watches for a node going silent.
+        </p>
+
+        <h3>dashboard.py</h3>
+        <p>
+          A small Flask server that turns the current state into a live
+          page — lab staff open a browser on the lab network and see the
+          system's status, no terminal or direct hardware access needed.
+        </p>
+      </section>
+
+      <!-- FAULT DETECTION + ALERTING -->
+      <section class="case-study-section" id="fault-detection">
+        <span class="case-study-section__label">05 · Fault Detection &amp; Alerting</span>
+        <h2>What counts as a fault, and what happens next</h2>
+        <p>
+          Two conditions trigger an alert. Both are checked continuously by
+          FlowMonitorCode.py:
+        </p>
+
+        <div class="rule-grid">
+          <div class="rule-card">
+            <span class="rule-card__trigger"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Low flow &gt; 10 minutes</span>
+            <span class="rule-card__result">If a node's flow reading stays below normal for more than ten minutes, an alert fires.</span>
+          </div>
+          <div class="rule-card">
+            <span class="rule-card__trigger"><i class="bi bi-wifi-off" aria-hidden="true"></i> Node goes offline</span>
+            <span class="rule-card__result">If a node stops responding on the bus, that's treated as a fault on its own — silence isn't assumed to be fine.</span>
+          </div>
+        </div>
+
+        <h3>Alert policy</h3>
+        <ul>
+          <li>Every alert email has that day's <strong>CSV log attached</strong>, so the fault has context, not just a headline.</li>
+          <li>A <strong>30-minute cooldown</strong> between repeated alerts for the same condition, so a sustained fault doesn't flood the inbox.</li>
+          <li>A <strong>startup confirmation email</strong> fires when the system boots — a working system announces itself instead of going silently online.</li>
+        </ul>
+      </section>
+
+      <!-- DASHBOARD -->
+      <section class="case-study-section" id="dashboard">
+        <span class="case-study-section__label">06 · Dashboard</span>
+        <h2>What lab staff actually see</h2>
+        <p>
+          Open a browser on the lab network and the dashboard shows every
+          node's status, live readings, fault history, a flow-rate trend,
+          and overall system health — refreshing automatically every five
+          seconds.
+        </p>
+
+        <div class="evidence-note">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          No screenshot exists yet for this write-up. The layout below is an
+          illustration of the confirmed dashboard design, not a live capture.
+        </div>
+
+        <div class="dashboard-mock" role="img" aria-label="Illustration of the FlowMonitor dashboard layout: three node status cards showing live flow and temperature readings with green or yellow status indicators, a fault history panel, a flow-rate trend chart, and a system health panel.">
+          <span class="dashboard-mock__label"><i class="bi bi-display" aria-hidden="true"></i> Dashboard layout — illustration, not a live screenshot</span>
+          <div class="dashboard-mock__nodes">
+            <div class="dashboard-mock__node">
+              <div class="dashboard-mock__node-head">
+                <span class="dashboard-mock__node-name">Node 1</span>
+                <span class="dashboard-mock__status-dot dashboard-mock__status-dot--green" aria-hidden="true"></span>
+              </div>
+              <div class="dashboard-mock__reading"><span>Flow</span><b>Normal</b></div>
+              <div class="dashboard-mock__reading"><span>Temp</span><b>Normal</b></div>
+            </div>
+            <div class="dashboard-mock__node">
+              <div class="dashboard-mock__node-head">
+                <span class="dashboard-mock__node-name">Node 2</span>
+                <span class="dashboard-mock__status-dot dashboard-mock__status-dot--green" aria-hidden="true"></span>
+              </div>
+              <div class="dashboard-mock__reading"><span>Flow</span><b>Normal</b></div>
+              <div class="dashboard-mock__reading"><span>Temp</span><b>Normal</b></div>
+            </div>
+            <div class="dashboard-mock__node">
+              <div class="dashboard-mock__node-head">
+                <span class="dashboard-mock__node-name">Node 3</span>
+                <span class="dashboard-mock__status-dot dashboard-mock__status-dot--yellow" aria-hidden="true"></span>
+              </div>
+              <div class="dashboard-mock__reading"><span>Flow</span><b>Watch</b></div>
+              <div class="dashboard-mock__reading"><span>Temp</span><b>Normal</b></div>
+            </div>
+          </div>
+          <div class="dashboard-mock__panels">
+            <div class="dashboard-mock__panel">
+              <span class="dashboard-mock__panel-title">Flow-rate trend</span>
+              <div class="dashboard-mock__chart" aria-hidden="true">
+                <span style="height:60%;"></span><span style="height:75%;"></span><span style="height:50%;"></span>
+                <span style="height:80%;"></span><span style="height:65%;"></span><span style="height:40%;"></span>
+                <span style="height:70%;"></span><span style="height:85%;"></span>
+              </div>
+            </div>
+            <div class="dashboard-mock__panel">
+              <span class="dashboard-mock__panel-title">System health</span>
+              <div class="dashboard-mock__health-row"><span>Nodes online</span><span>3 / 3</span></div>
+              <div class="dashboard-mock__health-row"><span>Refresh</span><span>5s</span></div>
+              <div class="dashboard-mock__health-row"><span>Last fault</span><span>—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Confirmed features</h3>
+        <ul>
+          <li>One status card per node, colored green / yellow / red</li>
+          <li>Live flow rate and live temperature per node</li>
+          <li>Fault history table</li>
+          <li>Flow-rate trend chart</li>
+          <li>System health panel</li>
+          <li>Automatic refresh every 5 seconds</li>
+          <li>Accessible from any computer on the lab network</li>
+        </ul>
+      </section>
+
+      <!-- TESTING / VALIDATION -->
+      <section class="case-study-section" id="testing">
+        <span class="case-study-section__label">07 · Testing &amp; Reliability</span>
+        <h2>How I brought it up</h2>
+        <p>
+          I validated the system node by node instead of all at once. Node 1
+          came online first — RS-485 communication, the Python monitoring
+          program, CSV logging, email alerts, the heartbeat watchdog,
+          auto-reconnect, the OLED display, and MAX31855 temperature sensing
+          all confirmed working on that single node before I added Node 2,
+          then Node 3 and additional nodes, then the temperature and
+          multi-node dashboard views.
+        </p>
+
+        <h3>Built-in reliability</h3>
+        <ul>
+          <li><strong>Heartbeat watchdog</strong> — detects when a node stops responding, rather than assuming silence means nothing's wrong.</li>
+          <li><strong>Automatic reconnect</strong> — a node that drops off the bus rejoins on its own instead of needing a manual restart.</li>
+        </ul>
+      </section>
+
+      <!-- ITERATION -->
+      <section class="case-study-section" id="iteration">
+        <span class="case-study-section__label">08 · Iteration</span>
+        <h2>What I'd still like to capture here</h2>
+        <p>
+          The heartbeat watchdog and auto-reconnect logic exist specifically
+          because a silent or dropped node is a real failure mode worth
+          designing for, not a hypothetical one. What I don't have yet is a
+          documented account of a specific real fault or false alarm and
+          exactly what I changed in response — that's the next thing I want
+          to add to this case study once it happens (or once I go back
+          through my notes to find it).
+        </p>
+        <span class="pending-note">
+          <i class="bi bi-dot" aria-hidden="true"></i>
+          Specific before/after iteration story — pending.
+        </span>
+      </section>
+
+      <!-- DEPLOYMENT -->
+      <section class="case-study-section" id="deployment">
+        <span class="case-study-section__label">09 · Deployment</span>
+        <h2>Where it runs today</h2>
+        <p>
+          FlowMonitor is currently deployed and running in the Ion Beam Lab
+          as part of my ongoing research role there. It's a working system
+          lab staff actually use, not a demo — the mini PC runs both Python
+          programs continuously, and the dashboard is reachable from any
+          computer on the lab network.
+        </p>
+      </section>
+
+      <!-- RESULTS -->
+      <section class="case-study-section" id="results">
+        <span class="case-study-section__label">10 · Results</span>
+        <h2>What's real right now</h2>
+        <p>
+          I'm keeping "built and working" and "measured in production"
+          strictly separate here — it would be easy to blur them, and I'd
+          rather this section be a little shorter and completely honest.
+        </p>
+
+        <div class="results-grid">
+          <div class="results-col results-col--done">
+            <span class="results-col__title"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Implemented &amp; Working</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Multi-node RS-485 communication across 3+ nodes, each individually addressed</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Continuous CSV logging of every reading</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Automated email alerts for low-flow (&gt;10 min) and node-offline conditions</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> CSV attached to every alert email; 30-minute cooldown between repeats</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Startup confirmation email on boot</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Heartbeat watchdog + automatic reconnect per node</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Live browser dashboard: per-node status, flow, temperature, fault history, trend chart, system health, 5s refresh</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Per-node local safety layer: relay cutoff, buzzer, bypass switch, OLED status</li>
+            </ul>
+          </div>
+          <div class="results-col results-col--pending">
+            <span class="results-col__title"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Not Yet Measured</span>
+            <ul>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Exact number of deployed nodes beyond "3 and additional"</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Flow sensor model</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Polling interval</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Total deployment runtime</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Number of real faults caught in production</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Prof. Knutson's sign-off on further publishable detail (additional photos, specifics)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="case-study-section" id="lessons">
+        <span class="case-study-section__label">11 · Lessons &amp; Next Steps</span>
+        <h2>What's next</h2>
+        <ul>
+          <li>Add lightweight metrics logging so I can report real uptime and fault-count numbers here instead of just "working."</li>
+          <li>Document the exact deployed node count and sensor models formally as the lab adds equipment.</li>
+          <li>Get sign-off from Prof. Knutson on what additional detail — photos, more specifics — can be published in this write-up.</li>
+        </ul>
+      </section>
+
+      <!-- TECH STACK -->
+      <section class="case-study-section" id="stack">
+        <span class="case-study-section__label">12 · Technology Stack</span>
+        <h2>What it's built with</h2>
+        <div class="projects__card__tags">
+          <span class="projects__card__tag">Arduino Nano</span>
+          <span class="projects__card__tag">RS-485</span>
+          <span class="projects__card__tag">MAX485</span>
+          <span class="projects__card__tag">MAX31855</span>
+          <span class="projects__card__tag">Python</span>
+          <span class="projects__card__tag">Flask</span>
+          <span class="projects__card__tag">SMTP</span>
+          <span class="projects__card__tag">CSV</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom CTA -->
+    <section class="case-study-cta">
+      <p>Have questions about how this system works?</p>
+      <div class="case-study-cta__links">
+        <a href="../index.html#projects" class="btn btn-outline"><i class="bi bi-arrow-left" aria-hidden="true"></i> All Projects</a>
+        <a href="../index.html#experience" class="btn btn-outline"><i class="bi bi-briefcase" aria-hidden="true"></i> Experience</a>
+        <a href="../index.html#home" class="btn btn-default"><i class="bi bi-house" aria-hidden="true"></i> Home</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__brand__name">Likith Kumar Kandukuri</p>
+          <p class="footer__brand__tagline">Building, learning, and leading — one project at a time.</p>
+        </div>
+        <div class="footer__socials">
+          <a href="https://www.linkedin.com/in/likithkandukuri/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+          <a href="https://github.com/likithkandukuri" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="GitHub"><i class="bi bi-github" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/likith_kumar22/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="https://x.com/LikithkLucky" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="X (Twitter)"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+          <a href="https://www.youtube.com/@likithkandukuri4522" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="YouTube"><i class="bi bi-youtube" aria-hidden="true"></i></a>
+        </div>
+        <a href="../index.html" class="btn btn-outline footer__cta"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Home</a>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 Likith Kumar Kandukuri. All rights reserved.</p>
+        <a href="#" class="footer__top-link" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </footer>
+
+    <script src="../app.js"></script>
+  </body>
+</html>

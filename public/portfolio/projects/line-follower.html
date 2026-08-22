@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Line Follower Robot — Case Study | Likith Kumar Kandukuri</title>
+    <meta
+      name="description"
+      content="Line Follower Robot — a priority-steering line-follower tuned for reliable IR tracking under ambient light interference. Most Creative Build, UAlbany Showcase 2026, out of 20 teams."
+    />
+    <meta property="og:title" content="Line Follower Robot — Case Study | Likith Kumar Kandukuri" />
+    <meta property="og:description" content="Priority-based steering for reliable IR line tracking under ambient light interference." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://cloudkrida.com/portfolio/projects/line-follower.html" />
+    <meta
+      property="og:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Line Follower Robot — Case Study | Likith Kumar Kandukuri" />
+    <meta name="twitter:description" content="Priority-based steering for reliable IR line tracking under ambient light interference." />
+    <meta
+      name="twitter:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <link rel="canonical" href="https://cloudkrida.com/portfolio/projects/line-follower.html" />
+
+    <link rel="icon" href="../assets/fevicons/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/fevicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/fevicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/fevicons/favicon-16x16.png" />
+    <link rel="manifest" href="../assets/fevicons/site.webmanifest" />
+
+    <link rel="stylesheet" href="../app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+
+  <body>
+    <nav class="nav">
+      <div class="nav__wrapper">
+        <div class="nav__wrapper__logo">
+          <a href="../index.html#home" class="nav__wrapper__logo__brand">Likith</a>
+        </div>
+        <ul class="nav__wrapper__ul" id="primary-navigation">
+          <li class="nav__wrapper__ul__li"><a href="../index.html#home" class="nav__wrapper__ul__li__a">Home</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#projects" class="nav__wrapper__ul__li__a active">Projects</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#experience" class="nav__wrapper__ul__li__a">Experience</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../about.html" class="nav__wrapper__ul__li__a">About</a></li>
+          <li class="nav__wrapper__ul__li">
+            <a href="../assets/files/Likith-Kumar-Kandukuri-Resume.pdf" target="_blank" rel="noopener noreferrer" class="nav__wrapper__ul__li__a" aria-label="View résumé (opens PDF in a new tab)">Resume</a>
+          </li>
+        </ul>
+        <button type="button" class="nav__wrapper__toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+          <i class="bi bi-justify-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="case-study-hero">
+      <div class="case-study-hero__inner">
+        <span class="case-study-hero__eyebrow">
+          <i class="bi bi-robot" aria-hidden="true"></i> Robotics
+        </span>
+        <h1 class="case-study-hero__title">Line Follower Robot</h1>
+        <p class="case-study-hero__lede">
+          A priority-steering line-follower built to move quickly without
+          losing the line as lighting changed or got covered — four IR
+          sensors, each calibrated with its own threshold, feeding a
+          9-step priority cascade that decides how hard to turn.
+        </p>
+        <span class="case-study-hero__status">
+          <i class="bi bi-star-fill" aria-hidden="true"></i>
+          Most Creative Build — UAlbany Showcase 2026, 20 teams
+        </span>
+
+        <div class="case-study-hero__meta">
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Event</span>
+            <span class="case-study-hero__meta-value">UAlbany Showcase, April 2026</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Result</span>
+            <span class="case-study-hero__meta-value">Most Creative Build, 20 teams</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Sensors</span>
+            <span class="case-study-hero__meta-value">4 × analog IR, independent thresholds</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Stack</span>
+            <span class="case-study-hero__meta-value">Arduino · IR Sensors</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="case-study-body" style="max-width: 82rem;">
+
+      <!-- PROBLEM -->
+      <section class="case-study-section" id="problem">
+        <span class="case-study-section__label">01 · The Problem</span>
+        <h2>Reliable tracking, at speed, under changing light</h2>
+        <p>
+          IR line sensors work by reading reflected infrared light — which
+          means ambient light in the room can interfere with the reading
+          and make a sensor misreport whether it's over the line. The robot
+          was designed to move quickly without losing the line, including
+          when lighting changed or a sensor got briefly covered — which
+          meant the sensing and steering logic had to be trustworthy enough
+          to react fast without second-guessing itself.
+        </p>
+      </section>
+
+      <!-- SENSOR LAYOUT -->
+      <section class="case-study-section" id="sensors">
+        <span class="case-study-section__label">02 · Sensor Layout</span>
+        <h2>Four sensors, each calibrated on its own</h2>
+        <p>
+          The array is four analog IR sensors — far-left, inner-left,
+          inner-right, far-right — wired to analog pins A1, A3, A2, and A0
+          respectively, driving two motors on digital pins D9 (left) and
+          D10 (right).
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 480 320" role="img" aria-labelledby="lfSensorTitle lfSensorDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="lfSensorTitle">Line follower sensor layout and thresholds</title>
+              <desc id="lfSensorDesc">A top-down view of the robot chassis with four IR sensors: far-left on pin A1 with threshold 620, inner-left on pin A3 with threshold 480, inner-right on pin A2 with threshold 840, far-right on pin A0 with threshold 830. Two motors are wired to pins D9 (left) and D10 (right). Exact sensor model is not verified.</desc>
+              <g font-family="Poppins, sans-serif">
+                <rect x="90" y="30" width="300" height="150" rx="16" fill="#fff" stroke="#94A3B8" stroke-width="2"/>
+                <text x="240" y="60" text-anchor="middle" font-size="11" fill="#94A3B8">Chassis (front edge, facing down-track)</text>
+                <text x="150" y="150" text-anchor="middle" font-size="10" fill="#64748B">Left motor</text>
+                <text x="150" y="164" text-anchor="middle" font-size="10" font-weight="700" fill="#046241">D9</text>
+                <text x="330" y="150" text-anchor="middle" font-size="10" fill="#64748B">Right motor</text>
+                <text x="330" y="164" text-anchor="middle" font-size="10" font-weight="700" fill="#046241">D10</text>
+
+                <rect x="60" y="190" width="90" height="55" rx="6" fill="#046241"/>
+                <text x="105" y="212" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Far-Left</text>
+                <text x="105" y="226" text-anchor="middle" font-size="9" fill="#D1FAE5">A1 · thr 620</text>
+
+                <rect x="160" y="190" width="90" height="55" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="205" y="212" text-anchor="middle" font-size="10" font-weight="700" fill="#046241">Inner-Left</text>
+                <text x="205" y="226" text-anchor="middle" font-size="9" fill="#475569">A3 · thr 480</text>
+
+                <rect x="260" y="190" width="90" height="55" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="305" y="212" text-anchor="middle" font-size="10" font-weight="700" fill="#046241">Inner-Right</text>
+                <text x="305" y="226" text-anchor="middle" font-size="9" fill="#475569">A2 · thr 840</text>
+
+                <rect x="360" y="190" width="90" height="55" rx="6" fill="#046241"/>
+                <text x="405" y="212" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Far-Right</text>
+                <text x="405" y="226" text-anchor="middle" font-size="9" fill="#D1FAE5">A0 · thr 830</text>
+
+                <line x1="255" y1="255" x2="255" y2="285" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="3,3"/>
+                <text x="255" y="300" text-anchor="middle" font-size="10" fill="#475569">Pin order (A1, A3, A2, A0) follows the actual wiring, not left-to-right sequence</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 1 — Four sensors with confirmed pins and thresholds. Sensor model is not verified.</span>
+        </div>
+
+        <div class="decision-callout">
+          <span class="decision-callout__label"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i> Design Decision — Independent thresholds, not a shared one</span>
+          <p>
+            The four sensors don't share a single threshold — I set one
+            per sensor: 620, 480, 840, and 830. Sensors don't all sit at
+            the same height, angle, or distance from the surface, and
+            ambient light doesn't hit each one evenly, so a reading that
+            means "on the line" for one sensor can mean something different
+            for another. Calibrating each sensor individually was the
+            difference between the robot reacting correctly and reacting to
+            noise.
+          </p>
+        </div>
+      </section>
+
+      <!-- WHY PRIORITY STEERING -->
+      <section class="case-study-section" id="why-priority">
+        <span class="case-study-section__label">03 · Design Decision</span>
+        <h2>Why priority-based steering</h2>
+        <div class="decision-callout">
+          <span class="decision-callout__label"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i> Design Decision — Priority cascade over uniform response</span>
+          <p>
+            A simpler design would treat every sensor the same and react
+            with one fixed turn strength. I chose a priority cascade
+            instead — nine ordered checks, evaluated top to bottom, where
+            the first matching condition wins. How far off the line the
+            robot has drifted determines how sharply it turns: a single
+            far sensor triggering gets a strong turn, both sensors on one
+            side triggering together gets a very strong turn, and an inner
+            sensor alone gets a small correction. That escalation is what
+            let it react fast without overcorrecting past the line.
+          </p>
+        </div>
+      </section>
+
+      <!-- STEERING LOGIC -->
+      <section class="case-study-section" id="steering-logic">
+        <span class="case-study-section__label">04 · Steering Decision Logic</span>
+        <h2>The priority cascade, as implemented</h2>
+        <p>
+          Checked in order — first match wins, then a short brake before
+          the next cycle:
+        </p>
+
+        <ol class="cascade-list">
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">All 4 sensors black</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Stop</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Both left sensors black (far-left + inner-left)</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Very strong left</span>
+              <span class="cascade-item__timing">40 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Both right sensors black (far-right + inner-right)</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Very strong right</span>
+              <span class="cascade-item__timing">40 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">All 4 sensors white</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Forward</span>
+              <span class="cascade-item__timing">18 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Far-left black</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Strong left</span>
+              <span class="cascade-item__timing">25 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Far-right black</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Strong right</span>
+              <span class="cascade-item__timing">25 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Inner-left black</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Small left correction</span>
+              <span class="cascade-item__timing">30 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Inner-right black</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Small right correction</span>
+              <span class="cascade-item__timing">30 ms</span>
+            </div>
+          </li>
+          <li class="cascade-item cascade-item--fallback">
+            <div class="cascade-item__body">
+              <span class="cascade-item__condition">Fallback (no case matched)</span>
+              <span class="cascade-item__arrow">→</span>
+              <span class="cascade-item__action">Stop</span>
+            </div>
+          </li>
+        </ol>
+        <p style="font-size: 1.3rem; color: var(--color-text-muted);">
+          Every cycle ends with a 20 ms brake before the next read, regardless of which case fired.
+        </p>
+
+        <div class="code-block">
+          <span class="code-block__label"><i class="bi bi-code-slash" aria-hidden="true"></i> Control logic, as implemented</span>
+          <pre><code><span class="c-comment">// Sensors (analog)</span>
+farLeft    = A1   <span class="c-comment">// threshold</span> <span class="c-num">620</span>
+innerLeft  = A3   <span class="c-comment">// threshold</span> <span class="c-num">480</span>
+innerRight = A2   <span class="c-comment">// threshold</span> <span class="c-num">840</span>
+farRight   = A0   <span class="c-comment">// threshold</span> <span class="c-num">830</span>
+
+<span class="c-comment">// Motors</span>
+leftMotor  = D9
+rightMotor = D10
+
+<span class="c-key">if</span> (all4 == BLACK)                    stop()
+<span class="c-key">else if</span> (farLeft & innerLeft == BLACK)   veryStrongLeft(<span class="c-num">40</span>)
+<span class="c-key">else if</span> (farRight & innerRight == BLACK) veryStrongRight(<span class="c-num">40</span>)
+<span class="c-key">else if</span> (all4 == WHITE)                  forward(<span class="c-num">18</span>)
+<span class="c-key">else if</span> (farLeft == BLACK)               strongLeft(<span class="c-num">25</span>)
+<span class="c-key">else if</span> (farRight == BLACK)              strongRight(<span class="c-num">25</span>)
+<span class="c-key">else if</span> (innerLeft == BLACK)             smallLeft(<span class="c-num">30</span>)
+<span class="c-key">else if</span> (innerRight == BLACK)            smallRight(<span class="c-num">30</span>)
+<span class="c-key">else</span>                                     stop()
+
+brake(<span class="c-num">20</span>)  <span class="c-comment">// every cycle</span></code></pre>
+        </div>
+        <p style="font-size: 1.25rem; color: var(--color-text-muted);">
+          This is a clean restatement of the confirmed pin assignments,
+          thresholds, and priority order — not a literal copy-pasted
+          excerpt from the original file.
+        </p>
+      </section>
+
+      <!-- ITERATION -->
+      <section class="case-study-section" id="iteration">
+        <span class="case-study-section__label">05 · Iteration &amp; Tuning</span>
+        <h2>What I tuned</h2>
+        <p>
+          I tuned the pulse duration behind each case by hand until
+          tracking held up smoothly under the room's lighting: 40 ms for
+          the very-strong turns, 25 ms for a single far sensor, 30 ms for
+          an inner correction, 18 ms for forward, and a 20 ms brake after
+          every cycle regardless of which case fired. The gap between the
+          tiers — 40 ms down to 25 ms down to 30 ms rather than one shared
+          number — reflects how urgent each case actually is: losing the
+          line on both sensors at once needs more correction than a single
+          inner sensor drifting slightly.
+        </p>
+        <span class="pending-note">
+          <i class="bi bi-dot" aria-hidden="true"></i>
+          What these values replaced, and how many tuning passes it took to land on them — not documented.
+        </span>
+      </section>
+
+      <!-- TESTING -->
+      <section class="case-study-section" id="testing">
+        <span class="case-study-section__label">06 · Testing</span>
+        <h2>How I checked it</h2>
+        <p>
+          Testing was empirical: run the robot on the track under the
+          competition's actual lighting, watch where it lost or held the
+          line, and adjust. I don't have logged trial data or lap times
+          from that process to cite here.
+        </p>
+      </section>
+
+      <!-- RESULT -->
+      <section class="case-study-section" id="result">
+        <span class="case-study-section__label">07 · Result</span>
+        <h2>Most Creative Build</h2>
+        <p>
+          The robot won <strong>Most Creative Build</strong> out of 20 teams
+          at the UAlbany Showcase 2026.
+        </p>
+
+        <div class="results-grid">
+          <div class="results-col results-col--done">
+            <span class="results-col__title"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Verified / Implemented</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> 4 analog IR sensors on pins A1/A3/A2/A0 (far-left/inner-left/inner-right/far-right)</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Independent per-sensor thresholds: 620 / 480 / 840 / 830</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Two motors on pins D9 (left) and D10 (right)</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> 9-case priority cascade, evaluated in order, first match wins</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Tuned pulse durations: 40 ms (very strong), 25 ms (strong), 30 ms (small correction), 18 ms (forward), 20 ms brake every cycle</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Designed for fast movement without losing the line under changing/covered lighting</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Most Creative Build, UAlbany Showcase 2026, out of 20 teams</li>
+            </ul>
+          </div>
+          <div class="results-col results-col--pending">
+            <span class="results-col__title"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Not Available / Not Measured</span>
+            <ul>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> IR sensor model</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Arduino model, motor/driver specifications</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Speed, accuracy, or lap time — "fast" is a design goal here, not a measured number</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Track dimensions or competition scoring criteria</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Number of tuning iterations, or what the timing values replaced</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Any measured performance improvement from this design</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Photos or video — none found locally</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSON -->
+      <section class="case-study-section" id="lesson">
+        <span class="case-study-section__label">08 · Lesson</span>
+        <h2>What I learned, what I'd improve</h2>
+        <p>
+          <strong>I learned</strong> that treating every sensor identically
+          is the easy path and the wrong one — the cascade only worked
+          because sensor position carried meaning about how urgent the
+          correction was. <strong>With more time</strong>, I'd log tuning
+          runs as I went, the way I have on later projects, instead of
+          relying on memory afterward — this write-up would be more
+          specific if I had.
+        </p>
+      </section>
+
+      <!-- TECH STACK -->
+      <section class="case-study-section" id="stack">
+        <span class="case-study-section__label">09 · Technology Stack</span>
+        <h2>What it's built with</h2>
+        <div class="projects__card__tags">
+          <span class="projects__card__tag">Arduino</span>
+          <span class="projects__card__tag">IR Sensors</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom CTA -->
+    <section class="case-study-cta">
+      <p>That's the whole write-up — this one's intentionally short.</p>
+      <div class="case-study-cta__links">
+        <a href="../index.html#projects" class="btn btn-outline"><i class="bi bi-arrow-left" aria-hidden="true"></i> All Projects</a>
+        <a href="../index.html#home" class="btn btn-default"><i class="bi bi-house" aria-hidden="true"></i> Home</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__brand__name">Likith Kumar Kandukuri</p>
+          <p class="footer__brand__tagline">Building, learning, and leading — one project at a time.</p>
+        </div>
+        <div class="footer__socials">
+          <a href="https://www.linkedin.com/in/likithkandukuri/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+          <a href="https://github.com/likithkandukuri" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="GitHub"><i class="bi bi-github" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/likith_kumar22/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="https://x.com/LikithkLucky" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="X (Twitter)"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+          <a href="https://www.youtube.com/@likithkandukuri4522" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="YouTube"><i class="bi bi-youtube" aria-hidden="true"></i></a>
+        </div>
+        <a href="../index.html" class="btn btn-outline footer__cta"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Home</a>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 Likith Kumar Kandukuri. All rights reserved.</p>
+        <a href="#" class="footer__top-link" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </footer>
+
+    <script src="../app.js"></script>
+  </body>
+</html>

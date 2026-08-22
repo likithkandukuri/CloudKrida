@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tunnel Vision — Case Study | Likith Kumar Kandukuri</title>
+    <meta
+      name="description"
+      content="Tunnel Vision — a real-time hand-tracking pipeline I built solo in 24 hours for a 5-person hackathon team's game at Hack-A-Damien. Placed 4th of 25 teams."
+    />
+    <meta property="og:title" content="Tunnel Vision — Case Study | Likith Kumar Kandukuri" />
+    <meta property="og:description" content="A solo-built real-time hand-tracking pipeline, 24 hours, 5-person team, 4th of 25." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://cloudkrida.com/portfolio/projects/tunnel-vision.html" />
+    <meta
+      property="og:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tunnel Vision — Case Study | Likith Kumar Kandukuri" />
+    <meta name="twitter:description" content="A solo-built real-time hand-tracking pipeline, 24 hours, 5-person team, 4th of 25." />
+    <meta
+      name="twitter:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <link rel="canonical" href="https://cloudkrida.com/portfolio/projects/tunnel-vision.html" />
+
+    <link rel="icon" href="../assets/fevicons/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/fevicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/fevicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/fevicons/favicon-16x16.png" />
+    <link rel="manifest" href="../assets/fevicons/site.webmanifest" />
+
+    <link rel="stylesheet" href="../app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+
+  <body>
+    <nav class="nav">
+      <div class="nav__wrapper">
+        <div class="nav__wrapper__logo">
+          <a href="../index.html#home" class="nav__wrapper__logo__brand">Likith</a>
+        </div>
+        <ul class="nav__wrapper__ul" id="primary-navigation">
+          <li class="nav__wrapper__ul__li"><a href="../index.html#home" class="nav__wrapper__ul__li__a">Home</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#projects" class="nav__wrapper__ul__li__a active">Projects</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#experience" class="nav__wrapper__ul__li__a">Experience</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../about.html" class="nav__wrapper__ul__li__a">About</a></li>
+          <li class="nav__wrapper__ul__li">
+            <a href="../assets/files/Likith-Kumar-Kandukuri-Resume.pdf" target="_blank" rel="noopener noreferrer" class="nav__wrapper__ul__li__a" aria-label="View résumé (opens PDF in a new tab)">Resume</a>
+          </li>
+        </ul>
+        <button type="button" class="nav__wrapper__toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+          <i class="bi bi-justify-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="case-study-hero">
+      <div class="case-study-hero__inner">
+        <span class="case-study-hero__eyebrow">
+          <i class="bi bi-eye" aria-hidden="true"></i> Computer Vision &amp; Real-Time Systems
+        </span>
+        <h1 class="case-study-hero__title">Tunnel Vision</h1>
+        <p class="case-study-hero__lede">
+          24 hours. A 5-person team. One input allowed. I built the entire
+          hand-tracking pipeline solo — OpenCV, MediaPipe, and a WebSocket
+          bridge into Godot — so the rest of the team could spend their time
+          on the game itself.
+        </p>
+        <span class="case-study-hero__status">
+          <i class="bi bi-trophy-fill" aria-hidden="true"></i>
+          4th of 25 teams — Hack-A-Damien
+        </span>
+
+        <div class="case-study-hero__meta">
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Event</span>
+            <span class="case-study-hero__meta-value">Hack-A-Damien, April 2026</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Constraint</span>
+            <span class="case-study-hero__meta-value">24 hours · one-input-only</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Team</span>
+            <span class="case-study-hero__meta-value">5 people — I owned hand-tracking, solo</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Stack</span>
+            <span class="case-study-hero__meta-value">Python · OpenCV · MediaPipe · WebSockets · Godot</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Quick jump nav -->
+    <nav class="case-study-jumpnav" aria-label="Case study sections">
+      <div class="case-study-jumpnav__inner">
+        <a href="#context">Context</a>
+        <a href="#role">My Role</a>
+        <a href="#pipeline">Pipeline</a>
+        <a href="#broke">What Broke</a>
+        <a href="#iteration">Iteration</a>
+        <a href="#testing">Testing</a>
+        <a href="#result">Result</a>
+        <a href="#lessons">Lessons</a>
+      </div>
+    </nav>
+
+    <main class="case-study-body">
+
+      <!-- CONTEXT -->
+      <section class="case-study-section" id="context">
+        <span class="case-study-section__label">01 · Hackathon Context</span>
+        <h2>The constraint</h2>
+        <p>
+          Hack-A-Damien gave every team 24 hours and a rule that shaped the
+          whole project: the game could only accept <strong>one kind of
+          input</strong>. Our team of five picked hand gestures, tracked live
+          through a webcam, as that one input — which meant someone had to
+          build a real-time computer vision pipeline from scratch, inside a
+          24-hour clock, before there was a game to plug it into.
+        </p>
+      </section>
+
+      <!-- MY ROLE -->
+      <section class="case-study-section" id="role">
+        <span class="case-study-section__label">02 · My Role</span>
+        <h2>What I built vs. what my team built</h2>
+        <p>
+          This was a 5-person team project. I want to be exact about scope
+          here rather than let a single project card blur it: I owned the
+          hand-tracking pipeline end to end, solo. I did not build the game.
+        </p>
+
+        <div class="results-grid">
+          <div class="results-col results-col--done">
+            <span class="results-col__title"><i class="bi bi-person-fill" aria-hidden="true"></i> Mine — Solo</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Webcam capture and frame handling (OpenCV)</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Hand landmark detection (MediaPipe HandLandmarker)</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Gesture detection/classification from landmarks</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Streaming gesture events out over WebSockets, with Flask managing the data flow</li>
+            </ul>
+          </div>
+          <div class="results-col results-col--team">
+            <span class="results-col__title"><i class="bi bi-people-fill" aria-hidden="true"></i> My Teammates — Game Dev &amp; Art</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> The Godot game itself — mechanics, levels, art direction</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Receiving and acting on the gesture events my pipeline sent</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Everything visual and playable about the finished game</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>
+          I took the hand-tracking piece specifically because it was the
+          most technically unfamiliar part of the stack — nobody on the team
+          had built a real-time CV pipeline before, and someone had to own
+          that risk so the rest of the team could commit their 24 hours to
+          the game instead of hedging on whether input would work at all.
+        </p>
+      </section>
+
+      <!-- PIPELINE -->
+      <section class="case-study-section" id="pipeline">
+        <span class="case-study-section__label">03 · The Pipeline</span>
+        <h2>How a hand becomes a game event</h2>
+        <p>
+          A webcam frame goes through OpenCV, then MediaPipe's
+          HandLandmarker, then my own gesture logic, then out over a
+          WebSocket into Godot. The diagram below marks exactly which parts
+          I can verify from files I still have, and which parts I'm
+          reporting from what I remember building and what's on my resume —
+          I'm not blurring that line.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 620 640" role="img" aria-labelledby="tvPipeTitle tvPipeDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="tvPipeTitle">Tunnel Vision hand-tracking pipeline</title>
+              <desc id="tvPipeDesc">A webcam frame is captured by OpenCV, passed to MediaPipe HandLandmarker for hand detection, then to gesture processing, then streamed over WebSockets into Godot. The first three stages are verified by a local script; gesture processing, WebSocket streaming, and the Godot side are reported from documented facts but not verified against local source files.</desc>
+              <defs>
+                <marker id="tvArrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#059669"/></marker>
+              </defs>
+              <g font-family="Poppins, sans-serif">
+                <rect x="160" y="20" width="300" height="60" rx="8" fill="#ECFDF5" stroke="#046241" stroke-width="2"/>
+                <text x="310" y="47" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Webcam frame</text>
+                <text x="310" y="65" text-anchor="middle" font-size="10" fill="#046241">✓ verified — cv2.VideoCapture(0)</text>
+                <line x1="310" y1="80" x2="310" y2="108" stroke="#059669" stroke-width="2" marker-end="url(#tvArrow)"/>
+
+                <rect x="160" y="110" width="300" height="60" rx="8" fill="#ECFDF5" stroke="#046241" stroke-width="2"/>
+                <text x="310" y="137" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">OpenCV frame read</text>
+                <text x="310" y="155" text-anchor="middle" font-size="10" fill="#046241">✓ verified locally</text>
+                <line x1="310" y1="170" x2="310" y2="198" stroke="#059669" stroke-width="2" marker-end="url(#tvArrow)"/>
+
+                <rect x="130" y="200" width="360" height="70" rx="8" fill="#046241"/>
+                <text x="310" y="228" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">MediaPipe HandLandmarker</text>
+                <text x="310" y="246" text-anchor="middle" font-size="10" fill="#D1FAE5">up to 2 hands · IMAGE mode</text>
+                <text x="310" y="261" text-anchor="middle" font-size="10" fill="#A7F3D0">✓ verified locally</text>
+                <line x1="310" y1="270" x2="310" y2="298" stroke="#059669" stroke-width="2" marker-end="url(#tvArrow)"/>
+
+                <rect x="160" y="300" width="300" height="60" rx="8" fill="#fff" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6,4"/>
+                <text x="310" y="327" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Gesture detection/classification</text>
+                <text x="310" y="345" text-anchor="middle" font-size="10" fill="#64748B">reported, not locally re-verified</text>
+                <line x1="310" y1="360" x2="310" y2="388" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#tvArrow)"/>
+
+                <rect x="160" y="390" width="300" height="60" rx="8" fill="#fff" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6,4"/>
+                <text x="310" y="415" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">WebSocket stream</text>
+                <text x="310" y="433" text-anchor="middle" font-size="10" fill="#64748B">Flask-managed, per resume — not locally re-verified</text>
+                <line x1="310" y1="450" x2="310" y2="478" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#tvArrow)"/>
+
+                <rect x="160" y="480" width="300" height="70" rx="8" fill="#fff" stroke="#94A3B8" stroke-width="2" stroke-dasharray="6,4"/>
+                <text x="310" y="508" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Godot — teammates' side</text>
+                <text x="310" y="526" text-anchor="middle" font-size="10" fill="#64748B">receives events, drives the game</text>
+                <text x="310" y="541" text-anchor="middle" font-size="10" fill="#64748B">not my code — not locally available</text>
+
+                <rect x="20" y="580" width="18" height="18" fill="#ECFDF5" stroke="#046241" stroke-width="2"/>
+                <text x="46" y="594" font-size="11" fill="#475569">Verified against a local file I still have</text>
+                <rect x="330" y="580" width="18" height="18" fill="#fff" stroke="#94A3B8" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="356" y="594" font-size="11" fill="#475569">Reported fact, not locally re-verified</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 1 — Pipeline with evidence boundary marked directly on the diagram</span>
+        </div>
+
+        <h3>What the local evidence actually shows</h3>
+        <p>
+          I still have the script I used to get hand detection working:
+          OpenCV opens the webcam, MediaPipe's <code>HandLandmarker</code>
+          runs in <code>IMAGE</code> mode against each frame, configured for
+          up to two hands, and prints the detected landmarks. That file and
+          the MediaPipe model it loads are both dated April 25, 2026 —
+          hours before the Godot project folder was created that same
+          night, which lines up with Hack-A-Damien's timeframe.
+        </p>
+        <div class="evidence-note">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          The gesture-classification logic, the WebSocket message format,
+          and the Godot-side receiving code aren't in any file I still have
+          locally — the Godot project folder on this machine contains only
+          the base project scaffold and imported art assets, no gameplay or
+          networking scripts. I'm reporting those pieces from the resume
+          and my own memory of building them, not from source I re-verified
+          for this write-up.
+        </div>
+      </section>
+
+      <!-- WHAT BROKE -->
+      <section class="case-study-section" id="broke">
+        <span class="case-study-section__label">04 · What Broke</span>
+        <h2>The honest answer: not documented</h2>
+        <p>
+          Under a 24-hour clock, something almost certainly went wrong at
+          some point — that's true of every hackathon. But I don't have
+          notes, commit history, or the actual event-night files that would
+          let me point to a specific failure and say exactly what it was.
+          Rather than write a compelling bug story I can't back up, I'm
+          marking this as undocumented.
+        </p>
+        <span class="pending-note">
+          <i class="bi bi-dot" aria-hidden="true"></i>
+          Specific tournament-night failure — not documented.
+        </span>
+      </section>
+
+      <!-- ITERATION -->
+      <section class="case-study-section" id="iteration">
+        <span class="case-study-section__label">05 · Iteration</span>
+        <h2>What I can actually evidence</h2>
+        <p>
+          <code>test.py</code> is a real, specific engineering choice, not
+          just a demo script: it runs HandLandmarker in
+          <code>RunningMode.IMAGE</code>, detecting each frame independently
+          rather than using MediaPipe's video-optimized streaming mode. That
+          reads as an early, low-risk step — get detection working reliably
+          on a single frame before building anything that depends on it
+          running continuously in real time.
+        </p>
+        <p>
+          What I don't have is a documented record of the specific change
+          between that step and the real-time pipeline that actually shipped
+          — whether that meant switching running modes, adding smoothing
+          across frames, or something else. I know it worked well enough to
+          ship and place 4th, but I can't point to the exact diff without
+          inventing one.
+        </p>
+        <span class="pending-note">
+          <i class="bi bi-dot" aria-hidden="true"></i>
+          Exact first-pass → shipped-pass technical diff — not documented beyond the IMAGE-mode starting point above.
+        </span>
+      </section>
+
+      <!-- TESTING -->
+      <section class="case-study-section" id="testing">
+        <span class="case-study-section__label">06 · Testing &amp; Validation</span>
+        <h2>How I checked it worked</h2>
+        <p>
+          <code>test.py</code> is itself how I validated the tracking
+          foundation: run the webcam loop, print every detection result to
+          the console, and watch the live frame in an OpenCV window at the
+          same time — a direct, visual check that landmarks were actually
+          being found before building anything on top of that signal.
+        </p>
+      </section>
+
+      <!-- RESULT -->
+      <section class="case-study-section" id="result">
+        <span class="case-study-section__label">07 · Result</span>
+        <h2>4th of 25 teams</h2>
+        <p>
+          The team placed 4th out of 25 at Hack-A-Damien in April 2026. The
+          hand-tracking input — the piece I owned — worked well enough,
+          under a hard 24-hour deadline, for the rest of the team to build a
+          complete, judged, competitive game around it.
+        </p>
+
+        <div class="results-grid">
+          <div class="results-col results-col--done">
+            <span class="results-col__title"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Implemented &amp; Verified</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Webcam capture + OpenCV frame handling — verified in a local file</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> MediaPipe HandLandmarker detection, up to 2 hands — verified in a local file</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Entire hand-tracking pipeline built solo — confirmed</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Gesture events streamed to Godot over WebSockets, Flask-managed — confirmed (resume)</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Built under a 24-hour, one-input-only, 5-person-team constraint — confirmed</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Result: 4th of 25 teams, Hack-A-Damien, April 2026 — confirmed</li>
+            </ul>
+          </div>
+          <div class="results-col results-col--pending">
+            <span class="results-col__title"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Not Available / Unverified</span>
+            <ul>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Latency, frame rate, or accuracy numbers</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Exact number or list of distinct gestures</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Gesture-classification algorithm detail</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> WebSocket message format/protocol specifics</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Godot-side integration code — not found locally</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Specific tournament-night bug/fix</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Public repo or demo link availability</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="case-study-section" id="lessons">
+        <span class="case-study-section__label">08 · Lessons &amp; Next Steps</span>
+        <h2>What I learned, what I'd change</h2>
+        <ul>
+          <li><strong>I learned</strong> that owning the unfamiliar, high-risk piece of a team project — rather than the safest task — is how you actually find out what you can build under pressure.</li>
+          <li><strong>I learned</strong> that a small, disposable test script (get one thing verifiably working before connecting it to anything else) is worth the ten minutes it costs, even on a 24-hour clock.</li>
+          <li><strong>With more time</strong>, I'd keep dated notes or commits through the build instead of just the working code — so a write-up like this could show the real iteration story instead of having to mark it undocumented.</li>
+          <li><strong>With more time</strong>, I'd also go back and re-verify the gesture-classification and WebSocket code against whatever's recoverable, rather than reporting it from memory.</li>
+        </ul>
+      </section>
+
+      <!-- TECH STACK -->
+      <section class="case-study-section" id="stack">
+        <span class="case-study-section__label">09 · Technology Stack</span>
+        <h2>What it's built with</h2>
+        <div class="projects__card__tags">
+          <span class="projects__card__tag">Python</span>
+          <span class="projects__card__tag">OpenCV</span>
+          <span class="projects__card__tag">MediaPipe</span>
+          <span class="projects__card__tag">Flask</span>
+          <span class="projects__card__tag">WebSockets</span>
+          <span class="projects__card__tag">Godot</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom CTA -->
+    <section class="case-study-cta">
+      <p>Curious about the hand-tracking approach?</p>
+      <div class="case-study-cta__links">
+        <a href="../index.html#projects" class="btn btn-outline"><i class="bi bi-arrow-left" aria-hidden="true"></i> All Projects</a>
+        <a href="../index.html#experience" class="btn btn-outline"><i class="bi bi-briefcase" aria-hidden="true"></i> Experience</a>
+        <a href="../index.html#home" class="btn btn-default"><i class="bi bi-house" aria-hidden="true"></i> Home</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__brand__name">Likith Kumar Kandukuri</p>
+          <p class="footer__brand__tagline">Building, learning, and leading — one project at a time.</p>
+        </div>
+        <div class="footer__socials">
+          <a href="https://www.linkedin.com/in/likithkandukuri/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+          <a href="https://github.com/likithkandukuri" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="GitHub"><i class="bi bi-github" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/likith_kumar22/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="https://x.com/LikithkLucky" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="X (Twitter)"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+          <a href="https://www.youtube.com/@likithkandukuri4522" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="YouTube"><i class="bi bi-youtube" aria-hidden="true"></i></a>
+        </div>
+        <a href="../index.html" class="btn btn-outline footer__cta"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Home</a>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 Likith Kumar Kandukuri. All rights reserved.</p>
+        <a href="#" class="footer__top-link" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </footer>
+
+    <script src="../app.js"></script>
+  </body>
+</html>

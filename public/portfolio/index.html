@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Likith Kumar Kandukuri — Electrical & Computer Engineering Portfolio</title>
+    <meta
+      name="description"
+      content="Likith Kumar Kandukuri — Electrical & Computer Engineering student at the University at Albany building embedded systems, full-stack software, and computer vision projects."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Likith Kumar Kandukuri — Electrical & Computer Engineering Portfolio" />
+    <meta
+      property="og:description"
+      content="ECE student building things that run in production — from lab hardware to a 100-player tournament."
+    />
+    <meta
+      property="og:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://cloudkrida.com/portfolio/"
+    />
+    <meta
+      property="og:site_name"
+      content="Likith Kumar Kandukuri — Portfolio"
+    />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Likith Kumar Kandukuri — Electrical & Computer Engineering Portfolio" />
+    <meta
+      name="twitter:description"
+      content="ECE student building things that run in production — from lab hardware to a 100-player tournament."
+    />
+    <meta
+      name="twitter:image"
+      content="https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg"
+    />
+
+    <link rel="canonical" href="https://cloudkrida.com/portfolio/" />
+
+    <link rel="icon" href="assets/fevicons/favicon.ico" sizes="any" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/fevicons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/fevicons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/fevicons/favicon-16x16.png"
+    />
+    <link rel="manifest" href="assets/fevicons/site.webmanifest" />
+
+    <link rel="stylesheet" href="app.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- Structured data: Person + WebSite schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://cloudkrida.com/portfolio/#person",
+            "name": "Likith Kumar Kandukuri",
+            "url": "https://cloudkrida.com/portfolio/",
+            "image": "https://cloudkrida.com/portfolio/assets/images/likith-portfolio-image.jpg",
+            "email": "mailto:likithkandukuri@gmail.com",
+            "jobTitle": "Electrical and Computer Engineering Student",
+            "alumniOf": {
+              "@type": "CollegeOrUniversity",
+              "name": "University at Albany"
+            },
+            "sameAs": [
+              "https://www.linkedin.com/in/likithkandukuri/",
+              "https://github.com/likithkandukuri",
+              "https://www.instagram.com/likith_kumar22/",
+              "https://x.com/LikithkLucky",
+              "https://www.youtube.com/@likithkandukuri4522"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://cloudkrida.com/portfolio/#website",
+            "name": "Likith Kumar Kandukuri — Portfolio",
+            "url": "https://cloudkrida.com/portfolio/",
+            "author": { "@id": "https://cloudkrida.com/portfolio/#person" }
+          }
+        ]
+      }
+    </script>
+  </head>
+
+  <body>
+    <!-- Start Navbar -->
+    <nav class="nav">
+      <div class="nav__wrapper">
+        <div class="nav__wrapper__logo">
+          <a href="#home" class="nav__wrapper__logo__brand">Likith</a>
+        </div>
+
+        <ul class="nav__wrapper__ul" id="primary-navigation">
+          <li class="nav__wrapper__ul__li">
+            <a href="#home" class="nav__wrapper__ul__li__a">Home</a>
+          </li>
+          <li class="nav__wrapper__ul__li">
+            <a href="#projects" class="nav__wrapper__ul__li__a">Projects</a>
+          </li>
+          <li class="nav__wrapper__ul__li">
+            <a href="#experience" class="nav__wrapper__ul__li__a">Experience</a>
+          </li>
+          <li class="nav__wrapper__ul__li">
+            <a href="about.html" class="nav__wrapper__ul__li__a">About</a>
+          </li>
+          <li class="nav__wrapper__ul__li">
+            <a
+              href="assets/files/Likith-Kumar-Kandukuri-Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="nav__wrapper__ul__li__a"
+              aria-label="View résumé (opens PDF in a new tab)"
+            >
+              Resume
+            </a>
+          </li>
+        </ul>
+
+        <button
+          type="button"
+          class="nav__wrapper__toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          aria-controls="primary-navigation"
+        >
+          <i class="bi bi-justify-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+    <!-- Close Nav -->
+
+    <!-- Open Header -->
+    <header class="header" id="home">
+      <div class="container">
+        <div class="header__grid">
+          <div class="header__content">
+            <p class="header__eyebrow">
+              <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+              Electrical & Computer Engineering Student
+            </p>
+
+            <h1 class="header__heading">
+              <span class="header__heading__greeting">Hi, I'm</span>
+              <span class="header__heading__name">Likith Kumar Kandukuri</span>
+            </h1>
+
+            <p class="header__subtitle">
+              I build things that run in production — from embedded lab
+              hardware to full-stack software and real-time computer vision.
+            </p>
+
+            <div class="header__tags">
+              <span class="header__tag">
+                <i class="bi bi-cpu" aria-hidden="true"></i> Embedded Systems &amp; Instrumentation
+              </span>
+              <span class="header__tag">
+                <i class="bi bi-diagram-3" aria-hidden="true"></i> Full-Stack Software
+              </span>
+              <span class="header__tag">
+                <i class="bi bi-eye" aria-hidden="true"></i> Computer Vision &amp; Real-Time Systems
+              </span>
+              <span class="header__tag">
+                <i class="bi bi-robot" aria-hidden="true"></i> Robotics
+              </span>
+            </div>
+
+            <div class="header__actions">
+              <a href="#projects" class="btn btn-default">View Work</a>
+              <a
+                href="assets/files/Likith-Kumar-Kandukuri-Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-outline"
+                aria-label="View résumé (opens PDF in a new tab)"
+              >
+                <i class="bi bi-file-earmark-pdf" aria-hidden="true"></i> Resume
+              </a>
+            </div>
+
+            <button type="button" id="talkBtn" class="header__why-link">
+              Why work with me
+              <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <div class="header__media">
+            <div class="header__media__shape" aria-hidden="true"></div>
+            <img
+              src="./assets/images/likith-portfolio-image.jpg"
+              alt="Likith Kumar Kandukuri"
+              class="header__media__img"
+              width="1310"
+              height="1600"
+            />
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Close Header -->
+
+    <!-- Talk To Me Modal -->
+    <div class="modal" id="contactModal">
+      <div
+        class="modal__wrapper"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contactModalTitle"
+        tabindex="-1"
+      >
+        <div class="modal__wrapper__image">
+          <img
+            src="./assets/images/pop-up-image.jpg"
+            alt="Likith Kumar Kandukuri"
+            loading="lazy"
+            width="750"
+            height="1000"
+          />
+        </div>
+        <div class="modal__wrapper__contents">
+          <button
+            class="modal__wrapper__close"
+            aria-label="Close"
+            type="button"
+          >
+            <i class="bi bi-x" aria-hidden="true"></i>
+          </button>
+          <h2 id="contactModalTitle" class="heading">Why Me?</h2>
+          <p class="modal__wrapper__contents__p">
+            I'm a hands-on engineer who builds real systems end to end — from
+            embedded hardware deployed in an active research lab to
+            full-stack platforms running live for real users. I focus on
+            understanding how things actually work, making deliberate design
+            decisions, and testing until they hold up outside a demo.
+          </p>
+
+          <div class="modal__wrapper__contents__block">
+            <span class="modal__wrapper__contents__block__left">email</span>
+            <span class="modal__wrapper__contents__block__right">
+              likithkandukuri@gmail.com
+            </span>
+          </div>
+
+          <div class="modal__wrapper__contents__block">
+            <span class="modal__wrapper__contents__block__left">Contact</span>
+            <span class="modal__wrapper__contents__block__right">
+              Use the form below
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Projects -->
+    <section class="projects section" id="projects">
+      <div class="section__header">
+        <span class="section__eyebrow">Featured Work</span>
+        <h2 class="section__title">Projects</h2>
+        <p class="section__subtitle">
+          Systems I've designed, built, and shipped — spanning embedded
+          hardware, full-stack software, and real-time computer vision.
+        </p>
+      </div>
+
+      <div class="projects__grid">
+        <!-- FlowMonitor -->
+        <div class="projects__card">
+          <div class="projects__card__header">
+            <span class="projects__card__category">Embedded Systems</span>
+            <i class="bi bi-cpu" aria-hidden="true"></i>
+          </div>
+          <div class="projects__card__body">
+            <h3 class="projects__card__title">FlowMonitor</h3>
+            <p class="projects__card__desc">
+              A multi-node RS-485 monitoring and safety-control system for
+              active Ion Beam Lab equipment — logging live sensor data and
+              firing automated alerts the moment a fault is detected.
+            </p>
+            <div class="projects__card__tags">
+              <span class="projects__card__tag">Arduino</span>
+              <span class="projects__card__tag">RS-485</span>
+              <span class="projects__card__tag">Python</span>
+              <span class="projects__card__tag">Flask</span>
+            </div>
+            <div class="projects__card__links">
+              <span class="projects__card__status">
+                <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                Deployed · Ion Beam Lab
+              </span>
+              <a
+                href="projects/flowmonitor.html"
+                class="projects__card__link projects__card__link--primary"
+                aria-label="Read the FlowMonitor case study"
+                >Read case study
+                <i class="bi bi-arrow-right" aria-hidden="true"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cloud Krida -->
+        <div class="projects__card">
+          <div class="projects__card__header projects__card__header--alt">
+            <span class="projects__card__category">Full-Stack</span>
+            <i class="bi bi-trophy" aria-hidden="true"></i>
+          </div>
+          <div class="projects__card__body">
+            <h3 class="projects__card__title">Cloud Krida</h3>
+            <p class="projects__card__desc">
+              A full-stack tournament management platform running live
+              community chess tournaments, with Swiss and single-elimination
+              brackets, live pairings, and role-based access control.
+            </p>
+            <div class="projects__card__tags">
+              <span class="projects__card__tag">React</span>
+              <span class="projects__card__tag">Supabase</span>
+              <span class="projects__card__tag">PostgreSQL</span>
+              <span class="projects__card__tag">Vercel</span>
+            </div>
+            <div class="projects__card__links">
+              <span class="projects__card__status">
+                <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                100+ participants · cloudkrida.com
+              </span>
+              <a
+                href="projects/cloud-krida.html"
+                class="projects__card__link projects__card__link--primary"
+                aria-label="Read the Cloud Krida case study"
+                >Read case study
+                <i class="bi bi-arrow-right" aria-hidden="true"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tunnel Vision -->
+        <div class="projects__card">
+          <div class="projects__card__header projects__card__header--dark">
+            <span class="projects__card__category">Computer Vision</span>
+            <i class="bi bi-eye" aria-hidden="true"></i>
+          </div>
+          <div class="projects__card__body">
+            <h3 class="projects__card__title">Tunnel Vision</h3>
+            <p class="projects__card__desc">
+              A real-time hand-tracking pipeline I built solo for a 5-person
+              hackathon team's game, streaming gesture events from Python
+              into Godot over WebSockets under a one-input-only constraint.
+            </p>
+            <div class="projects__card__tags">
+              <span class="projects__card__tag">Python</span>
+              <span class="projects__card__tag">OpenCV</span>
+              <span class="projects__card__tag">MediaPipe</span>
+              <span class="projects__card__tag">WebSockets</span>
+            </div>
+            <div class="projects__card__links">
+              <span class="projects__card__status">
+                <i class="bi bi-trophy-fill" aria-hidden="true"></i>
+                4th of 25 · Hack-A-Damien
+              </span>
+              <a
+                href="projects/tunnel-vision.html"
+                class="projects__card__link projects__card__link--primary"
+                aria-label="Read the Tunnel Vision case study"
+                >Read case study
+                <i class="bi bi-arrow-right" aria-hidden="true"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Line Follower Robot — lighter-weight archive entry, deliberately not a 4th flagship card -->
+      <div class="projects__archive">
+        <span class="projects__archive__icon">
+          <i class="bi bi-robot" aria-hidden="true"></i>
+        </span>
+        <div class="projects__archive__body">
+          <span class="projects__card__category projects__archive__category">Robotics</span>
+          <h3 class="projects__archive__title">Line Follower Robot</h3>
+          <p class="projects__archive__desc">
+            A priority-steering line-follower robot engineered for reliable
+            IR tracking under variable ambient light.
+          </p>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">Arduino</span>
+            <span class="projects__card__tag">IR Sensors</span>
+          </div>
+        </div>
+        <div class="projects__archive__meta">
+          <span class="projects__card__status">
+            <i class="bi bi-star-fill" aria-hidden="true"></i>
+            Most Creative Build · UAlbany Showcase
+          </span>
+          <a
+            href="projects/line-follower.html"
+            class="projects__card__link projects__card__link--primary"
+            aria-label="Read the Line Follower Robot case study"
+            >Read case study
+            <i class="bi bi-arrow-right" aria-hidden="true"></i
+          ></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Proof Strip -->
+    <section class="proof-strip">
+      <div class="container proof-strip__inner">
+        <div class="proof-strip__item">
+          <span class="proof-strip__value">100+</span>
+          <span class="proof-strip__label">Tournament participants — Cloud Krida</span>
+        </div>
+        <div class="proof-strip__item">
+          <span class="proof-strip__value">4th / 25</span>
+          <span class="proof-strip__label">Teams — Hack-A-Damien</span>
+        </div>
+        <div class="proof-strip__item">
+          <span class="proof-strip__value">Deployed</span>
+          <span class="proof-strip__label">In an active research lab — FlowMonitor</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section class="experience section" id="experience">
+      <div class="section__header">
+        <span class="section__eyebrow">Where I've Worked</span>
+        <h2 class="section__title">Experience</h2>
+        <p class="section__subtitle">
+          Research, competition, and leadership roles that have shaped how I
+          build.
+        </p>
+      </div>
+
+      <div class="experience__list">
+        <article class="experience__item">
+          <div class="experience__item__head">
+            <h3 class="experience__item__title">Undergraduate Research Assistant</h3>
+            <span class="experience__item__date">May 2025 – Present</span>
+          </div>
+          <p class="experience__item__org">Ion Beam Lab, University at Albany — Prof. Andrew Knutson</p>
+          <p class="experience__item__desc">
+            Designed and built a multi-node embedded monitoring and
+            safety-control system for active lab equipment — deployed and in
+            daily use by lab staff.
+          </p>
+          <a href="projects/flowmonitor.html" class="experience__item__link">
+            Full case study <i class="bi bi-arrow-right" aria-hidden="true"></i>
+          </a>
+        </article>
+
+        <article class="experience__item">
+          <div class="experience__item__head">
+            <h3 class="experience__item__title">Scouting and Strategy Specialist</h3>
+            <span class="experience__item__date">Mar. 2025</span>
+          </div>
+          <p class="experience__item__org">FIRST Robotics Competition — Tech Valley Regional</p>
+          <p class="experience__item__desc">
+            Tracked match and pit data on 40+ teams to guide alliance picks
+            and in-match adjustments for the drive team.
+          </p>
+        </article>
+
+        <article class="experience__item">
+          <div class="experience__item__head">
+            <h3 class="experience__item__title">Officer</h3>
+            <span class="experience__item__date">Aug. 2025 – Present</span>
+          </div>
+          <p class="experience__item__org">IEEE Student Branch, University at Albany</p>
+          <p class="experience__item__desc">
+            Evaluate potential sponsors, advise on outreach strategy, and
+            deliver structured post-event feedback — including proposing
+            introductory workshops after Hack-A-Damien to lower the barrier
+            for first-time participants.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="skills section">
+      <div class="section__header">
+        <span class="section__eyebrow">Technical Toolkit</span>
+        <h2 class="section__title">Skills</h2>
+        <p class="section__subtitle">
+          Grouped by the work that uses them — every skill listed here backs
+          a project above.
+        </p>
+      </div>
+
+      <div class="skills__grid">
+        <div class="skills__group">
+          <span class="skills__group__label">Languages</span>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">Python</span>
+            <span class="projects__card__tag">C</span>
+            <span class="projects__card__tag">Java</span>
+            <span class="projects__card__tag">JavaScript</span>
+            <span class="projects__card__tag">HTML/CSS</span>
+          </div>
+        </div>
+
+        <div class="skills__group">
+          <span class="skills__group__label">Embedded &amp; Hardware</span>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">Arduino</span>
+            <span class="projects__card__tag">RS-485</span>
+            <span class="projects__card__tag">IR Sensors</span>
+            <span class="projects__card__tag">Relay Modules</span>
+            <span class="projects__card__tag">Motor Control</span>
+          </div>
+        </div>
+
+        <div class="skills__group">
+          <span class="skills__group__label">Software &amp; Web</span>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">React</span>
+            <span class="projects__card__tag">Vite</span>
+            <span class="projects__card__tag">Flask</span>
+            <span class="projects__card__tag">WebSockets</span>
+          </div>
+        </div>
+
+        <div class="skills__group">
+          <span class="skills__group__label">Data &amp; Backend</span>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">PostgreSQL</span>
+            <span class="projects__card__tag">Supabase</span>
+          </div>
+        </div>
+
+        <div class="skills__group">
+          <span class="skills__group__label">Computer Vision</span>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">OpenCV</span>
+            <span class="projects__card__tag">MediaPipe</span>
+          </div>
+        </div>
+
+        <div class="skills__group">
+          <span class="skills__group__label">Tools &amp; Platforms</span>
+          <div class="projects__card__tags">
+            <span class="projects__card__tag">Git</span>
+            <span class="projects__card__tag">Vercel</span>
+            <span class="projects__card__tag">VS Code</span>
+            <span class="projects__card__tag">PyCharm</span>
+            <span class="projects__card__tag">IntelliJ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Honors strip -->
+      <div class="honors-strip">
+        <span class="honors-strip__label">Honors</span>
+        <p class="honors-strip__list">
+          Samuel Hurst Scholar Award &middot; National Honor Society &middot;
+          National Beta Club &middot; CHA Chess &amp; Debate Champion
+        </p>
+      </div>
+    </section>
+
+    <!-- Recommendations -->
+    <section class="recommendations" id="recommendations">
+      <div class="section__header">
+        <span class="section__eyebrow">What Others Say</span>
+        <h2 class="section__title">Recommendations</h2>
+        <p class="section__subtitle">
+          Feedback from teachers, mentors, and program leaders I've worked with
+          throughout my academic and extracurricular journey.
+        </p>
+      </div>
+
+      <div class="recommendations__grid">
+        <!-- Recommendation 1 -->
+        <article class="testimonial">
+          <i class="bi bi-quote testimonial__icon" aria-hidden="true"></i>
+
+          <div class="testimonial__text">
+            <p>
+              Since meeting him as a sophomore in our introductory Python course
+              at Fern Creek, Likith demonstrated exceptional work ethic,
+              curiosity, and a willingness to challenge himself beyond his
+              peers.
+            </p>
+
+            <p>
+              Over 2.5 years, Likith consistently chose the most rigorous
+              coursework available, including advanced STEM classes like AP
+              Computer Science A. He earned the respect of faculty through his
+              professionalism and strong communication with both peers and
+              teachers.
+            </p>
+
+            <p>
+              His conscientiousness and intellectual humility highlight his
+              ability to collaborate effectively while remaining independently
+              productive. Any academic or professional team would be fortunate
+              to have him.
+            </p>
+          </div>
+
+          <footer class="testimonial__footer">
+            <div class="testimonial__avatar" aria-hidden="true">QT</div>
+            <div>
+              <h3 class="testimonial__name">Quincy Tennyson</h3>
+              <p class="testimonial__role">
+                Computer Science Teacher, Jefferson County Public Schools
+              </p>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Recommendation 2 -->
+        <article class="testimonial">
+          <i class="bi bi-quote testimonial__icon" aria-hidden="true"></i>
+
+          <div class="testimonial__text">
+            <p>
+              I had the pleasure of working with Likith during his time in the
+              Louisville Youth Philanthropy Council, where he demonstrated
+              thoughtfulness, integrity, and genuine curiosity.
+            </p>
+
+            <p>
+              He did not simply want to do good—he wanted to understand how to
+              create meaningful impact through informed decision-making,
+              humility, and collaboration within the nonprofit space.
+            </p>
+
+            <p>
+              As he continues his academic journey, I am confident Likith will
+              remain a force for positive change. I am proud to have been part
+              of his early development and excited to see where his path leads.
+            </p>
+          </div>
+
+          <footer class="testimonial__footer">
+            <div class="testimonial__avatar" aria-hidden="true">CM</div>
+            <div>
+              <h3 class="testimonial__name">Candy Medina</h3>
+              <p class="testimonial__role">
+                Program Manager, Louisville Youth Philanthropy Council
+              </p>
+            </div>
+          </footer>
+        </article>
+
+        <!-- Recommendation 3 -->
+        <article class="testimonial">
+          <i class="bi bi-quote testimonial__icon" aria-hidden="true"></i>
+
+          <div class="testimonial__text">
+            <p>
+              Likith consistently proved himself to be reliable, innovative, and
+              driven in every collaborative environment.
+            </p>
+
+            <p>
+              His analytical thinking and willingness to take initiative allowed
+              him to exceed expectations, especially during complex
+              problem-solving and team-based challenges.
+            </p>
+
+            <p>
+              He approaches every task with focus, discipline, and creativity,
+              making him a standout contributor in both academic and technical
+              settings.
+            </p>
+          </div>
+
+          <footer class="testimonial__footer">
+            <div class="testimonial__avatar" aria-hidden="true">ML</div>
+            <div>
+              <h3 class="testimonial__name">Michael Lee</h3>
+              <p class="testimonial__role">
+                Robotics Mentor & Engineering Advisor
+              </p>
+            </div>
+          </footer>
+        </article>
+      </div>
+
+      <!-- Add Recommendation Prompt -->
+      <div class="recommendations__cta">
+        <p>Have you worked with me?</p>
+        <a
+          class="btn btn-outline"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSf7EwLULgHM4evowzYB0q-iSmoUWAPefZCRD1QDR3dNNzV6fw/viewform"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <i class="bi bi-pencil-square" aria-hidden="true"></i>
+          Add Your Recommendation
+        </a>
+      </div>
+    </section>
+
+    <!-- Contact Me Modal -->
+    <div class="modal" id="contact-me-modal">
+      <div
+        class="modal__wrapper modal__wrapper--contact"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contactMeModalTitle"
+        tabindex="-1"
+      >
+        <button class="modal__wrapper__close" aria-label="Close" type="button">
+          <i class="bi bi-x" aria-hidden="true"></i>
+        </button>
+
+        <h2 id="contactMeModalTitle" class="heading heading--center">
+          Send Me a Message
+        </h2>
+
+        <form id="contactForm" novalidate>
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            autocomplete="name"
+          />
+
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="email"
+          />
+
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" required />
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required></textarea>
+
+          <button type="submit" id="sendBtn" class="btn btn-default">
+            Send Message
+          </button>
+
+          <p
+            id="formStatus"
+            class="form-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__brand__name">Likith Kumar Kandukuri</p>
+          <p class="footer__brand__tagline">
+            Building, learning, and leading — one project at a time.
+          </p>
+        </div>
+
+        <div class="footer__socials">
+          <a
+            href="https://www.linkedin.com/in/likithkandukuri/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer__social-link"
+            aria-label="LinkedIn"
+            ><i class="bi bi-linkedin" aria-hidden="true"></i
+          ></a>
+          <a
+            href="https://github.com/likithkandukuri"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer__social-link"
+            aria-label="GitHub"
+            ><i class="bi bi-github" aria-hidden="true"></i
+          ></a>
+          <a
+            href="https://www.instagram.com/likith_kumar22/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer__social-link"
+            aria-label="Instagram"
+            ><i class="bi bi-instagram" aria-hidden="true"></i
+          ></a>
+          <a
+            href="https://x.com/LikithkLucky"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer__social-link"
+            aria-label="X (Twitter)"
+            ><i class="bi bi-twitter-x" aria-hidden="true"></i
+          ></a>
+          <a
+            href="https://www.youtube.com/@likithkandukuri4522"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer__social-link"
+            aria-label="YouTube"
+            ><i class="bi bi-youtube" aria-hidden="true"></i
+          ></a>
+        </div>
+
+        <button id="footerContactBtn" class="btn btn-outline footer__cta">
+          <i class="bi bi-envelope" aria-hidden="true"></i> Contact Me
+        </button>
+      </div>
+
+      <div class="footer__bottom">
+        <p>© 2026 Likith Kumar Kandukuri. All rights reserved.</p>
+        <a href="#home" class="footer__top-link">
+          Back to top <i class="bi bi-arrow-up" aria-hidden="true"></i>
+        </a>
+      </div>
+    </footer>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.emailjs.com/sdk/3.2/email.min.js"></script>
+
+    <!-- Initialize EmailJS safely -->
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        if (typeof emailjs !== "undefined") {
+          emailjs.init("B3vDHmsjN8LRzSckS");
+        } else {
+          console.error("EmailJS SDK not loaded");
+        }
+      });
+    </script>
+
+    <!-- Your main JS file -->
+    <script src="app.js"></script>
+  </body>
+</html>

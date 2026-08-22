@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cloud Krida — Case Study | Likith Kumar Kandukuri</title>
+    <meta
+      name="description"
+      content="Cloud Krida — a full-stack tournament management platform I built and deployed, live at cloudkrida.com, running a real 100+ participant community chess tournament across four divisions."
+    />
+    <meta property="og:title" content="Cloud Krida — Case Study | Likith Kumar Kandukuri" />
+    <meta property="og:description" content="A full-stack tournament management platform running live community tournaments." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://cloudkrida.com/portfolio/projects/cloud-krida.html" />
+    <meta
+      property="og:image"
+      content="https://cloudkrida.com/portfolio/assets/evidence/cloudkrida-live-home.png"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cloud Krida — Case Study | Likith Kumar Kandukuri" />
+    <meta name="twitter:description" content="A full-stack tournament management platform running live community tournaments." />
+    <meta
+      name="twitter:image"
+      content="https://cloudkrida.com/portfolio/assets/evidence/cloudkrida-live-home.png"
+    />
+
+    <link rel="canonical" href="https://cloudkrida.com/portfolio/projects/cloud-krida.html" />
+
+    <link rel="icon" href="../assets/fevicons/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" sizes="180x180" href="../assets/fevicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/fevicons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/fevicons/favicon-16x16.png" />
+    <link rel="manifest" href="../assets/fevicons/site.webmanifest" />
+
+    <link rel="stylesheet" href="../app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+
+  <body>
+    <nav class="nav">
+      <div class="nav__wrapper">
+        <div class="nav__wrapper__logo">
+          <a href="../index.html#home" class="nav__wrapper__logo__brand">Likith</a>
+        </div>
+        <ul class="nav__wrapper__ul" id="primary-navigation">
+          <li class="nav__wrapper__ul__li"><a href="../index.html#home" class="nav__wrapper__ul__li__a">Home</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#projects" class="nav__wrapper__ul__li__a active">Projects</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../index.html#experience" class="nav__wrapper__ul__li__a">Experience</a></li>
+          <li class="nav__wrapper__ul__li"><a href="../about.html" class="nav__wrapper__ul__li__a">About</a></li>
+          <li class="nav__wrapper__ul__li">
+            <a href="../assets/files/Likith-Kumar-Kandukuri-Resume.pdf" target="_blank" rel="noopener noreferrer" class="nav__wrapper__ul__li__a" aria-label="View résumé (opens PDF in a new tab)">Resume</a>
+          </li>
+        </ul>
+        <button type="button" class="nav__wrapper__toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-navigation">
+          <i class="bi bi-justify-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="case-study-hero">
+      <div class="case-study-hero__inner">
+        <span class="case-study-hero__eyebrow">
+          <i class="bi bi-trophy" aria-hidden="true"></i> Full-Stack Software
+        </span>
+        <h1 class="case-study-hero__title">Cloud Krida</h1>
+        <p class="case-study-hero__lede">
+          A full-stack tournament management platform I built and deployed —
+          real-time pairings, role-based access, and photo galleries for
+          community tournaments. It ran the Albany Telangana Community Chess
+          Tournament 2026, a real 100+ participant event across four age
+          divisions.
+        </p>
+        <span class="case-study-hero__status">
+          <i class="bi bi-broadcast" aria-hidden="true"></i>
+          Live production system — <a href="https://cloudkrida.com" target="_blank" rel="noopener noreferrer" style="color:inherit;">cloudkrida.com</a>
+        </span>
+
+        <div class="case-study-hero__meta">
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Type</span>
+            <span class="case-study-hero__meta-value">Personal project, live production</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Live Since</span>
+            <span class="case-study-hero__meta-value">May 2026</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Scale</span>
+            <span class="case-study-hero__meta-value">100+ participants · 4 divisions</span>
+          </div>
+          <div class="case-study-hero__meta-item">
+            <span class="case-study-hero__meta-label">Stack</span>
+            <span class="case-study-hero__meta-value">React · Supabase · PostgreSQL · Vercel</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Quick jump nav -->
+    <nav class="case-study-jumpnav" aria-label="Case study sections">
+      <div class="case-study-jumpnav__inner">
+        <a href="#problem">Problem</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#data-model">Data Model</a>
+        <a href="#access">Access Control</a>
+        <a href="#pairing">Pairing Engine</a>
+        <a href="#operations">Live Operation</a>
+        <a href="#results">Results</a>
+        <a href="#lessons">Lessons</a>
+      </div>
+    </nav>
+
+    <main class="case-study-body">
+
+      <!-- PROBLEM / ORIGIN -->
+      <section class="case-study-section" id="problem">
+        <span class="case-study-section__label">01 · Problem &amp; Origin</span>
+        <h2>What changes when software has to survive a real 100+ player tournament?</h2>
+        <p>
+          I originally built a simple chess tournament tool — plain HTML,
+          CSS, and JavaScript — for my school's chess club. It managed
+          brackets, tracked standings, and automated round pairings for one
+          division at a time. It worked fine for a small club event.
+        </p>
+        <p>
+          It could not have run the Albany Telangana Community Chess
+          Tournament 2026. That event needed four age divisions running at
+          once, public registration ahead of time, pairings that update live
+          for everyone watching — not just the person refreshing a page —
+          and more than one trusted person able to manage the event. I
+          rebuilt the whole thing from scratch as Cloud Krida rather than
+          patch the original tool past what it was designed for.
+        </p>
+
+        <h3>Requirements this had to meet</h3>
+        <ul>
+          <li><strong>Multiple concurrent divisions</strong> — Kindergarten–2nd, 3rd–5th, 6th–12th, and Adults, all running the same day.</li>
+          <li><strong>Real-time visibility</strong> — pairings and results visible to many people at once, without anyone manually refreshing.</li>
+          <li><strong>More than one operator</strong> — tournament directors besides me needed to run rounds, not just view them.</li>
+          <li><strong>Public registration</strong> — players sign up ahead of time, not through a spreadsheet I manage by hand.</li>
+          <li><strong>A record afterward</strong> — match history and photo galleries per tournament, not just live state that disappears.</li>
+        </ul>
+      </section>
+
+      <!-- ARCHITECTURE -->
+      <section class="case-study-section" id="architecture">
+        <span class="case-study-section__label">02 · System Architecture</span>
+        <h2>How it's built</h2>
+        <p>
+          A React front end talks directly to Supabase for data,
+          authentication, file storage, and live updates. Vercel builds and
+          hosts the app on a custom domain.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 680 500" role="img" aria-labelledby="ckArchTitle ckArchDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="ckArchTitle">Cloud Krida system architecture</title>
+              <desc id="ckArchDesc">A React and Vite frontend using React Router, Framer Motion, PDF.js, and EmailJS connects to Supabase, which provides Auth, a Postgres database, Storage, Realtime, and Edge Functions. The app is built and hosted on Vercel at cloudkrida.com.</desc>
+              <defs>
+                <marker id="ckArrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#059669"/></marker>
+              </defs>
+              <g font-family="Poppins, sans-serif">
+                <rect x="160" y="20" width="360" height="90" rx="8" fill="#fff" stroke="#046241" stroke-width="2"/>
+                <text x="340" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="#0F172A">React + Vite Frontend</text>
+                <text x="340" y="74" text-anchor="middle" font-size="11" fill="#475569">React Router · Framer Motion</text>
+                <text x="340" y="92" text-anchor="middle" font-size="11" fill="#475569">PDF.js · EmailJS</text>
+
+                <line x1="340" y1="110" x2="340" y2="148" stroke="#046241" stroke-width="2" marker-end="url(#ckArrow)"/>
+
+                <rect x="250" y="150" width="180" height="60" rx="8" fill="#046241"/>
+                <text x="340" y="186" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">Supabase</text>
+
+                <line x1="290" y1="210" x2="90" y2="255" stroke="#059669" stroke-width="2"/>
+                <line x1="320" y1="210" x2="250" y2="255" stroke="#059669" stroke-width="2"/>
+                <line x1="360" y1="210" x2="430" y2="255" stroke="#059669" stroke-width="2"/>
+                <line x1="390" y1="210" x2="590" y2="255" stroke="#059669" stroke-width="2"/>
+
+                <rect x="20" y="255" width="140" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="90" y="288" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Auth (JWT)</text>
+
+                <rect x="180" y="255" width="140" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="250" y="288" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Postgres DB</text>
+
+                <rect x="360" y="255" width="140" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="430" y="288" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Storage</text>
+
+                <rect x="520" y="255" width="140" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="590" y="288" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Realtime</text>
+
+                <line x1="340" y1="210" x2="340" y2="335" stroke="#059669" stroke-width="2"/>
+                <rect x="250" y="337" width="180" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="340" y="360" text-anchor="middle" font-size="12" font-weight="700" fill="#046241">Edge Functions</text>
+                <text x="340" y="378" text-anchor="middle" font-size="10" fill="#475569">manage-user</text>
+
+                <line x1="340" y1="392" x2="340" y2="428" stroke="#046241" stroke-width="2" marker-end="url(#ckArrow)"/>
+
+                <rect x="230" y="430" width="220" height="55" rx="8" fill="#0F172A"/>
+                <text x="340" y="453" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Vercel</text>
+                <text x="340" y="471" text-anchor="middle" font-size="10" fill="#CBD5E1">cloudkrida.com · custom domain</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 1 — Frontend, Supabase services, and hosting</span>
+        </div>
+      </section>
+
+      <!-- DATA MODEL -->
+      <section class="case-study-section" id="data-model">
+        <span class="case-study-section__label">03 · Data Model</span>
+        <h2>What's actually in the database</h2>
+        <p>
+          Four core tables. I'm showing the real, verified structure here —
+          confirmed columns where I have them, purpose only where I don't,
+          rather than guessing at fields I haven't gone back to check.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 680 400" role="img" aria-labelledby="ckErTitle ckErDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="ckErTitle">Cloud Krida sanitized data model</title>
+              <desc id="ckErDesc">Four tables: tournaments, players, matches, and user_profiles. Tournaments relate to players and matches; user_profiles governs role-based access separately. Only user_profiles' columns (id, username, role, status) are shown as confirmed.</desc>
+              <g font-family="Poppins, sans-serif">
+                <rect x="30" y="30" width="260" height="80" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="160" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#0F172A">tournaments</text>
+                <text x="160" y="78" text-anchor="middle" font-size="10" fill="#475569">tournament records —</text>
+                <text x="160" y="93" text-anchor="middle" font-size="10" fill="#475569">name, division, dates, format</text>
+
+                <rect x="390" y="30" width="260" height="80" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="520" y="58" text-anchor="middle" font-size="14" font-weight="700" fill="#0F172A">players</text>
+                <text x="520" y="78" text-anchor="middle" font-size="10" fill="#475569">player records, linked to</text>
+                <text x="520" y="93" text-anchor="middle" font-size="10" fill="#475569">a tournament</text>
+
+                <rect x="30" y="200" width="260" height="80" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="160" y="228" text-anchor="middle" font-size="14" font-weight="700" fill="#0F172A">matches</text>
+                <text x="160" y="248" text-anchor="middle" font-size="10" fill="#475569">match records within</text>
+                <text x="160" y="263" text-anchor="middle" font-size="10" fill="#475569">a tournament</text>
+
+                <rect x="390" y="200" width="260" height="130" rx="8" fill="#046241"/>
+                <text x="520" y="228" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">user_profiles</text>
+                <text x="520" y="248" text-anchor="middle" font-size="10" fill="#D1FAE5">id (UUID, PK — auth ref)</text>
+                <text x="520" y="264" text-anchor="middle" font-size="10" fill="#D1FAE5">username (text)</text>
+                <text x="520" y="280" text-anchor="middle" font-size="10" fill="#D1FAE5">role (text) — Guest/Admin/Super Admin</text>
+                <text x="520" y="296" text-anchor="middle" font-size="10" fill="#D1FAE5">status (text)</text>
+                <text x="520" y="315" text-anchor="middle" font-size="9" fill="#A7F3D0">confirmed columns</text>
+
+                <line x1="290" y1="70" x2="390" y2="70" stroke="#046241" stroke-width="2"/>
+                <text x="340" y="63" text-anchor="middle" font-size="9" fill="#046241">1 : many</text>
+                <line x1="160" y1="110" x2="160" y2="196" stroke="#046241" stroke-width="2"/>
+                <text x="200" y="155" text-anchor="middle" font-size="9" fill="#046241">1 : many</text>
+                <line x1="520" y1="110" x2="290" y2="235" stroke="#046241" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="430" y="150" text-anchor="middle" font-size="9" fill="#046241">references</text>
+
+                <line x1="390" y1="265" x2="290" y2="265" stroke="#046241" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="340" y="255" text-anchor="middle" font-size="9" fill="#046241">governs access to</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 2 — Sanitized data model. No participant data shown — table structure only.</span>
+        </div>
+
+        <div class="evidence-note">
+          <i class="bi bi-shield-lock" aria-hidden="true"></i>
+          Security note: this diagram deliberately omits participant names,
+          emails, and any Supabase project keys. Column detail for
+          <code>tournaments</code>, <code>players</code>, and
+          <code>matches</code> is described by purpose rather than an exact
+          field list I haven't independently re-verified for this write-up.
+        </div>
+      </section>
+
+      <!-- ACCESS CONTROL -->
+      <section class="case-study-section" id="access">
+        <span class="case-study-section__label">04 · Authentication &amp; Access Control</span>
+        <h2>Three roles, enforced at the database</h2>
+        <p>
+          Cloud Krida has three access tiers — <strong>Guest</strong>,
+          <strong>Admin</strong>, and <strong>Super Admin</strong> — backed
+          by Supabase Auth and a <code>role</code> field on each user's
+          profile.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 660 320" role="img" aria-labelledby="ckRbacTitle ckRbacDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="ckRbacTitle">Cloud Krida role-based access tiers</title>
+              <desc id="ckRbacDesc">Three escalating roles: Guest can view tournaments, standings, and galleries. Admin can additionally run tournaments, enter results, and manage pairings. Super Admin can additionally manage users and roles platform-wide.</desc>
+              <defs>
+                <marker id="ckArrow2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#059669"/></marker>
+              </defs>
+              <g font-family="Poppins, sans-serif">
+                <rect x="20" y="40" width="180" height="220" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="110" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#0F172A">Guest</text>
+                <text x="110" y="100" text-anchor="middle" font-size="10" fill="#475569">Browse tournaments</text>
+                <text x="110" y="120" text-anchor="middle" font-size="10" fill="#475569">View live standings</text>
+                <text x="110" y="140" text-anchor="middle" font-size="10" fill="#475569">View pairings, boards</text>
+                <text x="110" y="160" text-anchor="middle" font-size="10" fill="#475569">View photo galleries</text>
+
+                <line x1="200" y1="150" x2="238" y2="150" stroke="#059669" stroke-width="2" marker-end="url(#ckArrow2)"/>
+
+                <rect x="240" y="40" width="180" height="220" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="330" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#0F172A">Admin</text>
+                <text x="330" y="95" text-anchor="middle" font-size="9" fill="#94A3B8">Everything Guest can, plus:</text>
+                <text x="330" y="118" text-anchor="middle" font-size="10" fill="#475569">Create/run tournaments</text>
+                <text x="330" y="138" text-anchor="middle" font-size="10" fill="#475569">Enter results, manage rounds</text>
+                <text x="330" y="158" text-anchor="middle" font-size="10" fill="#475569">Upload gallery photos</text>
+
+                <line x1="420" y1="150" x2="458" y2="150" stroke="#059669" stroke-width="2" marker-end="url(#ckArrow2)"/>
+
+                <rect x="460" y="40" width="180" height="220" rx="8" fill="#046241"/>
+                <text x="550" y="70" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Super Admin</text>
+                <text x="550" y="95" text-anchor="middle" font-size="9" fill="#A7F3D0">Everything Admin can, plus:</text>
+                <text x="550" y="118" text-anchor="middle" font-size="10" fill="#D1FAE5">Manage users &amp; roles</text>
+                <text x="550" y="138" text-anchor="middle" font-size="10" fill="#D1FAE5">Platform-wide control</text>
+                <text x="550" y="158" text-anchor="middle" font-size="10" fill="#D1FAE5">via manage-user Edge Fn</text>
+
+                <text x="330" y="300" text-anchor="middle" font-size="11" font-weight="600" fill="#046241">Every tier's queries are checked by Row Level Security in Postgres — not just hidden in the UI</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 3 — Role-based access tiers, each escalating from the last</span>
+        </div>
+
+        <div class="decision-callout">
+          <span class="decision-callout__label"><i class="bi bi-lightbulb-fill" aria-hidden="true"></i> Design Decision — RLS at the database, not just the UI</span>
+          <p>
+            I enforced Row Level Security at the Postgres level rather than
+            only hiding admin controls in the React UI. Supabase's client
+            queries the database directly from the browser, so a Guest's
+            client could technically attempt any query — hiding a button
+            doesn't stop that. Putting the access rules in the database
+            itself means every query is checked no matter where it comes
+            from, not just the ones that go through my UI.
+          </p>
+        </div>
+      </section>
+
+      <!-- PAIRING ENGINE -->
+      <section class="case-study-section" id="pairing">
+        <span class="case-study-section__label">05 · Tournament &amp; Pairing Engine</span>
+        <h2>How pairings get made</h2>
+        <p>
+          Cloud Krida supports both Swiss-system and single-elimination
+          tournaments. The diagram below shows how Swiss pairing works
+          conceptually — the standard approach the engine implements — since
+          I'm describing the algorithm's design here rather than walking
+          through the exact source line by line.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <svg viewBox="0 0 500 460" role="img" aria-labelledby="ckSwissTitle ckSwissDesc" xmlns="http://www.w3.org/2000/svg">
+              <title id="ckSwissTitle">Swiss pairing flow</title>
+              <desc id="ckSwissDesc">After each round, players are ranked by score, paired with adjacent-ranked opponents while avoiding repeat pairings, and an unpaired player receives a bye. Pairings publish and every viewer's screen updates live.</desc>
+              <defs>
+                <marker id="ckArrow3" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#059669"/></marker>
+              </defs>
+              <g font-family="Poppins, sans-serif">
+                <rect x="60" y="20" width="380" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="250" y="52" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Round results recorded</text>
+                <line x1="250" y1="75" x2="250" y2="103" stroke="#059669" stroke-width="2" marker-end="url(#ckArrow3)"/>
+
+                <rect x="60" y="105" width="380" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="250" y="137" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Players ranked by score</text>
+                <line x1="250" y1="160" x2="250" y2="188" stroke="#059669" stroke-width="2" marker-end="url(#ckArrow3)"/>
+
+                <rect x="40" y="190" width="420" height="70" rx="8" fill="#046241"/>
+                <text x="250" y="218" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Adjacent-ranked players paired</text>
+                <text x="250" y="238" text-anchor="middle" font-size="11" fill="#D1FAE5">avoiding repeat pairings from earlier rounds</text>
+                <line x1="250" y1="260" x2="250" y2="288" stroke="#059669" stroke-width="2" marker-end="url(#ckArrow3)"/>
+
+                <rect x="60" y="290" width="380" height="55" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="250" y="315" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Odd player out → bye</text>
+                <text x="250" y="333" text-anchor="middle" font-size="10" fill="#475569">awarded automatically, tracked so it can't repeat</text>
+                <line x1="250" y1="345" x2="250" y2="373" stroke="#059669" stroke-width="2" marker-end="url(#ckArrow3)"/>
+
+                <rect x="60" y="375" width="380" height="70" rx="8" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="2"/>
+                <text x="250" y="403" text-anchor="middle" font-size="13" font-weight="700" fill="#0F172A">Pairings publish</text>
+                <text x="250" y="422" text-anchor="middle" font-size="10" fill="#475569">Realtime pushes the update — every connected</text>
+                <text x="250" y="437" text-anchor="middle" font-size="10" fill="#475569">viewer's screen refreshes without reloading</text>
+              </g>
+            </svg>
+          </div>
+          <span class="diagram-frame__caption">Fig. 4 — Swiss-pairing flow, conceptual (final tiebreaks computed from cumulative opponent strength once the event ends)</span>
+        </div>
+      </section>
+
+      <!-- LIVE OPERATION -->
+      <section class="case-study-section" id="operations">
+        <span class="case-study-section__label">06 · Live Operation</span>
+        <h2>What running on tournament day actually looks like</h2>
+        <p>
+          An admin enters a result or publishes the next round's pairings.
+          Supabase Realtime pushes that change out over a WebSocket
+          subscription, and every open browser — parents checking standings,
+          players checking their board, other admins — updates without
+          anyone refreshing. That's what "live pairings," "board
+          assignments," and the site's own Display Mode actually run on.
+        </p>
+
+        <div class="diagram-frame">
+          <div class="diagram-frame__scroll">
+            <img
+              src="../assets/evidence/cloudkrida-live-home.png"
+              alt="Cloud Krida's live homepage at cloudkrida.com, showing the Tournament Management and Learning Programs sections and site navigation. No participant data is visible on this page."
+              loading="lazy"
+              width="1280"
+              height="900"
+            />
+          </div>
+          <span class="diagram-frame__caption">Fig. 5 — Real screenshot, cloudkrida.com homepage (live, captured for this case study)</span>
+        </div>
+
+        <div class="evidence-note">
+          <i class="bi bi-images" aria-hidden="true"></i>
+          The live site also has a public gallery of real tournament photos.
+          I'm not reproducing those here — several show minors, and I'd
+          rather leave that decision to the people in the photos than
+          repurpose them for a portfolio without asking. You can see them at
+          <a href="https://cloudkrida.com" target="_blank" rel="noopener noreferrer">cloudkrida.com</a>.
+        </div>
+
+        <h3>Confirmed live features</h3>
+        <ul>
+          <li>Live pairings and board assignments, synced in real time</li>
+          <li>Match history per tournament</li>
+          <li>Per-tournament photo galleries (Supabase Storage)</li>
+          <li>Swiss Points and Single Elimination formats</li>
+          <li>Public registration intake</li>
+        </ul>
+      </section>
+
+      <!-- TESTING -->
+      <section class="case-study-section" id="testing">
+        <span class="case-study-section__label">07 · Testing</span>
+        <h2>Where testing stands</h2>
+        <p>
+          The project is set up with Vitest for the frontend. I haven't gone
+          back to audit exact test coverage for this write-up, so I'm not
+          going to claim more than that it's configured and available —
+          that's a real next step, not a finished one.
+        </p>
+        <span class="pending-note">
+          <i class="bi bi-dot" aria-hidden="true"></i>
+          Test coverage detail — pending audit.
+        </span>
+      </section>
+
+      <!-- ITERATION -->
+      <section class="case-study-section" id="iteration">
+        <span class="case-study-section__label">08 · Iteration — v1 → Cloud Krida</span>
+        <h2>What actually changed</h2>
+        <div class="results-grid">
+          <div class="results-col results-col--pending" style="background:var(--color-surface-alt);">
+            <span class="results-col__title" style="color:var(--color-text-muted);"><i class="bi bi-clock-history" aria-hidden="true"></i> v1 — School Tool</span>
+            <ul>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Plain HTML, CSS, JavaScript</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> One division at a time</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Single operator — me</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Static bracket pages, manual refresh</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Built for a school chess club</li>
+            </ul>
+          </div>
+          <div class="results-col results-col--done">
+            <span class="results-col__title"><i class="bi bi-rocket-takeoff-fill" aria-hidden="true"></i> Cloud Krida</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> React + Supabase, deployed on Vercel</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Four concurrent divisions</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Role-based multi-admin (Guest/Admin/Super Admin)</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Realtime sync, no manual refresh</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Ran a real 100+ participant community tournament</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>
+          I rebuilt rather than patched because the gap wasn't a missing
+          feature — it was architectural. The original tool had no concept
+          of roles, no live sync, and no data model for more than one
+          division running at once. Retrofitting that onto static pages
+          would have cost more than starting over with Supabase underneath
+          it.
+        </p>
+
+        <div class="evidence-note">
+          <i class="bi bi-info-circle" aria-hidden="true"></i>
+          I don't have a documented tournament-day incident or specific edge
+          case captured for this write-up — not fabricating one. If
+          something notable comes up running future events through the
+          platform, I'll add it here.
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <section class="case-study-section" id="results">
+        <span class="case-study-section__label">09 · Results</span>
+        <h2>What's real right now</h2>
+        <p>
+          Same rule as every case study here: built-and-working stays
+          separate from measured-in-production.
+        </p>
+
+        <div class="results-grid">
+          <div class="results-col results-col--done">
+            <span class="results-col__title"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Implemented &amp; Verified</span>
+            <ul>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> React + Vite frontend, deployed on Vercel with a custom domain</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Supabase Postgres backend: tournaments, players, matches, user_profiles</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Row Level Security enforced at the database level</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Three-tier RBAC (Guest / Admin / Super Admin) with a dedicated user-management Edge Function</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Supabase Realtime WebSocket sync for live pairings and results</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Swiss Points and Single Elimination tournament formats</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Public per-tournament photo galleries via Supabase Storage</li>
+              <li><i class="bi bi-check2" aria-hidden="true"></i> Live at cloudkrida.com, ran a real 100+ participant, 4-division community tournament</li>
+            </ul>
+          </div>
+          <div class="results-col results-col--pending">
+            <span class="results-col__title"><i class="bi bi-hourglass-split" aria-hidden="true"></i> Not Yet Measured</span>
+            <ul>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Exact participant count beyond confirmed "100+"</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Match/round counts, latency, or uptime numbers</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Test coverage (Vitest configured; not audited)</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> A specific tournament-day incident — not documented</li>
+              <li><i class="bi bi-dot" aria-hidden="true"></i> Independent security review beyond the documented RLS setup</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- LESSONS -->
+      <section class="case-study-section" id="lessons">
+        <span class="case-study-section__label">10 · Lessons &amp; Next Steps</span>
+        <h2>What's next</h2>
+        <ul>
+          <li>Audit and document real test coverage instead of just having Vitest configured.</li>
+          <li>Capture an actual tournament-day retrospective after the next event runs through the platform.</li>
+          <li>Extend the same tournament engine to the other sports already scaffolded in the codebase — darts, pickleball, and tennis — beyond chess.</li>
+        </ul>
+      </section>
+
+      <!-- TECH STACK -->
+      <section class="case-study-section" id="stack">
+        <span class="case-study-section__label">11 · Technology Stack</span>
+        <h2>What it's built with</h2>
+        <div class="projects__card__tags">
+          <span class="projects__card__tag">React 18</span>
+          <span class="projects__card__tag">Vite</span>
+          <span class="projects__card__tag">React Router</span>
+          <span class="projects__card__tag">Framer Motion</span>
+          <span class="projects__card__tag">PDF.js</span>
+          <span class="projects__card__tag">EmailJS</span>
+          <span class="projects__card__tag">Supabase</span>
+          <span class="projects__card__tag">PostgreSQL</span>
+          <span class="projects__card__tag">Vercel</span>
+          <span class="projects__card__tag">Vitest</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom CTA -->
+    <section class="case-study-cta">
+      <p>Want to see it running for real?</p>
+      <div class="case-study-cta__links">
+        <a href="https://cloudkrida.com" target="_blank" rel="noopener noreferrer" class="btn btn-outline"><i class="bi bi-box-arrow-up-right" aria-hidden="true"></i> cloudkrida.com</a>
+        <a href="../index.html#projects" class="btn btn-outline"><i class="bi bi-arrow-left" aria-hidden="true"></i> All Projects</a>
+        <a href="../index.html#home" class="btn btn-default"><i class="bi bi-house" aria-hidden="true"></i> Home</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer__inner">
+        <div class="footer__brand">
+          <p class="footer__brand__name">Likith Kumar Kandukuri</p>
+          <p class="footer__brand__tagline">Building, learning, and leading — one project at a time.</p>
+        </div>
+        <div class="footer__socials">
+          <a href="https://www.linkedin.com/in/likithkandukuri/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="LinkedIn"><i class="bi bi-linkedin" aria-hidden="true"></i></a>
+          <a href="https://github.com/likithkandukuri" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="GitHub"><i class="bi bi-github" aria-hidden="true"></i></a>
+          <a href="https://www.instagram.com/likith_kumar22/" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram"><i class="bi bi-instagram" aria-hidden="true"></i></a>
+          <a href="https://x.com/LikithkLucky" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="X (Twitter)"><i class="bi bi-twitter-x" aria-hidden="true"></i></a>
+          <a href="https://www.youtube.com/@likithkandukuri4522" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="YouTube"><i class="bi bi-youtube" aria-hidden="true"></i></a>
+        </div>
+        <a href="../index.html" class="btn btn-outline footer__cta"><i class="bi bi-arrow-left" aria-hidden="true"></i> Back to Home</a>
+      </div>
+      <div class="footer__bottom">
+        <p>© 2026 Likith Kumar Kandukuri. All rights reserved.</p>
+        <a href="#" class="footer__top-link" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Back to top <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+      </div>
+    </footer>
+
+    <script src="../app.js"></script>
+  </body>
+</html>
